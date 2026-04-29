@@ -2879,3 +2879,146 @@ Notes for next session
     `matrix(-1, 0, 0, -1, 0, 0)` (with FP drift
     `-?0` in the cross terms). Use a regex with
     the optional sign to keep the test stable.
+
+==========================================
+Iter 29 - AppBar slice (surfaces: M3 Expressive Top + Bottom App Bar)
+==========================================
+Flipped 13 features. 376 / 872 passing (was 363 / 872).
+
+Files added
+-----------
+- src/components/AppBar/{anatomy.ts,types.ts,
+  AppBar.tsx,AppBar.stories.tsx,index.ts}
+  M3 Expressive Top + Bottom App Bar per
+  https://m3.material.io/components/top-app-bar
+  and https://m3.material.io/components/bottom-app-bar.
+  Five variants (small/center-aligned/medium/
+  large/bottom), three density sizes, seven
+  shape steps, scrolled / elevated / disabled
+  states, leading / title / trailing slot matrix.
+    * variants:   small         = 64dp height,
+                                  title-l left
+                  center-aligned= 64dp,
+                                  title-l centered
+                  medium        = 112dp, two-row,
+                                  headline-s title
+                  large         = 152dp, two-row,
+                                  headline-m title
+                  bottom        = 80dp,
+                                  surface-container,
+                                  <footer>/contentinfo
+    * sizes:      sm=56/96/136dp top-row 56dp /
+                       12dp gutter / 20dp icon
+                  md=64/112/152dp top-row 64dp /
+                       16dp gutter / 24dp icon
+                  lg=72/128/168dp top-row 72dp /
+                       24dp gutter / 28dp icon
+    * shapes:     none / xs / sm / md / lg / xl /
+                  full mapped to shape-* tokens.
+                  Default is `none` (full-bleed)
+                  per the M3 top-app-bar spec.
+    * scrolled:   surface -> surface-container
+                  swap on scroll-position-1
+                  per the M3 on-scroll guidance.
+    * elevated:   adds elevation-2 box-shadow
+                  for docked / contextual bars
+                  + the bottom variant.
+    * disabled:   opacity 0.38 + pointer-events:
+                  none on the surface.
+    * slots:      leading (24dp glyph in
+                  on-surface), title (per
+                  variant), trailing (action
+                  icons row).
+    * a11y:       <header role=banner> for top
+                  variants, <footer
+                  role=contentinfo> for the
+                  bottom variant. aria-label
+                  composes through.
+    * motion:     bg/box-shadow/color animate
+                  via the M3 emphasized tween
+                  (medium2 / 300ms).
+- Stories: Default, Variants, Sizes, States,
+  Shapes, Slots, Motion, Accessibility,
+  Playground, InteractionSpec.
+- tests/visual/app-bar.spec.ts: 20 design-parity
+  assertions (variant height matrix
+  64/64/112/152/80 + center-aligned justify
+  centered + medium headline-s 24px + large
+  headline-m 28px + two-row layout split +
+  bottom surface-container + footer/contentinfo
+  + size 56/64/72px top-row + scrolled
+  surface->surface-container swap + elevated
+  elevation-2 shadow + disabled opacity 0.38 +
+  shape radius matrix + slot order leading-
+  title-trailing + title truncate ellipsis +
+  emphasized motion timing/duration + banner
+  role + contentinfo role + on-surface title
+  color + dark-theme bottom + playground).
+- tests/visual/app-bar.visual.spec.ts: 10
+  deterministic baselines (variants/sizes/
+  states/shapes/slots × light/dark).
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck                 PASS
+- pnpm lint                      PASS (0 errors, 0 warnings)
+- pnpm test                      PASS (4 token tests)
+- pnpm build                     PASS
+- pnpm build-storybook           PASS
+- playwright app-bar.spec        PASS (20 / 20)
+- playwright app-bar.visual      PASS (10 / 10)
+- full playwright suite          PASS (776 / 776)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 app-bar--*
+features. 376 / 872 passing (was 363 / 872).
+
+Notes for next session
+----------------------
+- Surfaces slice complete: paper + card +
+  accordion + app-bar all done.
+- Largest remaining slices by component (counts
+  from `passes: false` grouping; 496 total):
+  * Utils       : 130
+  * Navigation  : 117
+  * Advanced    : 104
+  * Feedback    :  78
+  * Layout      :  65
+  * Quality     :   2
+- Reusable lessons from this slice:
+  * `[data-size]` is reused by both AppBar and
+    its child IconButtons, so a Playwright
+    locator like `[data-size='md']`.first()
+    can latch on to the IconButton instead of
+    the AppBar (the order depends on tree
+    position). Always scope to
+    `[data-component='app-bar'][data-size=...]`
+    when you need to target the bar itself.
+    Lesson reinforces the same disambiguation
+    rule that Accordion needed for parent vs.
+    item containers.
+  * `page.locator(...).count()` does NOT
+    auto-wait for the page. If a test runs
+    immediately after `page.goto`, count can
+    return 0 even though the elements will
+    appear shortly. Always
+    `await expect(locator.first()).toBeVisible()`
+    before asserting count.
+  * Top-vs-bottom semantics: top app bars need
+    `<header role=banner>`, bottom app bars
+    need `<footer role=contentinfo>`. Encode
+    the element + role choice in the variant
+    matrix so callers can't misuse them.
+    `forwardRef` on a polymorphic union
+    (header|footer) still requires casting the
+    ref because React's typings don't widen the
+    intersection.
+  * Variant + size axes interact: medium / large
+    variants always keep a 64dp top-row, while
+    the title-row scales with size. Treat the
+    bar as `[top-row, title-row]` and only
+    scale the title-row's contribution to total
+    height — never the top-row, which has to
+    line up with the small/center-aligned bars
+    on the same screen.
