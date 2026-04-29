@@ -1754,3 +1754,103 @@ Notes for next session
     computation for role=separator only reads aria-label /
     aria-labelledby — children inside the separator do NOT
     contribute to the accessible name.
+
+
+==============================================================
+Iter 20: Typography slice complete
+==============================================================
+259 / 872 features passing (was 246). +13 (all typography-*
+atoms, molecules, stories, and playwright specs flipped).
+
+What shipped
+------------
+- src/components/Typography/{Typography.tsx,types.ts,anatomy.ts,
+  index.ts,Typography.stories.tsx} — full M3 Typography:
+    * variants:   display | headline | title | body | label
+    * sizes:      sm | md | lg → s/m/l within the variant's
+                  category, yielding the full 15-role M3 type
+                  scale (display 36/45/57, headline 24/28/32,
+                  title 14/16/22, body 12/14/16, label 11/12/14)
+    * emphasis:   default | muted | primary | error | inverse
+                  (color roles: on-surface / on-surface-variant
+                  / primary / error / inverse-on-surface)
+    * polymorph:  `as` prop overrides the rendered element;
+                  defaults follow the variant map
+                  (display→h1, headline→h2, title→h3, body→p,
+                  label→span)
+    * slots:      leadingIcon, trailingIcon (1em inline boxes)
+    * states:     disabled (38% opacity + aria-disabled),
+                  selected (forces primary emphasis)
+    * truncate:   single-line ellipsis container
+    * align:      start / center / end / justify
+    * motion:     M3 standard easing on color + opacity
+                  transitions (token-driven via Tailwind's
+                  duration-short4 ease-standard)
+- Stories: Default, Variants, Sizes, States, Slots, Polymorphic,
+  Motion, Accessibility, Playground, InteractionSpec
+  (asserts data-variant/size/emphasis/role + the resolved
+  semantic tag + aria-disabled on the disabled row).
+- tests/visual/typography.spec.ts: 16 design-parity assertions
+  (default render, 5-variant matrix, sm/md/lg sizes, emphasis
+  matrix muted/primary/error, disabled+aria, selected override,
+  default semantic tags, polymorphic `as`, leading/trailing
+  icon slots, truncate ellipsis, motion easing token, dark
+  theme, playground args).
+- tests/visual/typography.visual.spec.ts: 10 deterministic
+  baselines (variants/sizes/states/slots/polymorphic × light/
+  dark) with reduced-motion + animations:'disabled' +
+  maxDiffPixelRatio 0.02. Baselines committed under
+  tests/visual/typography.visual.spec.ts-snapshots/.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck                 ✓
+- pnpm lint                      ✓ (0 errors, 0 warnings)
+- pnpm test                      ✓ (4 token tests)
+- pnpm build                     ✓
+- pnpm build-storybook           ✓
+- playwright typography.spec     ✓ (16 / 16)
+- playwright typography.visual   ✓ (10 / 10)
+- full playwright suite          ✓ (501 / 501)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 typography-* features. 259 / 872
+passing (was 246 / 872).
+
+Notes for next session
+----------------------
+- Data Display category remaining: Icons, Material Icons, List,
+  Table, Tooltip. Tooltip is the natural next slice — it's
+  interactive (hover-to-show + ARIA), uses the label-m type
+  token (already in Typography), and provides the M3 hover
+  state-layer pattern that List + Table will reuse.
+- Re-usable lessons from this slice:
+  * Tailwind v3's content scanner is STATIC — it only picks
+    up classes that appear as literal strings in the source.
+    Computed classnames like `text-${role}` get silently
+    purged from production CSS for any role not used as a
+    literal elsewhere in the project. The fix is a literal map
+    (see Typography/anatomy.ts → `typeRoleClassMap`). This
+    bug is sneaky: classes that ARE referenced elsewhere
+    (text-body-l, text-label-l) work, but unused ones
+    (text-title-l, text-headline-l) silently fall back to
+    inherited defaults at runtime. Always assert computed
+    fontSize in playwright when adding new type-role usage.
+  * The MEMORY.md note about Tailwind opacity utilities
+    silently failing with var() colors is the same family of
+    bug — Tailwind preprocesses classes against its theme
+    table and silently drops anything it can't resolve.
+    Treat any Tailwind no-op as a token-resolution issue
+    first.
+  * For polymorphic React components, you can't pass `ref`
+    through a typed createElement props object — TypeScript
+    rejects it on intrinsic Attributes. Cast the props bag
+    to `Record<string, unknown>` (or use a JSX wrapper).
+    forwardRef still does the right thing.
+  * For `prefers-reduced-motion`, M3 typography only animates
+    color + opacity (no transform/spring), so a CSS transition
+    via Tailwind utilities is enough. Reduced-motion is a
+    no-op at the component level; the Storybook globals
+    decorator and the user agent reduce-motion media query
+    handle the rest.
