@@ -4771,7 +4771,7 @@
     "depends_on": [
       "theme-002"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -4824,7 +4824,7 @@
     "depends_on": [
       "radio-group--atom-anatomy"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -4877,7 +4877,7 @@
     "depends_on": [
       "radio-group--atom-base"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -4930,7 +4930,7 @@
     "depends_on": [
       "radio-group--atom-variants"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -4983,7 +4983,7 @@
     "depends_on": [
       "radio-group--atom-sizes"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -5036,7 +5036,7 @@
     "depends_on": [
       "radio-group--atom-states"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -5089,7 +5089,7 @@
     "depends_on": [
       "radio-group--molecule-slots"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -5143,7 +5143,7 @@
     "depends_on": [
       "radio-group--molecule-motion"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -5196,7 +5196,7 @@
     "depends_on": [
       "radio-group--molecule-a11y"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -5249,7 +5249,7 @@
     "depends_on": [
       "radio-group--story-default"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -5302,7 +5302,7 @@
     "depends_on": [
       "radio-group--story-variants"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -5355,7 +5355,7 @@
     "depends_on": [
       "radio-group--story-interaction"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -5409,7 +5409,7 @@
     "depends_on": [
       "radio-group--playwright-visual"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",

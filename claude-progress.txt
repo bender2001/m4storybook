@@ -540,3 +540,103 @@ Notes for next session
     them through Playwright was unreliable. Prefer asserting
     the resolved color via a real DOM element's `backgroundColor`
     rather than reading the variable directly.
+
+Session 2026-04-29 (Radio Group slice):
+  Goal: complete the 13 radio-group-* features as one self-contained
+  slice (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/RadioGroup/{types,anatomy,RadioGroup,index}.ts
+  implementing the M3 Radio Group: a single-select group of 20dp
+  rings with a 10dp inner dot when selected. Two variants
+  (default / error), three sizes (sm 32 hit / 16 ring / md 40 / 20
+  / lg 48 / 24), vertical or horizontal orientation, label-placement
+  start/end, optional legend + group helper-text, full controlled +
+  uncontrolled support, per-option disable plus group-level disable,
+  full keyboard a11y (Space toggles focused option). The component
+  is generic over a TValue extends string for type-safe values.
+- All motion routes through motion/react: whileTap scale 0.92 with
+  the springy preset on the ring, AnimatePresence on the inner dot
+  for a springy enter/exit. Reduced-motion collapses transitions
+  to 0. State-layer reads the M3 opacities (0.08 hover, 0.10 focus/
+  pressed) directly from src/tokens/motion.ts.
+- RadioGroup.stories.tsx exports Default, Variants, Sizes, States,
+  WithIcons, Horizontal, Playground, and Interaction (play() drives
+  click → onChange("medium") → click another → onChange("large") +
+  asserts aria-checked toggles).
+- tests/visual/radio-group.spec.ts has 19 design-parity assertions:
+  role=radiogroup with 3 options, default ring = on-surface-variant
+  + transparent fill + 2dp border, selected ring + dot = primary,
+  error variant uses error role, size scale heights (32/40/48) +
+  ring sizes (16/20/24), disabled group suppresses state-layer +
+  disables every input, hover paints 0.08, focus paints 0.10,
+  click selects + de-selects siblings, Space toggles focused
+  option, label-placement row direction, orientation=horizontal
+  uses flex-row, label uses M3 body-l type role, native input is
+  invisible but receives clicks, M3 emphasized motion 300ms /
+  cubic-bezier(0.2,0,0,1), per-option disabled disables only that
+  option, aria-describedby resolves to helper text, dark theme
+  swaps the selected dot color.
+- tests/visual/radio-group.visual.spec.ts captures 8 deterministic
+  baselines (variants/sizes/states/with-icons × light/dark)
+  with reduced-motion + animations:'disabled' + maxDiffPixelRatio
+  0.02. Baselines committed.
+- Bug fix: anatomy.options had `inline-flex flex-col gap-1`
+  baked in. When the component appended `flex-row gap-4` for
+  horizontal orientation, Tailwind's CSS source order put
+  `flex-col` after `flex-row`, so flex-col always won and the
+  horizontal layout silently rendered as a column. Fixed by
+  dropping `flex-col` from the anatomy and using a ternary in
+  the component (`horizontal ? "flex-row gap-4" : "flex-col"`)
+  so exactly one direction utility lands in the className. Lesson:
+  when conditionally swapping Tailwind direction utilities, do
+  not include the default direction in the base anatomy class
+  string — pick exactly one in the component.
+- Bug fix: aria-describedby was wired to the legend element
+  instead of the helper text. The legend belongs in
+  aria-labelledby (it labels the group); helper text belongs in
+  aria-describedby. Split them so the relationship matches a11y
+  spec.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright radio-group.spec        ✓ (19 / 19)
+- playwright radio-group.visual      ✓ (8 / 8)
+- full playwright suite              ✓ (168 / 168)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 radio-group-* features. 103 / 872
+passing (was 90 / 872).
+
+Notes for next session
+----------------------
+- Next up: Inputs alphabet continues with Rating
+  (rating--atom-anatomy through rating--playwright-spec). Same
+  13-feature shape as Radio Group.
+- Re-usable lessons from this slice:
+  * When two Tailwind utilities target the same CSS property and
+    both end up in the class list (e.g. `flex-col` + `flex-row`),
+    source-order in the generated CSS — not className order in
+    the markup — decides which wins. Don't bake the "default"
+    direction into the base anatomy if the component might swap
+    it; pick one direction in a ternary so only one utility lands.
+  * For groups with a legend + helper text, wire legend to
+    aria-labelledby and helper text to aria-describedby. They
+    play different a11y roles and conflating them confuses
+    screen readers.
+  * useId-generated ids contain ":" characters which are invalid
+    in CSS selectors. In Playwright tests, look up by attribute
+    value (`page.locator('[id="..."]')`) rather than `#id` when
+    the id was generated by React's useId.
+  * For toggleable visual containers that wrap an input + state-
+    layer + visual circle, the Checkbox pattern transfers cleanly
+    to Radio: outer `<label htmlFor>`, inner `<div data-radio-
+    control>` with absolutely-positioned input, and a `<span
+    data-state-layer>` painted under the visual element.
