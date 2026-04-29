@@ -1554,3 +1554,128 @@ Notes for next session
     the generated CSS. Symptom: bg-X works but text-X (or
     border-X) silently has no effect even though the class is
     in className.
+
+
+Session 2026-04-29 (Chip slice):
+  Goal: complete the 13 chip-* features as one self-contained
+  slice (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/Chip/{types,anatomy,Chip,index}.ts implementing
+  an M3 Expressive Chip per https://m3.material.io/components/
+  chips/specs. Four variants (assist / filter / input /
+  suggestion), three sizes (sm 24dp / md 32dp default / lg 40dp),
+  optional elevated container (surface-container-low + elevation-1),
+  leading + trailing icon slots, optional onDelete dismiss button
+  (input-chip pattern), and selected state with M3 Expressive
+  shape morph from rounded-shape-sm (8dp) to rounded-shape-full
+  (pill) over the medium2 (300ms) emphasized easing token.
+- M3 Expressive motion: motion/react drives whileHover scale=1.02
+  + whileTap scale=0.97 with the springy preset. Reduced-motion
+  sets transition.duration=0 and skips the hover/tap animations.
+- Color matrix per M3 chip spec:
+    * assist (rest)     : transparent + 1dp outline + on-surface
+    * assist (selected) : primary-container + on-primary-container
+    * filter (rest)     : transparent + 1dp outline + on-surface-variant
+    * filter (selected) : secondary-container + on-secondary-container
+    * input (rest)      : transparent + 1dp outline + on-surface
+    * input (selected)  : secondary-container + on-secondary-container
+    * suggestion (rest) : transparent + 1dp outline + on-surface-variant
+    * suggestion (sel.) : secondary-container + on-secondary-container
+  filter and input chips render an automatic leading check glyph
+  when selected (unless a custom leadingIcon was supplied).
+- Filter chips expose role=button + aria-pressed=true|false; the
+  other variants stay as plain buttons. Disabled chips set both
+  aria-disabled=true and the native disabled attribute (so the
+  whole Tailwind opacity-[0.38] dim + pointer-events-none gate
+  apply).
+- onDelete renders a nested span with role=button + tabindex=0 and
+  its own onClick/onKeyDown handlers (Enter, Space, Backspace, and
+  Delete all dismiss). The handler calls event.stopPropagation()
+  to keep the chip's React onClick from firing — clicking dismiss
+  fires onDelete only.
+- Chip.stories.tsx exports Default, Variants, Sizes, States, Slots,
+  Filters, Inputs, Interactive, Playground, InteractionSpec
+  (play() asserts onClick fires on click + Enter, then asserts
+  the dismiss button fires onDelete).
+- tests/visual/chip.spec.ts has 20 design-parity assertions:
+  default role=button + variant/size data attrs, assist (rest)
+  transparent + outline + on-surface, filter (rest)
+  on-surface-variant + outline, filter (selected) secondary-
+  container/on-secondary-container + aria-pressed=true, assist
+  (selected) primary-container/on-primary-container, elevated
+  surface-container-low + elevation-1 shadow, sm/md/lg = 24/32/
+  40px heights, rest = 8px shape-sm radius, selected morphs to
+  shape-full (≥ height/2), disabled = ~38% opacity + aria-disabled
+  + native :disabled, filter aria-pressed=false toggle semantics
+  + state-layer span, hover layer 0.08, focus layer 0.10, click
+  + Enter on the chip both fire onClick, M3 emphasized motion
+  (medium2 300ms / cubic-bezier(0.2,0,0,1)), filter selected
+  auto-renders the leading check glyph, input chip onDelete
+  exposes a Remove dismiss button with tabindex=0, dismiss is
+  keyboard reachable inside the chip (Enter triggers it),
+  leading + trailing icon slots render, dark theme swaps
+  on-surface text on the assist chip.
+- tests/visual/chip.visual.spec.ts captures 10 deterministic
+  baselines (variants/sizes/states/filters/inputs × light/dark)
+  with reduced-motion + animations:'disabled' + maxDiffPixelRatio
+  0.02. Baselines committed under
+  tests/visual/chip.visual.spec.ts-snapshots/.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright chip.spec       ✓ (20 / 20)
+- playwright chip.visual     ✓ (10 / 10)
+- full playwright suite      ✓ (448 / 448)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 chip-* features. 233 / 872
+passing (was 220 / 872).
+
+Notes for next session
+----------------------
+- Data Display category has 10 components in the MUI nav: Avatar
+  (done), Badge (done), Chip (done), Divider, Icons, Material
+  Icons, List, Table, Tooltip, Typography. Next slice should be
+  Divider — same 13-feature shape (divider--atom-anatomy through
+  divider--playwright-spec). Divider in M3 spec is straightforward
+  (variants: full-width / inset / middle; sizes; horizontal vs
+  vertical) so it's a simpler MUI fallback re-skinned with M3
+  outline-variant.
+- Re-usable lessons from this slice:
+  * Playwright's `getByRole("button", { name: "X" })` does
+    SUBSTRING matching by default, so "Disabled" matches both
+    "Disabled" and "Selected disabled". Always pass `exact: true`
+    when an accessible name is a prefix of another button on the
+    same page. Strict-mode violation flagged this with a clear
+    "resolved to 2 elements" message.
+  * `locator.count()` does NOT auto-wait for the element to
+    render. When a story uses motion/react, the chip mount can
+    happen after page.goto() resolves. Always assert
+    `expect(chip).toBeVisible()` (or `await expect(locator).
+    toHaveCount(...)`) before reading raw `.count()` — otherwise
+    you race the mount and get 0. The same anti-pattern showed up
+    in the badge slice and is worth treating as a project rule.
+  * React 17+ uses event delegation at the React root. When you
+    call `event.stopPropagation()` inside a React onClick, you
+    stop React's SYNTHETIC event from bubbling — but native DOM
+    listeners (`addEventListener("click", ...)`) on parent
+    elements still fire because native bubbling already happened
+    by the time React processes the event. Don't write Playwright
+    tests that attach native listeners to verify React
+    propagation: instead test the user-facing outcome (focus
+    state, visible result) or use Storybook InteractionSpec with
+    fn() spies. The dismiss-doesn't-bubble assertion belongs in
+    the @storybook/test InteractionSpec, not in playwright spec.
+  * For chip + dismiss button composition: the dismiss span gets
+    role="button" + tabindex="0" + its own React onClick that
+    calls stopPropagation. That keeps clicking dismiss from
+    triggering the chip's onClick, but the dismiss button stays
+    keyboard-reachable (Tab onto it, Enter dismisses).
