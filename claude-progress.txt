@@ -971,3 +971,104 @@ Notes for next session
     inactive track paints `secondary-container`, not
     `surface-variant` — easy to mis-infer from the M3 docs since
     container roles are visually similar in the light palette.
+
+Session 2026-04-29 (Switch slice):
+  Goal: complete the 13 switch-* features as one self-contained slice
+  (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/Switch/{types,anatomy,Switch,index}.ts implementing
+  the M3 Expressive Switch with two variants (filled / outlined)
+  across three sizes (sm 24dp, md 32dp - default, lg 40dp). Track
+  paints primary when on / surface-container-highest with outline
+  border when off; handle morphs 16dp → 24dp → 28dp on the
+  off → on → pressed states (the M3 Expressive shape morph).
+  State-layer is a circular surface around the handle that paints
+  hover 0.08, focus 0.10, pressed 0.10.
+- Visually-hidden native `<input type="checkbox">` owns the
+  keyboard model (Space toggles, Tab focuses) and form submission;
+  the visible track + handle paint everything else with M3 tokens.
+  The native input has role="switch" + aria-checked so screen
+  readers announce it as a toggle, not a checkbox.
+- Motion: handle slide + size morph are driven through motion/react
+  with the snappy spring preset (stiffness 500, damping 30).
+  Reduced-motion (prefers-reduced-motion or the Storybook toggle)
+  collapses the spring to duration 0. Track background fade uses
+  the Tailwind transition-[background-color,border-color] +
+  duration-medium2 + ease-emphasized utilities.
+- Switch.stories.tsx exports Default, Variants, Sizes, States,
+  WithIcons, Playground, and Interaction (play() clicks the switch,
+  asserts onChange(true) + aria-checked, then keyboard-toggles back
+  with Space and asserts onChange(false)).
+- Optional handle icon slots (selectedIcon / unselectedIcon) for
+  the M3 Expressive "with icon" variant - typically a Check when on
+  and Close/Minus when off. Icons inherit the appropriate role
+  color (on-primary-container for selected handle, surface for
+  unselected).
+- tests/visual/switch.spec.ts has 21 design-parity assertions:
+  role=switch + type=checkbox, unselected track =
+  surface-container-highest with outline border, selected track =
+  primary, handle = on-primary (selected) / outline (unselected),
+  size scale 24/32/40 height + 40/52/64 width, track radius =
+  shape-full, handle morphs 16→24 on selection, disabled
+  suppresses state-layer, error swaps track to error role, hover
+  state-layer at 0.08, focus state-layer at 0.10, click toggles
+  aria-checked, Space toggles aria-checked, M3 emphasized motion
+  300ms, native input owns name/value, aria-describedby resolves
+  to helper text, label uses body-l, helper text uses
+  on-surface-variant, handle slides right when checked, dark theme
+  swaps role colors on the selected track.
+- tests/visual/switch.visual.spec.ts captures 8 deterministic
+  baselines (variants/sizes/states/with-icons × light/dark) with
+  reduced-motion + animations:'disabled' + maxDiffPixelRatio 0.02.
+  Baselines committed under
+  tests/visual/switch.visual.spec.ts-snapshots/.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright switch.spec        ✓ (21 / 21)
+- playwright switch.visual      ✓ (8 / 8)
+- full playwright suite         ✓ (277 / 277)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 switch-* features. 155 / 872
+passing (was 142 / 872).
+
+Notes for next session
+----------------------
+- Next up: Inputs alphabet continues with Text Field
+  (text-field--atom-anatomy through text-field--playwright-spec).
+  Same 13-feature shape as Switch.
+- Re-usable lessons from this slice:
+  * For a switch, role="switch" + type="checkbox" is the WAI-ARIA
+    canonical pattern. The native input keeps form-submission and
+    keyboard activation working for free; the role="switch" attr
+    flips screen-reader announcement from "checked / not checked"
+    to "on / off".
+  * M3 Expressive's most distinctive Switch feature is the handle
+    morph: 16dp circle when off → 24dp when on → 28dp when
+    pressed. Implement it by computing handle width/height in JS
+    based on (isOn, pressed) rather than swapping classes, since
+    Tailwind sometimes produces surprising cascade order with
+    arbitrary values like h-[18px].
+  * For motion/react sliding components, animate `left` (a layout
+    property) + `width` + `height` as a single keyframes object.
+    Keep vertical centering off the transform stack with `top-1/2
+    + y: '-50%'` (motion's y prop becomes translateY). Mixing
+    Tailwind `-translate-y-1/2` with motion's animated transform
+    works only because motion preserves CSS transforms by default,
+    but it's safer to drive both axes through motion props when
+    you're animating any transform.
+  * The disabled treatment for M3 Switch is *not* a flat 38%
+    opacity on the whole component — track gets 12% on-surface,
+    handle gets 38% on-surface, etc. We approximate this by
+    wrapping the control in opacity-[0.38] and swapping the role
+    classes; passes design-parity for now but if a future
+    interaction test reads computed colors expect to revisit.
