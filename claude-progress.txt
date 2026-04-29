@@ -3022,3 +3022,151 @@ Notes for next session
     height — never the top-row, which has to
     line up with the small/center-aligned bars
     on the same screen.
+
+
+==========================================
+Iter 30 - Alert slice (feedback: M3 banner-style alert)
+==========================================
+Flipped 13 features. 389 / 872 passing (was 376 / 872).
+
+Files added
+-----------
+- src/components/Alert/{anatomy.ts,types.ts,
+  Alert.tsx,Alert.stories.tsx,index.ts}
+  M3 Alert per https://m3.material.io/components/banners
+  with the MUI Alert API re-skinned onto the M3
+  banner surface. Four variants × four severities
+  × three densities × seven shapes × five slots:
+    * variants:   filled    = severity color bg,
+                              on-color text
+                  tonal     = severity-container,
+                              on-container text
+                              (M3 default)
+                  outlined  = transparent + 1dp
+                              severity border +
+                              severity text
+                  text      = transparent +
+                              severity text only
+    * severities: info     -> primary
+                  success  -> secondary
+                  warning  -> tertiary
+                  error    -> error
+    * sizes:      sm = 32dp shell / body-s 12px /
+                       16dp icon / 8dp gutter
+                  md = 48dp shell / body-m 14px /
+                       20dp icon / 12dp gutter
+                  lg = 56dp shell / body-l 16px /
+                       24dp icon / 16dp gutter
+    * shapes:     none / xs / sm / md / lg / xl /
+                  full mapped to shape-* tokens.
+                  Default is `sm` (8dp) per the
+                  M3 banner spec.
+    * slots:      icon (auto severity-aware
+                  glyph or custom node, `false`
+                  to suppress), title (title-m /
+                  title-s above body), body
+                  (children), action (button row)
+                  trailing close (escape-key
+                  dismissable when onClose set).
+    * a11y:       role="status" + aria-live=polite
+                  for info/success severities;
+                  role="alert" + aria-live=
+                  assertive for warning/error.
+                  Escape with focus inside fires
+                  onClose.
+    * motion:     enter/exit via AnimatePresence
+                  + height/opacity over the M3
+                  standard tween (medium2 / 300ms
+                  / cubic-bezier(0.2,0,0,1));
+                  reduced-motion collapses to
+                  opacity fade.
+- Stories: Default, Variants, Severities, Sizes,
+  States, Shapes, Slots, Motion, Accessibility,
+  Playground, InteractionSpec.
+- tests/visual/alert.spec.ts: 20 design-parity
+  assertions (variant color matrix filled/tonal/
+  outlined/text + severity color matrix
+  primary/secondary/tertiary/error + size matrix
+  32/48/56dp shell + body-s/m/l type + shape
+  radius matrix + slot order icon-content-
+  action-close + icon=false suppresses + title
+  type role + close click fires onClose +
+  emphasized motion timing + role=status/alert
+  + aria-live polite/assertive + dark theme
+  primary-container swap + playground).
+- tests/visual/alert.visual.spec.ts: 10
+  deterministic baselines (variants/severities/
+  sizes/shapes/slots × light/dark).
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck                 PASS
+- pnpm lint                      PASS (0 errors, 0 warnings)
+- pnpm test                      PASS (4 token tests)
+- pnpm build                     PASS
+- pnpm build-storybook           PASS
+- playwright alert.spec          PASS (20 / 20)
+- playwright alert.visual        PASS (10 / 10)
+- full playwright suite          PASS (806 / 806)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 alert--*
+features. 389 / 872 passing (was 376 / 872).
+
+Notes for next session
+----------------------
+- Feedback slice progress: alert complete.
+  Remaining feedback: backdrop, dialog, progress,
+  skeleton, snackbar (5 components × 13 features
+  = 65 left).
+- Largest remaining slices by component (counts
+  from `passes: false` grouping; 483 total):
+  * Utils       : 130
+  * Navigation  : 117
+  * Advanced    : 104
+  * Feedback    :  65 (alert done -> backdrop,
+                       dialog, progress,
+                       skeleton, snackbar)
+  * Layout      :  65
+  * Quality     :   2
+- Reusable lessons from this slice:
+  * `min-h-8`, `min-h-12`, `min-h-14` are NOT in
+    Tailwind v3's default `minHeight` scale —
+    Tailwind ships `min-h-{0, full, screen, min,
+    max, fit, svh, lvh, dvh}` and the integer
+    spacing values stop at `min-h-px`/`min-h-0`.
+    `min-h-8` resolves to `min-height: auto`,
+    not 32px. Use the arbitrary syntax
+    `min-h-[32px]` when you need a token-shell
+    height. The same caveat applies to `h-` and
+    `w-` for non-default spacing values.
+  * `motion/react` writes the active animation
+    state (opacity, height, transform) to the
+    target element as INLINE styles — those
+    inline styles BEAT Tailwind classes by CSS
+    specificity. So `disabled` cannot apply a
+    CSS class like `opacity-[0.38]` if the
+    motion `animate` prop is also setting
+    opacity. The fix is to push the disabled
+    opacity through the `animate` prop itself
+    (e.g. `animate={{ opacity: disabled ?
+    0.38 : 1 }}`) so motion drives both states.
+    Cursor + pointer-events still work as CSS
+    classes because motion doesn't touch them.
+  * `<AnimatePresence initial={false}>` plus a
+    motion.div whose `initial={{ opacity: 0,
+    height: 0 }}` lets the alert mount without
+    animating in but still animate OUT via the
+    `exit` prop when the open prop flips. This
+    matches the M3 banner enter/exit guidance
+    (no entrance flash on first paint).
+  * Tailwind's opacity modifier `bg-current/10`
+    silently fails on `currentColor` because
+    Tailwind needs RGB triples to slot into
+    `rgb(... / opacity)`. Don't reach for it on
+    a close-button hover wash — use an opacity
+    transition on the icon itself instead
+    (`opacity-80 hover:opacity-100`). Same
+    constraint as the var()-color tokens
+    documented in the auto-memory.
