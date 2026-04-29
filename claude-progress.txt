@@ -1072,3 +1072,93 @@ Notes for next session
     wrapping the control in opacity-[0.38] and swapping the role
     classes; passes design-parity for now but if a future
     interaction test reads computed colors expect to revisit.
+
+Session 2026-04-29 (Text Field slice):
+  Goal: complete the 13 text-field-* features as one self-contained slice
+  (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/TextField/{types,anatomy,TextField,index}.ts implementing
+  the M3 Text Field with filled (default) + outlined variants across
+  three sizes (sm 40dp, md 56dp - default, lg 72dp). Filled tray paints
+  surface-container-highest with rounded-t-shape-xs corners + a 1dp
+  on-surface-variant bottom indicator that morphs to 2dp primary on
+  focus; outlined tray is transparent with a 1dp outline that grows to
+  2dp primary on focus and lets the floating label cut through the top
+  edge. Error swaps the indicator + label + helper text to the error
+  role; disabled wraps the field at opacity 0.38.
+- Floating label model: starts at body-l in resting position, animates
+  to label-m floating above the tray when the input has focus, a value,
+  or a placeholder. Color cascade is JS-computed (error wins → focused
+  primary → on-surface-variant) to side-step the Tailwind utility-order
+  issue where text-on-surface-variant beat text-error in the CSS
+  output.
+- State-layer paints on-surface (filled) / primary (outlined) at the
+  M3 opacities (hover 0.08, focus 0.10, pressed 0.10) and respects
+  data-disabled. Click anywhere in the field tray (gutter, label,
+  state-layer) focuses the input; the M3 single-target tray UX.
+- TextField.stories.tsx exports Default, Variants, Sizes, States,
+  WithIcons, Playground, and Interaction (play() focuses the input,
+  types a value, asserts onChange + data-floating, then blurs and
+  confirms the value persists).
+- tests/visual/text-field.spec.ts has 20 design-parity assertions:
+  type=text wired via htmlFor, filled/outlined background + radius +
+  border colors + widths, size scale 40/56/72, focus indicator morph
+  to 2dp primary, hover/focus state-layer opacities, disabled opacity
+  + disabled input, error role on indicator + label + helper, typing
+  flips data-floating, clicking the field focuses input, motion uses
+  emphasized 300ms, body-l type at md, leading + trailing icon slots
+  reserve 24dp boxes, placeholder forces label floating, dark theme
+  swaps role colors, blur preserves value, data-focused toggles.
+- tests/visual/text-field.visual.spec.ts captures 8 deterministic
+  baselines (variants/sizes/states/with-icons × light/dark) with
+  reduced-motion + animations:'disabled' + maxDiffPixelRatio 0.02.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright text-field.spec    ✓ (20 / 20)
+- playwright text-field.visual  ✓ (8 / 8)
+- full playwright suite         ✓ (305 / 305)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 text-field-* features. 168 / 872
+passing (was 155 / 872).
+
+Notes for next session
+----------------------
+- Next up: Inputs alphabet continues with Transfer List
+  (transfer-list--atom-anatomy through transfer-list--playwright-spec),
+  the same 13-feature shape.
+- Re-usable lessons from this slice:
+  * Tailwind utility cascade is unpredictable for "later one wins"
+    rules involving multiple color utilities (text-error vs
+    text-on-surface-variant on the same element). Tailwind sorts
+    utilities by category and color order from the config — so the
+    color whose name appears later in the colors[] array wins,
+    regardless of source-order in the className string. Fix: pick a
+    single color in JS and pass exactly one text-* class to the
+    element. Same trick used in the Switch errorClasses table.
+  * Same lesson for the field's border-color: even though
+    [&[data-error=true]]:border-error appeared LAST in the variant
+    string, [&[data-focused=true]]:border-primary kept winning. The
+    safe pattern is the Select / Switch escape hatch: keep the
+    arbitrary-variant rules AND append a JS-computed `error &&
+    "border-error"` so an explicit class always wins.
+  * Floating-label click-through is awkward for Playwright. The label
+    is positioned absolute over the input region; whether you keep
+    pointer-events:none (input intercepts the click) or remove it
+    (label intercepts the click), Playwright's actionability check
+    fails. Workaround: test the M3 UX directly — clicking the field
+    gutter focuses the input via the field's onClick handler.
+  * data-* attributes on a NESTED div need their own data-variant /
+    data-error / data-size copy; arbitrary-variant Tailwind rules
+    target the element they're on, not the root. Putting the prop
+    once on the root and assuming descendants inherit will silently
+    lose styles.
