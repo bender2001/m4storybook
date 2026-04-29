@@ -153,10 +153,11 @@ test.describe("List - M3 design parity", () => {
   }) => {
     await page.goto(storyUrl("data-display-list--slots"));
     const list = page.getByRole("list", { name: "Slots list" });
+    await expect(list).toBeVisible();
+    await expect(list.locator("[data-slot='headline']")).toHaveCount(4);
     expect(await list.locator("[data-slot='leading']").count()).toBeGreaterThanOrEqual(2);
     expect(await list.locator("[data-slot='trailing']").count()).toBeGreaterThanOrEqual(2);
     expect(await list.locator("[data-slot='overline']").count()).toBeGreaterThanOrEqual(1);
-    expect(await list.locator("[data-slot='headline']").count()).toBe(4);
   });
 
   test("interactive item promotes to a <button> with role=button + state-layer", async ({
@@ -271,13 +272,12 @@ test.describe("List - M3 design parity", () => {
     expect(bg).not.toBe(TRANSPARENT);
   });
 
-  test("ordered list renders an <ol> when ordered=true", async ({ page }) => {
-    await page.goto(storyUrl("data-display-list--playground"));
-    // Default is unordered.
-    const ulCount = await page.locator("ul[data-component='list']").count();
-    const olCount = await page.locator("ol[data-component='list']").count();
-    expect(ulCount).toBeGreaterThanOrEqual(1);
-    expect(olCount).toBe(0);
+  test("default story renders a <ul> tag (unordered)", async ({ page }) => {
+    await page.goto(storyUrl("data-display-list--default"));
+    const list = page.getByRole("list").first();
+    await expect(list).toBeVisible();
+    const tag = await list.evaluate((el) => el.tagName.toLowerCase());
+    expect(tag).toBe("ul");
   });
 
   test("playground respects runtime variant + size controls", async ({

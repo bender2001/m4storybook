@@ -1960,3 +1960,117 @@ Notes for next session
     Switch the meta to `layout: padded` and let stories
     manage their own padding (top/bottom) so panels with
     placement=top get vertical headroom.
+
+==============================================================
+Session 2026-04-29 (iter 22) - List slice complete (285/872)
+==============================================================
+
+Verification
+------------
+Re-ran tests/visual/tooltip.spec.ts before starting new work
+(per Step 3 of the runbook). All 14 design-parity assertions
+passed locally. No regressions inherited from iter 21.
+
+What shipped
+------------
+- src/components/List/{List.tsx,types.ts,anatomy.ts,
+  index.ts,List.stories.tsx} - M3 List + ListItem:
+    * variants:   standard (transparent), filled (surface-
+                  container fill + shape-sm), outlined (1dp
+                  outline-variant border + shape-sm)
+    * sizes:      sm = 1-line / 56dp w/ leading (48dp without)
+                  md = 2-line / 72dp - body-l + body-m supporting
+                  lg = 3-line / 88dp - supporting wraps to 2 lines
+    * slots:      leading (24dp icon), trailing (icon/label),
+                  overline (label-s), headline (body-l),
+                  supporting (body-m, hidden in size sm)
+    * states:     resting, selected (secondary-container fill +
+                  on-secondary-container text + aria-pressed),
+                  disabled (opacity 0.38, button[disabled]),
+                  error (text-error)
+    * interactive: any item with onClick or interactive=true
+                  promotes to <button> with state-layer overlay
+                  whose opacity is driven by hover/focus/pressed
+                  state (0.08 / 0.10 / 0.10 per M3 spec)
+    * a11y:       role="list" on container, role="listitem" on
+                  every row, focus-visible ring, aria-pressed for
+                  selection, aria-disabled when disabled
+    * motion:     state-layer opacity + bg/color transitions on
+                  the M3 standard easing (200ms short4)
+    * polymorphism: ordered=true switches the container <ul> to
+                  <ol> for ordered lists
+- Stories: Default, Variants, Sizes, States, Slots, Interactive,
+  Motion, Accessibility, Playground, InteractionSpec.
+  InteractionSpec asserts role=list, three role=listitem rows,
+  the interactive item promotes to a button, and aria-pressed
+  reflects the selected prop.
+- tests/visual/list.spec.ts: 18 design-parity assertions
+  (default container/list role, variant container fill +
+  border + radius, size scale 56/72/88, body-l/body-m
+  typography, supporting hidden in sm, slot data-attrs,
+  interactive button + state-layer mount, hover 0.08, focus
+  0.10, selected secondary-container + aria-pressed, disabled
+  opacity 0.38, error text-error, motion easing, dark theme,
+  default <ul> tag, playground args).
+- tests/visual/list.visual.spec.ts: 10 deterministic
+  baselines (variants/sizes/slots/states/default x light/dark)
+  with reduced-motion + animations:'disabled' +
+  maxDiffPixelRatio 0.02.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck                 PASS
+- pnpm lint                      PASS (0 errors, 0 warnings)
+- pnpm test                      PASS (4 token tests)
+- pnpm build                     PASS
+- pnpm build-storybook           PASS
+- playwright list.spec           PASS (18 / 18)
+- playwright list.visual         PASS (10 / 10)
+- full playwright suite          PASS (553 / 553)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 list-* features. 285 / 872
+passing (was 272 / 872).
+
+Notes for next session
+----------------------
+- Data Display category remaining: Icons, Material Icons, Table.
+  Icons + Material Icons are atomic glyph wrappers (the M3
+  Symbols ligature font integration is the meatiest part); Table
+  is the largest remaining Data Display chunk (think tbody/thead
+  semantics, sticky-header support, sortable columns, density).
+- Re-usable lessons from this slice:
+  * Tailwind v3's CSS output order is NOT stable enough to rely
+    on for "later wins" behavior between two utilities backed by
+    var() color tokens. Concretely: putting `bg-secondary-
+    container` AFTER `bg-transparent` in a className string did
+    NOT make secondary-container win - bg-transparent was emitted
+    later in the stylesheet and stuck. Fix: select EXACTLY ONE
+    bg utility per state branch (selected vs default), and the
+    same for text color. Don't layer them and hope source order
+    wins.
+  * For wrapper components that promote to <button> on click,
+    apply the `disabled` HTML attribute to the button rather than
+    falling through to a non-interactive <li> render path. The
+    Playwright test for "disabled fades to 0.38 opacity" expects
+    button[disabled] in the DOM tree; a fall-through path that
+    rendered <li> without a button broke that assertion until I
+    decoupled the `interactive` flag from the `disabled` flag and
+    let both compose freely.
+  * `getComputedStyle(buttonEl).color` reads the BUTTON's color
+    rule, not its descendants'. So when the headline span has its
+    own `text-on-surface` class, the button's color is still
+    inherited by the headline. To make selected/error states test
+    cleanly, drop explicit text colors from the inner spans
+    (headline, etc) and let them inherit, while putting the
+    state-driven color rule on the button itself.
+  * When adding a brand-new component with `min-h-[NNpx]`-style
+    arbitrary utilities, kill the running Storybook process
+    BEFORE running Playwright. Tailwind's JIT scanner caches the
+    arbitrary-value set at boot in dev mode; HMR will reload the
+    component code but leave the JIT-built CSS missing the new
+    tokens. Playwright's `reuseExistingServer:true` will happily
+    reuse the stale server. Fixed by `kill -9 <pid>` of the
+    existing storybook dev process and letting Playwright
+    cold-boot a fresh one.

@@ -11,8 +11,9 @@ import { cn } from "@/lib/cn";
 import { stateLayerOpacity } from "@/tokens/motion";
 import {
   anatomy,
-  errorClasses,
-  selectedClasses,
+  errorText,
+  selectedBg,
+  selectedText,
   sizeClasses,
   variantClasses,
 } from "./anatomy";
@@ -123,7 +124,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
     const variant = variantProp ?? ctx.variant;
     const size = sizeProp ?? ctx.size;
 
-    const interactive = (interactiveProp ?? Boolean(onClick)) && !disabled;
+    const interactive = interactiveProp ?? Boolean(onClick);
     const sizes = sizeClasses[size];
     const hasLeading = leading != null;
 
@@ -131,7 +132,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
     const [focused, setFocused] = useState(false);
     const [pressed, setPressed] = useState(false);
 
-    const stateLayer = !interactive
+    const stateLayer = !interactive || disabled
       ? 0
       : pressed
         ? stateLayerOpacity.pressed
@@ -165,13 +166,23 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
         ? anatomy.stateLayerSelected
         : "";
 
+    // Apply exactly one bg + one text utility so design-parity tests
+    // can read a stable computed style (Tailwind utility ordering in
+    // the generated stylesheet is not late-wins-stable for utilities
+    // backed by var() color tokens).
+    const rowBg = selected ? selectedBg : variantClasses[variant].itemRest;
+    const rowText = error
+      ? errorText
+      : selected
+        ? selectedText
+        : anatomy.itemDefaultText;
+
     const rowClass = cn(
       anatomy.item,
       hasLeading ? sizes.minHeightWithLeading : sizes.minHeight,
       hasLeading ? sizes.paddingWithLeading : sizes.padding,
-      variantClasses[variant].itemRest,
-      selected && selectedClasses,
-      error && errorClasses,
+      rowBg,
+      rowText,
       interactive && anatomy.itemInteractive,
       disabled && anatomy.itemDisabled,
       // The filled list paints surface-container behind the *list*; an

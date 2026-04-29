@@ -27,9 +27,10 @@ export const anatomy = {
   ].join(" "),
   item: [
     "relative isolate flex w-full items-center gap-4 select-none",
-    "text-on-surface",
     "transition-[background-color,color] duration-short4 ease-standard",
   ].join(" "),
+  /** Default text color for items that aren't selected/error. */
+  itemDefaultText: "text-on-surface",
   itemInteractive: [
     "cursor-pointer outline-none",
     "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
@@ -54,7 +55,8 @@ export const anatomy = {
     "relative z-[1] flex min-w-0 flex-1 flex-col items-start gap-0.5",
   ].join(" "),
   overline: "text-label-s text-on-surface-variant",
-  headline: "text-body-l text-on-surface",
+  /** Headline inherits color from the row so selected/error flip works. */
+  headline: "text-body-l",
   supporting: "text-body-m text-on-surface-variant truncate",
   trailing: [
     "relative z-[1] inline-flex shrink-0 items-center justify-center",
@@ -130,15 +132,17 @@ export const sizeClasses: Record<
 /**
  * Selected state paints the secondary-container fill + the
  * on-secondary-container text on the entire item box. M3 lists in
- * navigation contexts use this exact role mapping.
+ * navigation contexts use this exact role mapping. Split into bg /
+ * text so the row composer can apply exactly one bg + one text class
+ * (Tailwind utility ordering in the generated stylesheet is not
+ * stable enough to rely on for late-wins behavior with var()-backed
+ * color tokens).
  */
-export const selectedClasses = [
-  "bg-secondary-container text-on-secondary-container",
-].join(" ");
+export const selectedBg = "bg-secondary-container";
+export const selectedText = "text-on-secondary-container";
 
 /**
  * Error state recolors headline + supporting + leading icon to the
- * error role; selected + error compose by letting selected win on
- * background and error win on text.
+ * error role.
  */
-export const errorClasses = "text-error";
+export const errorText = "text-error";
