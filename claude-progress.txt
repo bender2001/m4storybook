@@ -750,3 +750,114 @@ Notes for next session
     `text-tertiary` looks set on the element but computes the
     wrong color, kill and restart `pnpm storybook` before
     chasing the bug elsewhere.
+
+Session 2026-04-29 (Select slice):
+  Goal: complete the 13 select-* features as one self-contained slice
+  (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/Select/{types,anatomy,Select,index}.ts implementing
+  Select as an M3 fallback (no Expressive spec). Trigger reuses the
+  M3 Text Field anatomy in two variants (filled, outlined) across
+  three sizes (sm 40dp, md 56dp, lg 72dp). The trigger is a
+  semantic <button role="combobox" aria-haspopup="listbox"> — not a
+  native <select> — so the menu can be styled with M3 tokens, but
+  a visually-hidden native <select> mirrors the value when `name`
+  is supplied for native form submission.
+- Popup re-uses the M3 Menu spec (rounded-shape-xs,
+  bg-surface-container, shadow-elevation-2, py-2). Each option
+  renders with a stacked state-layer at M3 opacities (active 0.08,
+  selected 0.10) painted over the on-surface role.
+- Floating label drives the M3 outlined-cutout effect: when the
+  trigger is focused, open, or has a selected value, the label
+  shrinks to label-m and tints to primary; resting state keeps it
+  at body-l on on-surface-variant. Helper text wires up via
+  aria-describedby on the trigger.
+- Keyboard model follows the WAI-ARIA listbox-combobox pattern:
+  Enter/Space/ArrowDown opens the menu; ArrowUp/ArrowDown move
+  the active option; Home/End jump to ends; Enter/Space commit;
+  Esc/Tab dismiss. Active option resets to the currently selected
+  option (or 0) every time the menu opens.
+- Motion: chevron rotates through a 200ms standard tween; menu
+  enters with the emphasized-decelerate tween (medium2/300ms) and
+  exits with emphasized — both routed through motion/react. The
+  Storybook reduced-motion toggle (and prefers-reduced-motion)
+  collapses both to 0ms.
+- Select.stories.tsx exports Default, Variants, Sizes, States,
+  WithIcons, Playground, and Interaction (play() opens the menu
+  via click, navigates to "Brazil" via ArrowDown + Enter, asserts
+  onChange("br", {value:"br",label:"Brazil"}) + trigger displays
+  "Brazil", then re-opens with Enter and dismisses with Escape).
+- tests/visual/select.spec.ts has 17 design-parity assertions:
+  combobox + listbox semantics, outlined variant token surface
+  (56dp height, shape-xs radius, transparent fill, outline border,
+  emphasized motion duration/easing), filled variant uses
+  surface-container-highest fill + bottom border, size scale
+  40/56/72, disabled fades to 0.38 + disables trigger, error
+  swaps border to error role, hover paints state-layer at 0.08,
+  click opens listbox + floats label to <=12px, popup matches M3
+  Menu spec (surface-container fill, shape-xs radius, non-empty
+  elevation-2 shadow), keyboard navigation commits a value,
+  Escape closes without committing, active option state-layer at
+  0.08, resting label color = on-surface-variant, open trigger
+  bumps outline to 2dp + primary, aria-describedby resolves to
+  helper text, hidden native select mirrors selection, dark theme
+  swaps the popup background.
+- tests/visual/select.visual.spec.ts captures 8 deterministic
+  baselines (variants/sizes/states/with-icons × light/dark) with
+  reduced-motion + animations:'disabled' + maxDiffPixelRatio 0.02.
+  Baselines committed under
+  tests/visual/select.visual.spec.ts-snapshots/.
+- Bug fix: First pass omitted `name` from the meta args, so the
+  hidden native <select> was never rendered in the Default/Sizes/
+  States/etc. stories. The "hidden native select mirrors
+  selection" Playwright test then timed out waiting for a
+  <select> element. Added `name: "country"` to meta.args so the
+  native shadow renders alongside the M3 trigger across all
+  stories.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright select.spec        ✓ (17 / 17)
+- playwright select.visual      ✓ (8 / 8)
+- full playwright suite         ✓ (220 / 220)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 select-* features. 129 / 872
+passing (was 116 / 872).
+
+Notes for next session
+----------------------
+- Next up: Inputs alphabet continues with Slider
+  (slider--atom-anatomy through slider--playwright-spec). Same
+  13-feature shape as Select.
+- Re-usable lessons from this slice:
+  * Custom Select beats native <select> for M3 design parity
+    because native dropdowns can't be styled. Render the trigger
+    as a `<button role="combobox" aria-haspopup="listbox">` and
+    the menu as a `<ul role="listbox">` — that's the WAI-ARIA
+    listbox-combobox pattern and it's what MUI does. Pair it
+    with a visually-hidden native `<select>` (sr-only + tabIndex
+    -1) so native form submission still works without breaking
+    the visual treatment.
+  * When the menu opens, reset `activeIndex` to the currently
+    selected option's index (or 0 if none). Otherwise the first
+    ArrowDown after re-opening jumps from a stale index.
+  * Tests that assert form-submission behavior need a `name`
+    prop on the component — and that means setting it in the
+    Storybook meta.args, not just in the Playground story.
+    Otherwise stories like Default/States won't render the
+    hidden native select and tests timeout.
+  * For combobox triggers, `aria-expanded` is the source of
+    truth for "menu open?" — use it in Playwright assertions
+    rather than locating the popup directly. The popup
+    AnimatePresence-mounts asynchronously, but `aria-expanded`
+    flips synchronously on the trigger so it's a more reliable
+    handle.
