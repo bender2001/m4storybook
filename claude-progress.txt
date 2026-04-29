@@ -861,3 +861,113 @@ Notes for next session
     AnimatePresence-mounts asynchronously, but `aria-expanded`
     flips synchronously on the trigger so it's a more reliable
     handle.
+
+Session 2026-04-29 (Slider slice):
+  Goal: complete the 13 slider-* features as one self-contained slice
+  (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/Slider/{types,anatomy,Slider,index}.ts implementing
+  the M3 Expressive Slider with two variants (continuous / discrete)
+  across three sizes (sm 32dp, md 44dp, lg 56dp). Active track paints
+  primary, inactive paints secondary-container, handle is a pill in
+  primary. Discrete variant renders one stop indicator per step on a
+  shared track.
+- The visible track + handle paint M3 tokens; a visually-hidden
+  native `<input type="range">` overlays the track and owns the
+  keyboard model + form value (Arrow keys, Home/End, PageUp/PageDown
+  all "just work" for free). onChange fires on every step change,
+  onChangeCommitted fires on pointerup or keyup.
+- States: hover 0.08, focus 0.10, pressed 0.10, dragged 0.16 paint
+  on a circular state-layer centered on the pill handle. Disabled
+  fades the field to opacity 0.38 and disables the input. Error
+  swaps active track + handle to the error role and inactive to
+  error-container.
+- Motion: handle width morphs from 4dp → 10dp on press/drag through
+  a short4 tween with the M3 emphasized easing. Value bubble
+  (primary fill, on-primary text, elevation-2 shadow) lifts in via
+  AnimatePresence + emphasized-decelerate when focused or dragged.
+  Reduced-motion collapses both to 0ms.
+- Slider.stories.tsx exports Default, Variants, Sizes, States,
+  WithIcons, Playground, and Interaction (play() focuses the
+  slider, drives ArrowRight to assert onChange(41), then End to
+  assert onChange(100) + onChangeCommitted(100) + aria-valuetext
+  reflects "100").
+- tests/visual/slider.spec.ts has 20 design-parity assertions:
+  role=slider with type=range + aria-valuetext, active track =
+  primary / inactive = secondary-container, handle = primary,
+  active track width tracks the value percent, size scale 32/44/56,
+  track height scale 12/16/20, discrete variant emits N stops, hover
+  state-layer 0.08, focus state-layer 0.10 + bubble appears,
+  ArrowRight increments, End commits to max, track radius is
+  shape-full pill, handle morphs wider on press, motion uses
+  emphasized easing, aria-describedby resolves to helper text,
+  native input owns name/min/max/step/value, label color =
+  on-surface-variant, error swaps roles, dark theme swaps the
+  active track color.
+- tests/visual/slider.visual.spec.ts captures 8 deterministic
+  baselines (variants/sizes/states/with-icons × light/dark) with
+  reduced-motion + animations:'disabled' + maxDiffPixelRatio 0.02.
+  Baselines committed under
+  tests/visual/slider.visual.spec.ts-snapshots/.
+- Bug fix: First implementation stacked `bg-error` on top of
+  `bg-primary` via cn(); Tailwind generated CSS in alphabetical
+  order so `bg-primary` won the cascade and the error variant
+  rendered purple instead of red. Switched the active track + handle
+  classnames to a ternary `error ? "bg-error" : "bg-primary"` so
+  only one bg utility is ever emitted and the cascade is
+  deterministic.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright slider.spec        ✓ (20 / 20)
+- playwright slider.visual      ✓ (8 / 8)
+- full playwright suite         ✓ (248 / 248)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 slider-* features. 142 / 872
+passing (was 129 / 872).
+
+Notes for next session
+----------------------
+- Next up: Inputs alphabet continues with Switch
+  (switch--atom-anatomy through switch--playwright-spec). Same
+  13-feature shape as Slider.
+- Re-usable lessons from this slice:
+  * For inputs that have a strong native HTML semantic
+    (input[type=range], input[type=checkbox], select), let the
+    native element own the keyboard + form-submission contract
+    while a tokenized custom element paints the visual. Layer the
+    native input absolutely-positioned + opacity-0 over the
+    visual track so all native shortcuts (Arrow / Home / End /
+    PageUp / PageDown / typeahead) come for free, and form
+    submission keeps working without any extra wiring.
+  * Stacking conditional Tailwind utilities through cn() is a
+    landmine when both utilities target the same property.
+    `cn("bg-primary", error && "bg-error")` produces both classes
+    in the className list, but the cascade is decided by
+    *generation order* in the compiled stylesheet — usually
+    alphabetical, so `bg-primary` wins. Use a ternary
+    `error ? "bg-error" : "bg-primary"` when overriding a base
+    utility so only one ever lands on the element.
+  * onChangeCommitted ≠ onChange. Drag interactions need both:
+    onChange fires at every step during the drag (so consumers
+    can preview), onChangeCommitted fires once at pointerup (so
+    consumers can persist or trigger expensive side effects).
+    For keyboard interactions, a `keyup` on the keys that move
+    the value (Arrows / Home / End / PageUp / PageDown) is the
+    natural commit point — pair the `change` event with a
+    `keyup` listener that filters for those keys.
+  * M3 Expressive Slider track is `shape-full` (pill), not
+    `shape-xs`. The handle sits centered on the track and morphs
+    its width on press to advertise the dragged state. The
+    inactive track paints `secondary-container`, not
+    `surface-variant` — easy to mis-infer from the M3 docs since
+    container roles are visually similar in the light palette.
