@@ -1,8 +1,11 @@
 export { ButtonGroup } from "./ButtonGroup";
 export type {
+  ButtonGroupButtonVariant,
   ButtonGroupOption,
-  ButtonGroupOrientation,
   ButtonGroupProps,
+  ButtonGroupSelectionMode,
+  ButtonGroupShape,
   ButtonGroupSize,
   ButtonGroupVariant,
+  ButtonGroupWidth,
 } from "./types";

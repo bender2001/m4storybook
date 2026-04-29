@@ -1,154 +1,183 @@
 import type {
+  ButtonGroupButtonVariant,
+  ButtonGroupShape,
   ButtonGroupSize,
   ButtonGroupVariant,
+  ButtonGroupWidth,
 } from "./types";
 
-/**
- * Button Group anatomy slot → Tailwind class string. M3 Expressive
- * does not specify Button Group as a separate component, so we follow
- * the standard M3 Button Group spec: a row of "connected" buttons
- * with shared borders, full outer radius (pill), and a thin inner gap
- * between adjacent items. The selected variant uses the secondary
- * container role for tonal emphasis.
- *
- * https://m3.material.io/components/button-groups/specs
- */
 export const anatomy = {
-  /** The group container: inline-flex with role="group". */
-  root: [
-    "relative inline-flex isolate select-none",
-    "rounded-shape-full",
-  ].join(" "),
-  /** Each button slot — the gap between segments is the inner divider. */
-  segment: [
-    "relative inline-flex items-center justify-center",
-    "outline-none cursor-pointer font-medium",
-    "transition-[box-shadow,background-color,border-color,color]",
-    "duration-medium2 ease-emphasized",
-    "focus-visible:z-[2]",
-    "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+  root: "relative isolate select-none items-center",
+  item: [
+    "group relative inline-flex shrink-0 items-center justify-center border-0 bg-transparent p-0",
+    "outline-none disabled:cursor-not-allowed",
+    "focus-visible:z-[2] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
     "focus-visible:ring-offset-surface",
-    "disabled:cursor-not-allowed",
-    // M3 disabled treatment: fade the whole segment to ~38% so disabled
-    // selected and disabled rest both visibly mute together.
-    "disabled:opacity-[0.38]",
   ].join(" "),
-  /** Persistent state-layer over each segment. */
+  button: [
+    "relative inline-flex w-full items-center justify-center overflow-hidden font-medium",
+    "transition-[box-shadow,background-color,border-color,color,border-radius,width]",
+    "duration-medium2 ease-emphasized",
+  ].join(" "),
   stateLayer: [
     "pointer-events-none absolute inset-0 rounded-[inherit]",
     "transition-opacity duration-short4 ease-standard",
   ].join(" "),
   label: "relative z-[1] inline-flex items-center",
-  icon: "relative z-[1] inline-flex items-center",
+  icon: "relative z-[1] inline-flex items-center justify-center",
 } as const;
 
-/** Container backgrounds per variant. */
-export const variantContainerClasses: Record<ButtonGroupVariant, string> = {
-  filled: "bg-transparent",
-  tonal: "bg-transparent",
-  outlined: "bg-transparent",
-  text: "bg-transparent",
-  elevated: "bg-transparent",
+export const rootVariantClasses: Record<ButtonGroupVariant, string> = {
+  standard: "inline-flex",
+  connected: "flex w-full",
 };
 
-/**
- * Per-variant per-state segment classes. The `selected` row uses the
- * tonal/secondary-container role for visual emphasis, matching M3's
- * segmented-button-active treatment.
- */
-export const segmentVariantClasses: Record<
-  ButtonGroupVariant,
+export const buttonVariantClasses: Record<
+  ButtonGroupButtonVariant,
   { rest: string; selected: string; stateLayer: string }
 > = {
   filled: {
     rest: [
       "bg-primary text-on-primary",
-      "shadow-elevation-0 hover:shadow-elevation-1 active:shadow-elevation-0",
-      "disabled:bg-on-surface/[0.12] disabled:text-on-surface/[0.38] disabled:shadow-elevation-0",
+      "shadow-elevation-0 group-hover:shadow-elevation-1 group-active:shadow-elevation-0",
+      "group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38] group-disabled:shadow-elevation-0",
     ].join(" "),
     selected: [
       "bg-secondary text-on-secondary",
-      "shadow-elevation-0 hover:shadow-elevation-1",
+      "shadow-elevation-0 group-hover:shadow-elevation-1 group-active:shadow-elevation-0",
+      "group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38] group-disabled:shadow-elevation-0",
     ].join(" "),
     stateLayer: "bg-on-primary",
   },
   tonal: {
     rest: [
       "bg-secondary-container text-on-secondary-container",
-      "shadow-elevation-0 hover:shadow-elevation-1 active:shadow-elevation-0",
-      "disabled:bg-on-surface/[0.12] disabled:text-on-surface/[0.38]",
+      "shadow-elevation-0 group-hover:shadow-elevation-1 group-active:shadow-elevation-0",
+      "group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38]",
     ].join(" "),
     selected: [
       "bg-secondary text-on-secondary",
-      "shadow-elevation-0 hover:shadow-elevation-1",
+      "shadow-elevation-0 group-hover:shadow-elevation-1 group-active:shadow-elevation-0",
+      "group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38]",
     ].join(" "),
     stateLayer: "bg-on-secondary-container",
   },
   outlined: {
     rest: [
-      "bg-transparent text-on-surface border border-outline",
-      "hover:border-primary",
-      "disabled:text-on-surface/[0.38] disabled:border-on-surface/[0.12]",
+      "border border-outline bg-transparent text-on-surface",
+      "group-hover:border-primary",
+      "group-disabled:border-on-surface/[0.12] group-disabled:text-on-surface/[0.38]",
     ].join(" "),
     selected: [
-      "bg-secondary-container text-on-secondary-container border border-outline",
+      "border border-outline bg-secondary-container text-on-secondary-container",
+      "group-disabled:border-on-surface/[0.12] group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38]",
     ].join(" "),
     stateLayer: "bg-on-surface",
   },
-  text: {
-    rest: [
-      "bg-transparent text-primary",
-      "disabled:text-on-surface/[0.38]",
-    ].join(" "),
-    selected: ["bg-secondary-container text-on-secondary-container"].join(" "),
-    stateLayer: "bg-primary",
-  },
   elevated: {
     rest: [
-      "bg-surface-container-low text-primary",
-      "shadow-elevation-1 hover:shadow-elevation-2 active:shadow-elevation-1",
-      "disabled:bg-on-surface/[0.12] disabled:text-on-surface/[0.38] disabled:shadow-elevation-0",
+      "bg-surface-container-low text-on-surface shadow-elevation-1",
+      "group-hover:shadow-elevation-2 group-active:shadow-elevation-1",
+      "group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38] group-disabled:shadow-elevation-0",
     ].join(" "),
     selected: [
-      "bg-secondary-container text-on-secondary-container",
-      "shadow-elevation-1",
+      "bg-secondary-container text-on-secondary-container shadow-elevation-1",
+      "group-hover:shadow-elevation-2 group-active:shadow-elevation-1",
+      "group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38] group-disabled:shadow-elevation-0",
     ].join(" "),
     stateLayer: "bg-primary",
   },
 };
 
-/**
- * Segment height + padding. M3 Button Group ships at the same heights
- * as the standalone Button: sm = 32dp, md = 40dp, lg = 56dp.
- */
-export const segmentSizeClasses: Record<ButtonGroupSize, string> = {
-  sm: "h-8 px-3 text-label-m gap-1.5",
-  md: "h-10 px-6 text-label-l gap-2",
-  lg: "h-14 px-8 text-title-m gap-2.5",
+interface SizeSpec {
+  height: number;
+  hitTarget: number;
+  standardSpace: number;
+  connectedSpace: number;
+  innerRadius: number;
+  pressedInnerRadius: number;
+  selectedInnerRadius: string;
+  textClass: string;
+  iconSize: string;
+  minWidth: number;
+  widths: Record<ButtonGroupWidth, number>;
+}
+
+export const sizeSpec: Record<ButtonGroupSize, SizeSpec> = {
+  xs: {
+    height: 32,
+    hitTarget: 48,
+    standardSpace: 18,
+    connectedSpace: 2,
+    innerRadius: 8,
+    pressedInnerRadius: 4,
+    selectedInnerRadius: "9999px",
+    textClass: "text-label-m",
+    iconSize: "h-4 w-4",
+    minWidth: 48,
+    widths: { narrow: 48, default: 64, wide: 88 },
+  },
+  s: {
+    height: 40,
+    hitTarget: 48,
+    standardSpace: 12,
+    connectedSpace: 2,
+    innerRadius: 8,
+    pressedInnerRadius: 4,
+    selectedInnerRadius: "9999px",
+    textClass: "text-label-l",
+    iconSize: "h-5 w-5",
+    minWidth: 48,
+    widths: { narrow: 48, default: 80, wide: 112 },
+  },
+  m: {
+    height: 56,
+    hitTarget: 56,
+    standardSpace: 8,
+    connectedSpace: 2,
+    innerRadius: 8,
+    pressedInnerRadius: 4,
+    selectedInnerRadius: "9999px",
+    textClass: "text-title-m",
+    iconSize: "h-6 w-6",
+    minWidth: 56,
+    widths: { narrow: 56, default: 104, wide: 144 },
+  },
+  l: {
+    height: 96,
+    hitTarget: 96,
+    standardSpace: 8,
+    connectedSpace: 2,
+    innerRadius: 16,
+    pressedInnerRadius: 12,
+    selectedInnerRadius: "9999px",
+    textClass: "text-title-m",
+    iconSize: "h-7 w-7",
+    minWidth: 96,
+    widths: { narrow: 96, default: 144, wide: 192 },
+  },
+  xl: {
+    height: 136,
+    hitTarget: 136,
+    standardSpace: 8,
+    connectedSpace: 2,
+    innerRadius: 20,
+    pressedInnerRadius: 16,
+    selectedInnerRadius: "9999px",
+    textClass: "text-title-l",
+    iconSize: "h-8 w-8",
+    minWidth: 136,
+    widths: { narrow: 136, default: 184, wide: 240 },
+  },
 };
 
-/**
- * The connected look: buttons share a 2px gap between segments, the
- * outer corners pick up the full pill radius, and inner corners are
- * squared off so the adjoining edges meet flush.
- */
-export const segmentRadiusClasses = {
-  horizontal: {
-    only: "rounded-shape-full",
-    first: "rounded-l-shape-full rounded-r-shape-xs",
-    middle: "rounded-shape-xs",
-    last: "rounded-r-shape-full rounded-l-shape-xs",
-  },
-  vertical: {
-    only: "rounded-shape-full",
-    first: "rounded-t-shape-full rounded-b-shape-xs",
-    middle: "rounded-shape-xs",
-    last: "rounded-b-shape-full rounded-t-shape-xs",
-  },
-} as const;
-
-/** Inner spacing between segments — 2dp matches the M3 connected style. */
-export const orientationGap: Record<"horizontal" | "vertical", string> = {
-  horizontal: "flex-row gap-0.5",
-  vertical: "flex-col gap-0.5",
+export const squareOuterRadius: Record<ButtonGroupSize, number> = {
+  xs: 4,
+  s: 8,
+  m: 8,
+  l: 16,
+  xl: 20,
 };
+
+export const rootRadius = (shape: ButtonGroupShape, size: ButtonGroupSize) =>
+  shape === "round" ? "9999px" : `${squareOuterRadius[size]}px`;

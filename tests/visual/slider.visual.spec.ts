@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * Visual baseline screenshots for the M3 Expressive Slider.
+ * Visual baseline screenshots for the Material 3 Slider.
  * Animations are disabled and reduced-motion is forced so the
  * snapshots stay deterministic across runs.
  */

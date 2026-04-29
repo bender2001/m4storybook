@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * Visual baseline screenshots for the M3 Button Group.
+ * Visual baseline screenshots for the M3 Expressive Button Group.
  * Animations are disabled and reduced-motion is forced so the
  * snapshots are deterministic across runs.
  */

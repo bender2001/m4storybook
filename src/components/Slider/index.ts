@@ -1,2 +1,2 @@
 export { Slider } from "./Slider";
-export type { SliderProps, SliderSize, SliderVariant } from "./types";
+export type { SliderProps, SliderSize } from "./types";

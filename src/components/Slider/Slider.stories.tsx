@@ -1,3 +1,5 @@
+import { useState } from "react";
+import type { ChangeEvent } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, waitFor, within } from "@storybook/test";
 import { Slider } from "./Slider";
@@ -22,40 +24,41 @@ const meta: Meta<typeof Slider> = {
     docs: {
       description: {
         component:
-          "M3 Expressive Slider with continuous and discrete variants. Pill-shaped handle morphs on press, value bubble appears while focused or dragged. The visually-hidden native `<input type=\"range\">` owns keyboard + form value, while the visible track / handle paint M3 tokens. See https://m3.material.io/components/sliders/specs.",
+          "Material 3 slider with standard horizontal single-thumb behavior, optional stops, optional value indicator, and XS-XL size tokens. The native range input owns keyboard and form semantics while the visible track, handle, stops, and value indicator paint M3 tokens.",
       },
     },
   },
   argTypes: {
-    variant: { control: "inline-radio", options: ["continuous", "discrete"] },
-    size: { control: "inline-radio", options: ["sm", "md", "lg"] },
+    ticks: { control: "boolean" },
+    labeled: { control: "boolean" },
+    valueLabel: { control: "text" },
+    size: { control: "inline-radio", options: ["xs", "s", "m", "l", "xl"] },
     disabled: { control: "boolean" },
     error: { control: "boolean" },
-    showValueLabel: { control: "boolean" },
     label: { control: "text" },
     min: { control: "number" },
     max: { control: "number" },
     step: { control: "number" },
     helperText: { control: "text" },
+    onInput: { action: "input" },
     onChange: { action: "changed" },
-    onChangeCommitted: { action: "committed" },
   },
   args: {
     label: "Volume",
     name: "volume",
-    variant: "continuous",
-    size: "md",
     min: 0,
     max: 100,
     step: 1,
     defaultValue: 40,
+    size: "xs",
+    ticks: false,
+    labeled: true,
     disabled: false,
     error: false,
-    showValueLabel: true,
   },
   decorators: [
     (Story) => (
-      <div style={{ width: 360 }}>
+      <div style={{ width: 420 }}>
         <Story />
       </div>
     ),
@@ -66,25 +69,27 @@ export default meta;
 type Story = StoryObj<typeof Slider>;
 
 export const Default: Story = {
-  args: { onChange: fn(), onChangeCommitted: fn() },
+  args: { onInput: fn(), onChange: fn() },
 };
 
 export const Variants: Story = {
   parameters: { controls: { disable: true }, actions: { disable: true } },
   render: (args) => (
     <div className="flex flex-col gap-8">
+      <Slider {...args} label="Standard" defaultValue={42} />
       <Slider
         {...args}
-        variant="continuous"
-        label="Continuous"
-        defaultValue={42}
+        label="Stops"
+        ticks
+        step={10}
+        defaultValue={30}
       />
       <Slider
         {...args}
-        variant="discrete"
-        label="Discrete (step 10)"
-        step={10}
-        defaultValue={30}
+        label="Value indicator"
+        labeled
+        defaultValue={55}
+        valueLabel={(value) => `${value}%`}
       />
     </div>
   ),
@@ -94,9 +99,11 @@ export const Sizes: Story = {
   parameters: { controls: { disable: true }, actions: { disable: true } },
   render: (args) => (
     <div className="flex flex-col gap-8">
-      <Slider {...args} size="sm" label="Small (32dp)" defaultValue={25} />
-      <Slider {...args} size="md" label="Medium (44dp)" defaultValue={50} />
-      <Slider {...args} size="lg" label="Large (56dp)" defaultValue={75} />
+      <Slider {...args} size="xs" label="XS" defaultValue={20} />
+      <Slider {...args} size="s" label="S" defaultValue={35} />
+      <Slider {...args} size="m" label="M" defaultValue={50} />
+      <Slider {...args} size="l" label="L" defaultValue={65} />
+      <Slider {...args} size="xl" label="XL" defaultValue={80} />
     </div>
   ),
 };
@@ -105,12 +112,13 @@ export const States: Story = {
   parameters: { controls: { disable: true }, actions: { disable: true } },
   render: (args) => (
     <div className="flex flex-col gap-8">
-      <Slider {...args} label="Resting" defaultValue={20} />
+      <Slider {...args} label="Enabled" defaultValue={20} />
       <Slider
         {...args}
-        label="With selection"
+        label="With stops"
+        ticks
+        step={10}
         defaultValue={60}
-        helperText="Drag the handle"
       />
       <Slider
         {...args}
@@ -137,8 +145,8 @@ export const WithIcons: Story = {
       />
       <Slider
         {...args}
-        variant="discrete"
-        label="Brightness (step 25)"
+        ticks
+        label="Brightness"
         step={25}
         leadingIcon={<VolumeIcon />}
         trailingIcon={<VolumeMaxIcon />}
@@ -148,21 +156,52 @@ export const WithIcons: Story = {
   ),
 };
 
+const ExternalValueRender = () => {
+  const [value, setValue] = useState(50);
+
+  return (
+    <div className="flex items-end gap-4">
+      <div className="min-w-0 flex-1">
+        <Slider
+          label="Brightness"
+          value={value}
+          onInput={setValue}
+          onChange={setValue}
+          aria-label="Brightness"
+        />
+      </div>
+      <label className="flex flex-col gap-1 text-label-m text-on-surface-variant">
+        Value
+        <input
+          className="h-10 w-16 rounded-shape-xs border border-outline bg-surface px-2 text-body-m text-on-surface outline-none focus:border-primary"
+          type="number"
+          min={0}
+          max={100}
+          value={value}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            setValue(Number(event.target.value));
+          }}
+        />
+      </label>
+    </div>
+  );
+};
+
+export const ExternalValue: Story = {
+  parameters: { controls: { disable: true }, actions: { disable: true } },
+  render: () => <ExternalValueRender />,
+};
+
 export const Playground: Story = {
   args: {
+    onInput: fn(),
     onChange: fn(),
-    onChangeCommitted: fn(),
-    helperText: "Use the controls panel to drive the variant + size",
+    helperText: "Use the controls panel to drive the slider configuration",
   },
 };
 
-/**
- * Storybook interaction test: focuses the slider, drives the value
- * with ArrowRight, asserts the change handler fires with the new
- * value, then jumps to the max with End and asserts the commit.
- */
 export const Interaction: Story = {
-  args: { onChange: fn(), onChangeCommitted: fn(), defaultValue: 40 },
+  args: { onInput: fn(), onChange: fn(), defaultValue: 40 },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
     const slider = canvas.getByRole("slider");
@@ -170,20 +209,17 @@ export const Interaction: Story = {
     slider.focus();
     expect(slider).toHaveFocus();
 
-    // ArrowRight increments by step (1).
     await userEvent.keyboard("{ArrowRight}");
     await waitFor(() => {
-      expect(args.onChange).toHaveBeenCalledWith(41);
+      expect(args.onInput).toHaveBeenCalledWith(41);
     });
 
-    // End jumps to the max (100) and commits.
     await userEvent.keyboard("{End}");
     await waitFor(() => {
+      expect(args.onInput).toHaveBeenCalledWith(100);
       expect(args.onChange).toHaveBeenCalledWith(100);
-      expect(args.onChangeCommitted).toHaveBeenCalledWith(100);
     });
 
-    // ARIA reflects the new value via the native input.
     expect(slider).toHaveAttribute("aria-valuetext", "100");
   },
 };

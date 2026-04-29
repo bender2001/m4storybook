@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 
-export type SliderVariant = "continuous" | "discrete";
-export type SliderSize = "sm" | "md" | "lg";
+export type SliderSize = "xs" | "s" | "m" | "l" | "xl";
 
 export interface SliderProps {
   /** Optional label rendered above the slider. */
@@ -14,11 +13,15 @@ export interface SliderProps {
   min?: number;
   /** Inclusive maximum. */
   max?: number;
-  /** Step granularity. Used by both continuous and discrete variants. */
+  /** Step granularity for value updates. */
   step?: number;
-  /** Continuous (default) or discrete with tick stops. */
-  variant?: SliderVariant;
-  /** Track / handle density. */
+  /** Render stop indicators for each step. */
+  ticks?: boolean;
+  /** Show the floating value indicator while interacting. */
+  labeled?: boolean;
+  /** Format value indicator text + aria-valuetext. */
+  valueLabel?: string | ((value: number) => string);
+  /** Track / handle size. */
   size?: SliderSize;
   /** Disabled state. Suppresses interaction + state-layer. */
   disabled?: boolean;
@@ -30,14 +33,10 @@ export interface SliderProps {
   leadingIcon?: ReactNode;
   /** Optional trailing content (e.g. icon or max indicator). */
   trailingIcon?: ReactNode;
-  /** Show the value bubble above the handle when active. */
-  showValueLabel?: boolean;
-  /** Format value for the bubble + aria-valuetext. */
-  formatValue?: (value: number) => string;
-  /** Fires on every step change. */
+  /** Fires on every value update. */
+  onInput?: (value: number) => void;
+  /** Fires once when the interaction commits. */
   onChange?: (value: number) => void;
-  /** Fires once at pointer release (commit). */
-  onChangeCommitted?: (value: number) => void;
   /** Stable id; auto-generated when omitted. */
   id?: string;
   /** Field name for native form submission. */
