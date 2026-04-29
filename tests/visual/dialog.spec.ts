@@ -112,7 +112,11 @@ test.describe("Dialog - M3 design parity", () => {
     expect(styles.bg).toBe(LIGHT_SURFACE);
     expect(styles.borderColor).toBe(LIGHT_OUTLINE);
     expect(styles.borderWidth).toBe("1px");
-    expect(styles.boxShadow).toBe("none");
+    // elevation-0 -> Tailwind chains `--tw-ring-offset-shadow` placeholders,
+    // so the computed style is a sequence of transparent zero-spread shadows
+    // rather than the literal string "none". Assert no opaque shadow colour.
+    expect(styles.boxShadow).not.toMatch(/rgba?\(0, 0, 0, 0\.\d/);
+    expect(styles.boxShadow).not.toMatch(/rgb\(0, 0, 0\)/);
   });
 
   test("fullscreen variant: edge-to-edge surface + 0 radius + no elevation", async ({
@@ -133,7 +137,9 @@ test.describe("Dialog - M3 design parity", () => {
       };
     });
     expect(styles.radius).toBe("0px");
-    expect(styles.boxShadow).toBe("none");
+    // elevation-0 produces a transparent-only shadow stack — no opaque ink.
+    expect(styles.boxShadow).not.toMatch(/rgba?\(0, 0, 0, 0\.\d/);
+    expect(styles.boxShadow).not.toMatch(/rgb\(0, 0, 0\)/);
     expect(styles.bg).toBe(LIGHT_SURFACE);
   });
 
