@@ -1,1 +1,11 @@
 node_modules
+dist
+storybook-static
+playwright-report
+test-results
+.cache
+*.log
+.DS_Store
+.codex-run/loop.pid
+.codex-run/loop.log
+.codex-run/nohup.out
