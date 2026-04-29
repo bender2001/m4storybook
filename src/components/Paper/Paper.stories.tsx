@@ -106,14 +106,24 @@ export const States: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
     <div className="grid w-[640px] grid-cols-2 gap-4">
-      <Paper interactive label="Interactive">
+      <Paper interactive aria-label="Interactive paper" label="Interactive">
         Hover, focus, or press me.
       </Paper>
-      <Paper interactive selected label="Selected">
-        Selected interactive surface.
+      <Paper
+        interactive
+        selected
+        aria-label="Selected paper"
+        label="Selected"
+      >
+        Selected paper surface.
       </Paper>
-      <Paper interactive disabled label="Disabled">
-        Disabled interactive surface.
+      <Paper
+        interactive
+        disabled
+        aria-label="Disabled paper"
+        label="Disabled"
+      >
+        Disabled paper surface.
       </Paper>
       <Paper variant="outlined" label="Outlined resting">
         Static outlined surface.

@@ -2445,3 +2445,132 @@ Notes for next session
     same context so size/variant propagate
     consistently regardless of which shape the
     consumer chose.
+
+==========================================
+Iter 26 - Paper slice (surfaces: surface primitive)
+==========================================
+Flipped 13 features. 337 / 872 passing (was 324 / 872).
+
+Files added
+-----------
+- src/components/Paper/{anatomy.ts,types.ts,Paper.tsx,
+  Paper.stories.tsx,index.ts}
+  M3 surface primitive that Card / AppBar / Dialog /
+  Menu / Snackbar will compose on top of. Three
+  primary M3 variants (elevated / filled / outlined)
+  plus an MUI tonal variant mapped to the M3
+  secondary-container role for low-emphasis
+  surfaces.
+    * variants:   elevated  = surface-container-low +
+                              elevation-1 (resting),
+                              elevation-2 on hover
+                              when interactive
+                  filled    = surface-container-
+                              highest, no shadow
+                  tonal     = secondary-container +
+                              on-secondary-container
+                  outlined  = transparent + 1dp
+                              outline-variant border
+    * sizes:      sm = 8dp padding / 40dp min-h
+                  md = 16dp / 64dp
+                  lg = 24dp / 88dp
+    * shapes:     none / xs / sm / md / lg / xl /
+                  full mapped to the shape-* tokens.
+                  Default is shape-md (12dp).
+    * elevation:  0..5 mapped to shadow-elevation-*
+                  tokens; resting default is 1 for
+                  the elevated variant. filled /
+                  tonal / outlined ignore elevation.
+    * interactive: opt-in via `interactive` prop or
+                  by passing onClick. Renders as
+                  role=button with tabindex=0,
+                  exposes the M3 state-layer overlay
+                  (0.08 hover / 0.10 focus /
+                  0.10 pressed), morphs the radius
+                  one shape step up on hover/focus,
+                  and lifts -1dp on the y axis via
+                  the gentle spring preset. Enter +
+                  Space synthesize a click.
+    * selected:   secondary-container fill + aria-
+                  selected=true. Honored only when
+                  interactive (decorative surfaces
+                  don't expose aria-selected).
+    * disabled:   opacity 0.38 + aria-disabled +
+                  pointer-events:none.
+    * slots:      leading icon + label + trailing
+                  icon row above the body slot.
+                  Icons paint at on-surface-variant.
+- Stories: Default, Variants, Sizes, States,
+  Elevation, Shapes, Slots, Motion, Accessibility,
+  Playground, InteractionSpec.
+- tests/visual/paper.spec.ts: 19 design-parity
+  assertions (variant color matrix + shape radius
+  matrix + size padding (8/16/24px) + elevation
+  shadow scale + interactive role/tabindex/state-
+  layer slot + hover (0.08) / focus (0.10) state-
+  layer opacity + selected aria-selected +
+  secondary-container fill + disabled aria-disabled +
+  opacity 0.38 + slot rendering + emphasized motion
+  on shape/elevation transitions + standard motion
+  on opacity + dark theme color swap + playground
+  controls).
+- tests/visual/paper.visual.spec.ts: 10
+  deterministic baselines (variants/sizes/states/
+  elevation/slots × light/dark).
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck                 PASS
+- pnpm lint                      PASS (0 errors, 0 warnings)
+- pnpm test                      PASS (4 token tests)
+- pnpm build                     PASS
+- pnpm build-storybook           PASS
+- playwright paper.spec          PASS (19 / 19)
+- playwright paper.visual        PASS (10 / 10)
+- full playwright suite          PASS (680 / 680)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 paper--* features.
+337 / 872 passing (was 324 / 872).
+
+Notes for next session
+----------------------
+- Largest remaining slices by component (counts
+  from `passes: false` grouping; 535 total):
+  * Utils       : 130
+  * Navigation  : 117
+  * Advanced    : 104
+  * Feedback    :  78
+  * Surfaces    :  39 (paper done -> accordion,
+                       app-bar, card next)
+  * Layout      :  65
+  * Quality     :   2
+- Reusable lessons from this slice:
+  * Tailwind's `shadow-elevation-*` utility composes
+    multiple box-shadow CSS variables (ring + offset
+    + base) so even `elevation-0` ("none") produces
+    a computed `rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+    ...` triple-shadow string in the browser. Don't
+    assert `boxShadow === "none"` for level 0;
+    instead assert the alpha 0.30 / 0.15 stops are
+    NOT present (or absent for level 0, present for
+    1..5).
+  * Strict-mode getByRole accessible-name matching
+    is substring + accent-insensitive. If three
+    cards in the same story all have a label like
+    "Interactive surface" / "Selected surface" /
+    "Disabled surface", `name: "surface"` matches
+    all three. Fix by either:
+      - giving each card a distinct aria-label
+        (preferred for interactive surfaces — the
+        aria-label overrides the inner-text-derived
+        accessible name), or
+      - filtering by the card's data-* attribute
+        (e.g. `:has([data-disabled='true'])`).
+  * Card / AppBar / Dialog / Menu can now compose
+    on top of Paper instead of re-implementing the
+    elevated/filled/tonal/outlined matrix. The
+    `variant` / `size` / `shape` / `elevation`
+    contracts are the source of truth for surface
+    treatments going forward.

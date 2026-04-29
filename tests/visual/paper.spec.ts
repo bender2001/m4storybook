@@ -132,10 +132,14 @@ test.describe("Paper - M3 design parity", () => {
         );
       }),
     );
-    // Level 0 has no shadow; levels 1..5 paint shadow.
-    expect(levels[0]).toBe("none");
+    // Level 0: Tailwind's composed box-shadow string still renders but
+    // every layer is transparent (rgba 0,0,0,0). Levels 1..5 paint
+    // visible umbra/penumbra at 0.30 / 0.15 alphas.
+    expect(levels[0]).not.toContain("rgba(0, 0, 0, 0.3)");
+    expect(levels[0]).not.toContain("rgba(0, 0, 0, 0.15)");
     levels.slice(1).forEach((shadow) => {
-      expect(shadow).toContain("rgb");
+      expect(shadow).toContain("rgba(0, 0, 0, 0.3)");
+      expect(shadow).toContain("rgba(0, 0, 0, 0.15)");
     });
   });
 
@@ -185,7 +189,7 @@ test.describe("Paper - M3 design parity", () => {
     page,
   }) => {
     await page.goto(storyUrl("surfaces-paper--states"));
-    const paper = page.getByRole("button", { name: "Interactive" });
+    const paper = page.getByRole("button", { name: "Interactive paper" });
     await expect(paper).toBeVisible();
     await expect(paper).toHaveAttribute("data-interactive", "true");
     await expect(paper).toHaveAttribute("tabindex", "0");
@@ -196,7 +200,7 @@ test.describe("Paper - M3 design parity", () => {
     await page.goto(
       storyUrl("surfaces-paper--states", "light", "no-preference"),
     );
-    const paper = page.getByRole("button", { name: "Interactive" });
+    const paper = page.getByRole("button", { name: "Interactive paper" });
     await paper.hover();
     // Wait for the state-layer transition (short4 = 200ms) to settle.
     await page.waitForTimeout(280);
@@ -213,7 +217,7 @@ test.describe("Paper - M3 design parity", () => {
     await page.goto(
       storyUrl("surfaces-paper--states", "light", "no-preference"),
     );
-    const paper = page.getByRole("button", { name: "Interactive" });
+    const paper = page.getByRole("button", { name: "Interactive paper" });
     await paper.focus();
     await page.waitForTimeout(280);
     const opacity = await paper.getAttribute("data-state-layer-opacity");
@@ -224,7 +228,7 @@ test.describe("Paper - M3 design parity", () => {
     page,
   }) => {
     await page.goto(storyUrl("surfaces-paper--states"));
-    const paper = page.getByRole("button", { name: "Selected" });
+    const paper = page.getByRole("button", { name: "Selected paper" });
     await expect(paper).toBeVisible();
     await expect(paper).toHaveAttribute("aria-selected", "true");
     const bg = await paper.evaluate(
@@ -237,7 +241,7 @@ test.describe("Paper - M3 design parity", () => {
     page,
   }) => {
     await page.goto(storyUrl("surfaces-paper--states"));
-    const paper = page.getByRole("button", { name: "Disabled" });
+    const paper = page.getByRole("button", { name: "Disabled paper" });
     await expect(paper).toBeVisible();
     await expect(paper).toHaveAttribute("aria-disabled", "true");
     const opacity = await paper.evaluate(
@@ -287,7 +291,7 @@ test.describe("Paper - M3 design parity", () => {
       storyUrl("surfaces-paper--states", "light", "no-preference"),
     );
     const layer = page
-      .getByRole("button", { name: "Interactive" })
+      .getByRole("button", { name: "Interactive paper" })
       .locator("[data-slot='state-layer']");
     const styles = await layer.evaluate((el) => {
       const cs = window.getComputedStyle(el);

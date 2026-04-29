@@ -23455,7 +23455,7 @@
     "depends_on": [
       "theme-002"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -23508,7 +23508,7 @@
     "depends_on": [
       "paper--atom-anatomy"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -23561,7 +23561,7 @@
     "depends_on": [
       "paper--atom-base"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -23614,7 +23614,7 @@
     "depends_on": [
       "paper--atom-variants"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -23667,7 +23667,7 @@
     "depends_on": [
       "paper--atom-sizes"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -23720,7 +23720,7 @@
     "depends_on": [
       "paper--atom-states"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -23773,7 +23773,7 @@
     "depends_on": [
       "paper--molecule-slots"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -23827,7 +23827,7 @@
     "depends_on": [
       "paper--molecule-motion"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -23880,7 +23880,7 @@
     "depends_on": [
       "paper--molecule-a11y"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -23933,7 +23933,7 @@
     "depends_on": [
       "paper--story-default"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -23986,7 +23986,7 @@
     "depends_on": [
       "paper--story-variants"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -24039,7 +24039,7 @@
     "depends_on": [
       "paper--story-interaction"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -24093,7 +24093,7 @@
     "depends_on": [
       "paper--playwright-visual"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
