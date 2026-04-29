@@ -13,8 +13,8 @@
 set -u
 PROJECT="/home/meir/Desktop/m4storybook"
 HARNESS="/home/meir/Desktop/autocodev1"
-PROMPT_FILE="$LOG_DIR/coding_prompt.md"
 LOG_DIR="$PROJECT/.codex-run"
+PROMPT_FILE="$LOG_DIR/coding_prompt.md"
 ITER_DIR="$LOG_DIR/iterations"
 HEALTH="$LOG_DIR/health.json"
 mkdir -p "$ITER_DIR"
