@@ -1339,3 +1339,98 @@ Notes for next session
     morph effect is lost. anatomy.root contains
     "transition-[box-shadow,background-color,border-color,color,border-radius]"
     so the medium2/emphasized tokens drive the shape change too.
+
+Session 2026-04-29 (Avatar slice):
+  Goal: complete the 13 avatar-* features as one self-contained
+  slice (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/Avatar/{types,anatomy,Avatar,index}.ts implementing
+  a MUI-fallback Avatar re-skinned with M3 tokens (M3 has no first-
+  class Avatar component; spec uses MUI shape ladder + M3 token
+  recoloring). Four color variants (filled / tonal / outlined /
+  elevated), three shapes (circular / rounded / square), three
+  sizes (sm 32 / md 40 / lg 56) matching the rest of the input
+  set, image with graceful fallback to initials/icon, optional
+  presence dot (online/away/busy/offline) anchored bottom-right
+  with surface ring, and an interactive (button-style) mode with
+  full state-layer + shape morph.
+- M3 Expressive shape morph: when interactive AND circular, hover/
+  focus morph the container from shape-full to shape-md (12dp).
+  border-radius is on the transition list so the morph animates
+  over the medium2 (300ms) emphasized easing token.
+- Motion: motion/react drives whileHover scale=1.04 + whileTap
+  scale=0.96 with the springy preset for interactive avatars.
+  Reduced-motion sets duration=0 and skips hover/tap animations.
+- Image fallback: <img onError> sets a local imageFailed flag and
+  the component swaps to the initials/icon path. Initials are
+  derived from `alt` automatically (deriveInitials picks first
+  + last word initial for two-word names, first 2 chars otherwise).
+- Avatar.stories.tsx exports Default, Variants, Sizes, Shapes,
+  States, WithImage, WithIcons, WithStatus, Interactive,
+  Playground, InteractionSpec (play() asserts onClick fires on
+  click + Enter).
+- tests/visual/avatar.spec.ts has 18 design-parity assertions:
+  default role=img + variant/shape data attrs, filled = primary-
+  container/on-primary-container, tonal = tertiary-container/
+  on-tertiary-container, outlined transparent + 1dp outline,
+  elevated = surface-container-low + elevation-1 shadow, sm/md/lg
+  32/40/56 heights, circular pill / rounded 12dp / square 0dp,
+  disabled opacity 0.38, interactive role=button + tabindex=0 +
+  state-layer span, hover state-layer 0.08, focus state-layer
+  0.10, circular interactive morphs to 12dp on hover, click+Enter
+  both fire on the focused button, M3 emphasized 300ms / cubic-
+  bezier(0.2,0,0,1), <img> renders with data: URI src, status dot
+  exposes role=status with the correct label, icon-only avatar
+  uses aria-label override, dark theme swaps role colors.
+- tests/visual/avatar.visual.spec.ts captures 10 deterministic
+  baselines (variants/sizes/shapes/states/with-status × light/dark)
+  with reduced-motion + animations:'disabled' + maxDiffPixelRatio
+  0.02. Baselines committed under
+  tests/visual/avatar.visual.spec.ts-snapshots/.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright avatar.spec     ✓ (18 / 18)
+- playwright avatar.visual   ✓ (10 / 10)
+- full playwright suite      ✓ (388 / 388)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 avatar-* features. 207 / 872
+passing (was 194 / 872).
+
+Notes for next session
+----------------------
+- Data Display category has 10 components in the MUI nav: Avatar
+  (done), Badge, Chip, Divider, Icons, Material Icons, List,
+  Table, Tooltip, Typography. Next slice should be Badge — same
+  13-feature shape (badge--atom-anatomy through badge--playwright-
+  spec). Badge is M3 Expressive (small / large variants, dot vs
+  count, anchored to a child element) so it gets the M3 spec
+  treatment, not MUI fallback.
+- Re-usable lessons from this slice:
+  * For TS strict mode + HTMLMotionProps<"div"> intersections,
+    do NOT keep a separate non-exported BaseProps interface and
+    intersect it via `&` — TypeScript requires an export when
+    the resulting type appears in a public function signature
+    (TS4023 error). Fold the own props into a single exported
+    interface with `extends Omit<HTMLMotionProps<"div">, "ref" |
+    OwnKey>` instead.
+  * Image avatars need a graceful fallback path. The pattern:
+    a local imageFailed state that flips on <img onError>, with
+    the JSX choosing between <img> and the initials/icon span
+    based on `src && !imageFailed`. This handles broken URLs
+    without a flash of unstyled content.
+  * For role="status" indicators (presence dot), the aria-label
+    is the *visible* status name. Playwright's getByRole("status",
+    { name }) uses the accessible name, so prefix with "Status:"
+    so the role=status group shows up cleanly in the a11y tree
+    (otherwise screen-reader output is just "online" with no
+    context).
