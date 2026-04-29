@@ -81,8 +81,16 @@ interface SizeSpec {
   field: string;
   paddingX: string;
   input: string;
+  /** Resting label class — does NOT set `left`, that comes from `labelLeft`. */
   label: string;
+  /** Floating label class — does NOT set `left`, that comes from `labelLeftFloating`. */
   labelFloating: string;
+  /** Resting label `left-*` when there is no leading icon. */
+  labelLeft: string;
+  /** Resting label `left-*` when there is a leading icon. */
+  labelLeftWithIcon: string;
+  /** Floating label `left-*` (always anchored to the field edge). */
+  labelLeftFloating: string;
   iconBox: string;
   popupOption: string;
 }
@@ -96,9 +104,12 @@ export const sizeSpec: Record<AutocompleteSize, SizeSpec> = {
     field: "h-10",
     paddingX: "px-3",
     input: "py-2 text-body-m",
-    label: "left-3 top-1/2 -translate-y-1/2 text-body-m text-on-surface-variant",
+    label: "top-1/2 -translate-y-1/2 text-body-m text-on-surface-variant",
     labelFloating:
-      "left-3 -top-1.5 text-label-s bg-background px-1 -translate-y-0 text-primary",
+      "-top-1.5 text-label-s bg-background px-1 -translate-y-0 text-primary",
+    labelLeft: "left-3",
+    labelLeftWithIcon: "left-11",
+    labelLeftFloating: "left-3",
     iconBox: "h-5 w-5",
     popupOption: "h-10",
   },
@@ -106,9 +117,12 @@ export const sizeSpec: Record<AutocompleteSize, SizeSpec> = {
     field: "h-14",
     paddingX: "px-4",
     input: "py-4 text-body-l",
-    label: "left-4 top-1/2 -translate-y-1/2 text-body-l text-on-surface-variant",
+    label: "top-1/2 -translate-y-1/2 text-body-l text-on-surface-variant",
     labelFloating:
-      "left-4 -top-2 text-label-m bg-background px-1 -translate-y-0 text-primary",
+      "-top-2 text-label-m bg-background px-1 -translate-y-0 text-primary",
+    labelLeft: "left-4",
+    labelLeftWithIcon: "left-14",
+    labelLeftFloating: "left-4",
     iconBox: "h-6 w-6",
     popupOption: "h-12",
   },
@@ -116,9 +130,12 @@ export const sizeSpec: Record<AutocompleteSize, SizeSpec> = {
     field: "h-[72px]",
     paddingX: "px-5",
     input: "py-5 text-title-m",
-    label: "left-5 top-1/2 -translate-y-1/2 text-body-l text-on-surface-variant",
+    label: "top-1/2 -translate-y-1/2 text-body-l text-on-surface-variant",
     labelFloating:
-      "left-5 -top-2 text-label-m bg-background px-1 -translate-y-0 text-primary",
+      "-top-2 text-label-m bg-background px-1 -translate-y-0 text-primary",
+    labelLeft: "left-5",
+    labelLeftWithIcon: "left-16",
+    labelLeftFloating: "left-5",
     iconBox: "h-7 w-7",
     popupOption: "h-14",
   },

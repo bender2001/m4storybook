@@ -250,7 +250,11 @@ export const Autocomplete = forwardRef<HTMLInputElement, AutocompleteProps>(
               className={cn(
                 anatomy.label,
                 isFloating ? sz.labelFloating : sz.label,
-                leadingIcon && !isFloating && "!left-12",
+                isFloating
+                  ? sz.labelLeftFloating
+                  : leadingIcon
+                    ? sz.labelLeftWithIcon
+                    : sz.labelLeft,
                 error && "text-error",
               )}
             >

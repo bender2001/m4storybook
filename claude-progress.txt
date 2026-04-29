@@ -85,3 +85,76 @@ Notes for next session
 - transitionDuration in tailwind.config.ts MUST include "ms" suffix
   (e.g. "300ms" not "300"). Trying to use bare numbers silently
   produces invalid CSS and Tailwind's default 150ms wins.
+
+Session 2026-04-29 (Autocomplete slice):
+  Goal: complete the 13 autocomplete-* features as one self-contained
+  slice (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/Autocomplete/{types,anatomy,Autocomplete,index}.ts
+  with two M3 variants (outlined / filled), three sizes (sm 40 / md 56
+  / lg 72), label that floats on focus or input, leading/trailing icon
+  slots, error + disabled states, helper-text slot, listbox popup with
+  state-layered options, full keyboard nav (Up/Down/Home/End/Enter/Esc)
+  driven through aria-activedescendant. M3 has no native Autocomplete
+  spec, so this is the MUI-fallback re-skinned with M3 Text Field +
+  Menu tokens.
+- All motion routes through motion/react: AnimatePresence on the popup
+  with the emphasized-decelerate tween, chevron rotates with a 200ms
+  emphasized tween, label morphs via CSS transitions on the medium2
+  duration. Reduced-motion collapses durations to 0.
+- Autocomplete.stories.tsx exports Default, Variants, Sizes, States,
+  WithIcons, Playground, and Interaction (play() drives type → arrow
+  navigation → Enter, asserts onChange + input value).
+- tests/visual/autocomplete.spec.ts has 14 design-parity assertions:
+  outlined/filled container roles, sm/md/lg heights, disabled +
+  error states, hover state-layer at 0.08, focus-opens-listbox,
+  popup uses surface-container + elevation 2, keyboard arrows +
+  enter select, escape closes, active option state-layer at 0.08,
+  resting label color = on-surface-variant, focus-visible draws
+  2dp primary outline, dark theme swaps the popup role.
+- tests/visual/autocomplete.visual.spec.ts captures 8 deterministic
+  baselines (variants/sizes/states/with-icons × light/dark).
+  Reduced-motion + animations:'disabled' + maxDiffPixelRatio: 0.02
+  keep them stable.
+- Bug fix: when both label and placeholder are set, M3 hides the
+  placeholder until the label floats. Wired the input's effective
+  placeholder to "" when label is at rest.
+- Bug fix: leading-icon spacing. Resting label's `left-*` offset
+  shifts to clear the icon (sm → left-11, md → left-14, lg → left-16);
+  floating label snaps back to the field edge.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck            ✓
+- pnpm lint                 ✓ (0 errors, 0 warnings)
+- pnpm test                 ✓ (4 token tests)
+- pnpm build                ✓
+- pnpm build-storybook      ✓
+- playwright autocomplete.spec        ✓ (14 / 14)
+- playwright autocomplete.visual.spec ✓ (8 / 8)
+- playwright button.spec / visual     ✓ (regressions clean)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 autocomplete-* features. 38 / 872
+passing (was 25 / 872).
+
+Notes for next session
+----------------------
+- Next up: Inputs alphabet continues with Button Group
+  (button-group--atom-anatomy through button-group--playwright-spec).
+  Same 13-feature shape as Autocomplete.
+- Re-usable lessons from this slice:
+  * For text-field-like components, separate the label `left-*`
+    class from the resting/floating font + position class so a
+    leading icon can shift only the resting offset.
+  * Inputs with both label + placeholder: blank the input's
+    placeholder when the label is at rest.
+  * For popups under reduced-motion, use AnimatePresence with
+    a tween (not a spring) — springs occasionally leave a residue
+    transform that breaks visual baselines.
+  * The Playwright `text-label-m` font-size assertion needs a
+    waitForTimeout(360) after focus because the label font-size
+    is animated over the medium2 (300ms) duration.
