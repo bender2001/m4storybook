@@ -29,6 +29,9 @@ export const anatomy = {
     "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
     "focus-visible:ring-offset-surface",
     "disabled:cursor-not-allowed",
+    // M3 disabled treatment: fade the whole segment to ~38% so disabled
+    // selected and disabled rest both visibly mute together.
+    "disabled:opacity-[0.38]",
   ].join(" "),
   /** Persistent state-layer over each segment. */
   stateLayer: [

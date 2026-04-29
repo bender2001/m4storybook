@@ -14,10 +14,10 @@ const FORMAT_OPTIONS = [
   { value: "underline", label: "U", ariaLabel: "Underline" },
 ];
 
-const FormatBoldIcon = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
-    <path d="M15.6 11.8c1-.7 1.6-1.8 1.6-2.8 0-2.3-1.8-4-4-4H7v14h7c2.2 0 3.9-1.8 3.9-4 0-1.6-.9-3-2.3-3.2zM10 7.5h3a1.5 1.5 0 0 1 0 3h-3v-3zm3.5 9H10v-3h3.5a1.5 1.5 0 0 1 0 3z" />
-  </svg>
+const FormatIcon = ({ glyph }: { glyph: string }) => (
+  <span aria-hidden className="inline-flex h-4 w-4 items-center justify-center font-bold">
+    {glyph}
+  </span>
 );
 
 const meta: Meta<typeof ButtonGroup> = {
@@ -45,6 +45,9 @@ const meta: Meta<typeof ButtonGroup> = {
     },
     disabled: { control: "boolean" },
     onChange: { action: "changed" },
+    // The `options` arg can contain ReactNode icons, which break
+    // Storybook's prettyPrint serializer (max-call-stack on JSX trees).
+    options: { control: false },
   },
   args: {
     options: ALIGN_OPTIONS,
@@ -109,25 +112,30 @@ export const States: Story = {
   ),
 };
 
+const ICON_OPTIONS = [
+  { value: "bold", label: "Bold", startIcon: <FormatIcon glyph="B" /> },
+  { value: "italic", label: "Italic", startIcon: <FormatIcon glyph="I" /> },
+  { value: "under", label: "Underline", startIcon: <FormatIcon glyph="U" /> },
+];
+
 export const WithIcons: Story = {
-  render: (args) => (
+  parameters: { controls: { disable: true }, actions: { disable: true } },
+  render: () => (
     <div className="flex flex-col gap-4">
       <ButtonGroup
-        {...args}
+        variant="outlined"
+        size="md"
         selectionMode="multi"
         defaultValue={["bold"]}
         options={FORMAT_OPTIONS}
         aria-label="Text formatting"
       />
       <ButtonGroup
-        {...args}
-        options={[
-          { value: "bold", label: "Bold", startIcon: <FormatBoldIcon /> },
-          { value: "italic", label: "Italic", startIcon: <FormatBoldIcon /> },
-          { value: "under", label: "Underline", startIcon: <FormatBoldIcon /> },
-        ]}
+        variant="outlined"
+        size="md"
         selectionMode="multi"
         defaultValue={["bold"]}
+        options={ICON_OPTIONS}
         aria-label="Format with icons"
       />
     </div>

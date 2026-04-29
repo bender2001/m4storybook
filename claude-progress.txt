@@ -158,3 +158,94 @@ Notes for next session
   * The Playwright `text-label-m` font-size assertion needs a
     waitForTimeout(360) after focus because the label font-size
     is animated over the medium2 (300ms) duration.
+
+Session 2026-04-29 (Button Group slice):
+  Goal: complete the 13 button-group-* features as one self-contained
+  slice (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/ButtonGroup/{types,anatomy,ButtonGroup,index}.ts
+  implementing the standard M3 Button Group: a row of "connected"
+  buttons sharing a pill-shaped outer radius and a 2dp inner gap,
+  with squared-off (shape-xs) inner corners. Five variants
+  (filled / tonal / outlined / text / elevated), three sizes
+  (sm 32 / md 40 / lg 56) matching the standalone Button, both
+  horizontal and vertical orientation, and `single` + `multi`
+  selection modes (rendered as role=radio / role=checkbox).
+  Selected segment swaps to the secondary role (secondary-container
+  for tonal/outlined/text/elevated, secondary for filled).
+- All motion routes through motion/react: whileHover scale=1.02,
+  whileTap scale=0.97 on each segment with the springy preset.
+  Reduced-motion collapses transitions to 0.
+- ButtonGroup.stories.tsx exports Default, Variants, Sizes, States,
+  WithIcons, Playground, and Interaction (play() clicks Center,
+  asserts onChange("center") + aria-checked, then clicks again to
+  toggle off and asserts onChange(null)).
+- tests/visual/button-group.spec.ts has 16 design-parity assertions:
+  group role + orientation, default value drives aria-checked,
+  filled rest = primary / selected = secondary, outlined transparent
+  fill + outline border, text variant transparent on non-selected,
+  size scale (sm 32 / md 40 / lg 56), connected radii (pill outer +
+  shape-xs inner), disabled fades to opacity 0.38 + suppresses
+  state-layer, hover paints 0.08, focus paints 0.10, click toggles
+  aria-checked, multi-select allows multiple checked checkboxes,
+  M3 emphasized motion (300ms / cubic-bezier), dark theme swaps
+  selected color.
+- tests/visual/button-group.visual.spec.ts captures 8 deterministic
+  baselines (variants / sizes / states / with-icons × light/dark)
+  with reduced-motion + animations:'disabled' + maxDiffPixelRatio
+  0.02. Baselines committed under
+  tests/visual/button-group.visual.spec.ts-snapshots/.
+- Bug fix: WithIcons story crashed Storybook with
+  "Maximum call stack size exceeded" inside `prettyPrint2` because
+  Storybook's actions instrumentation tries to recursively
+  serialize JSX nodes nested inside the `options` array prop.
+  Fixed by setting `parameters.actions.disable = true` and
+  `parameters.controls.disable = true` on the WithIcons story so
+  Storybook does not walk the option tree.
+- Bug fix: disabled+selected segments visually looked the same as
+  selected — added `disabled:opacity-[0.38]` to the segment anatomy
+  so disabled groups (and individually disabled options) clearly
+  fade to the M3 disabled-content opacity regardless of which
+  variant slot they're in.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright button-group.spec        ✓ (16 / 16)
+- playwright button-group.visual      ✓ (8 / 8)
+- playwright button + autocomplete    ✓ (regressions clean)
+- full playwright suite               ✓ (65 / 65)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 button-group-* features. 51 / 872
+passing (was 38 / 872).
+
+Notes for next session
+----------------------
+- Next up: Inputs alphabet continues with Checkbox
+  (checkbox--atom-anatomy through checkbox--playwright-spec).
+  Same 13-feature shape as Button Group.
+- Re-usable lessons from this slice:
+  * Storybook's prettyPrint2 (used by the actions addon and
+    several internal serializers) recurses into prop values — a
+    React node nested inside an array prop blows its call stack.
+    For any story whose props include arrays-of-objects with
+    optional ReactNode fields, set
+    `parameters: { controls: { disable: true }, actions: { disable: true } }`
+    or define the array as a module-level const that doesn't flow
+    through args. (Top-level ReactNode props are fine.)
+  * For visually-toggleable components, prefer a single
+    disabled:opacity-[0.38] on the segment over per-variant
+    disabled CSS — it survives the rest/selected swap without
+    duplicating Tailwind classes.
+  * For Playwright pixel-radius checks on connected groups,
+    assert outer corners >= height/2 and inner corners < small
+    threshold (8px) — works even when the inner uses shape-xs
+    rather than 0.
