@@ -2296,3 +2296,152 @@ Notes for next session
     caller explicitly sets fill - that's the M3
     selected-state rule and it lets toggle UIs
     flip filled/unfilled without juggling two props.
+
+==========================================
+Iter 25 - Table slice (data display: thead/tbody + sortable + selected)
+==========================================
+Flipped 13 features. 324 / 872 passing (was 311 / 872).
+
+Files added
+-----------
+- src/components/Table/{anatomy.ts,types.ts,Table.tsx,
+  Table.stories.tsx,index.ts}
+  M3 expressive data table — re-skins the MUI/HTML
+  Table pattern with M3 tokens (per the spec rule
+  for MUI-only components: M3 has no formal Table).
+    * variants:   standard / filled / outlined /
+                  elevated. standard = transparent
+                  wrapper, filled = surface-container
+                  + shape-sm, outlined = 1dp
+                  outline-variant border + shape-sm,
+                  elevated = surface-container-low +
+                  elevation-1 shadow + shape-sm
+    * sizes:      sm = 40dp body row, md = 52dp,
+                  lg = 72dp (mirrors the M3 list
+                  density scale)
+    * sections:   <TableHead>, <TableBody>,
+                  <TableFooter>, <TableRow>,
+                  <TableCell>. Header section is
+                  bottom-bordered with outline-variant
+                  to mark the M3 header divider; body
+                  rows are divided by 1dp
+                  outline-variant dividers (last body
+                  row drops the divider via :last-child
+                  to avoid doubling against the
+                  wrapper border)
+    * cells:      header cells render at title-s
+                  (14px / weight 500); body cells at
+                  body-m (14px). Numeric cells
+                  text-right + tabular-nums per the
+                  M3 expressive table layout
+    * sortable:   sortable header cells render an
+                  inline <button> + sort caret
+                  affordance. Click toggles
+                  asc -> desc -> asc; aria-sort tracks
+                  ascending|descending|none; keyboard
+                  Enter/Space activates the sort
+    * states:     selected = secondary-container fill
+                  + on-secondary-container text +
+                  aria-selected=true; disabled =
+                  opacity 0.38 + aria-disabled=true +
+                  pointer-events disabled
+    * interactive: rows expose tabindex=0 + a state-
+                  layer overlay span inside every
+                  cell (since <span> is invalid as
+                  an immediate child of <tr>). All
+                  cells share the same row state so
+                  the row paints uniformly at the
+                  M3 state-layer opacities
+                  (0.08 hover / 0.10 focus / 0.10
+                  pressed)
+    * sticky:     stickyHeader prop pins thead cells
+                  to position:sticky top-0 with a
+                  surface fill so they don't
+                  overlap body content semantically
+    * data API:   pass `columns: TableColumn<T>[]` +
+                  `rows: T[]` for the auto-rendered
+                  thead+tbody. Columns describe key,
+                  label, numeric, sortable, render,
+                  width. Composition mode (children)
+                  remains for fully-custom layouts
+- Stories: Default, Variants, Sizes, States, Slots
+  (caption + footer demo), Sortable, Interactive,
+  StickyHeader, Motion, Accessibility, Playground,
+  InteractionSpec.
+- tests/visual/table.spec.ts: 23 design-parity
+  assertions (variant/size/typography matrix +
+  thead divider + body row dividers (last drops) +
+  numeric right-align + sortable aria + caret 180°
+  rotation + selected aria-selected + disabled
+  aria-disabled + state-layer hover 0.08 +
+  state-layer focus 0.10 + tabindex=0 +
+  data-state-layer-opacity attr + caption
+  caption-side:top + M3 standard easing on
+  state-layer transition + dark theme color swap +
+  sticky-header position:sticky + playground
+  controls).
+- tests/visual/table.visual.spec.ts: 10
+  deterministic baselines (default/variants/sizes/
+  states/slots × light/dark).
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck                 PASS
+- pnpm lint                      PASS (0 errors, 0 warnings)
+- pnpm test                      PASS (4 token tests)
+- pnpm build                     PASS
+- pnpm build-storybook           PASS
+- playwright table.spec          PASS (23 / 23)
+- playwright table.visual        PASS (10 / 10)
+- full playwright suite          PASS (651 / 651)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 table--* features.
+324 / 872 passing (was 311 / 872).
+
+Notes for next session
+----------------------
+- Data Display category is now COMPLETE (0
+  remaining).
+- Largest remaining slices by component (counts
+  from `passes: false` grouping):
+  * Utils       : 130
+  * Navigation  : 117
+  * Advanced    : 104
+  * Feedback    :  78
+  * Layout      :  65
+  * Surfaces    :  52
+  * Quality     :   2
+- Reusable lessons from this slice:
+  * <span> is INVALID as an immediate child of
+    <tr> — table state-layer overlays must live
+    inside each <td>/<th>, not at the row level.
+    The pattern: stash row hover/focus/pressed
+    state in a context, have every cell render
+    its own absolutely-positioned overlay span
+    bound to the same opacity. Visually the row
+    paints uniformly, semantically the markup
+    stays valid.
+  * Body-row dividers should drop on :last-child
+    to avoid doubling against the wrapper border
+    (e.g. outlined variant). `last:border-b-0`
+    is the cleanest Tailwind pattern.
+  * The cubic-bezier easing on transform leaves
+    the matrix slightly off `(-1, 0, 0, -1, 0, 0)`
+    even after the duration completes — assert
+    with `toBeCloseTo(-1, 2)` against the parsed
+    matrix, not a substring match.
+  * Sticky-header cells need both
+    `position: sticky; top: 0` AND a non-
+    transparent fill (otherwise body rows scroll
+    visibly through the header). Use `bg-surface`
+    so the header always paints over body rows.
+  * The Table component supports two API shapes:
+    a controlled `columns + rows` data API for
+    quick wins, and a composition `<TableHead>` /
+    `<TableBody>` / `<TableRow>` / `<TableCell>`
+    API for fully-custom layouts. Both share the
+    same context so size/variant propagate
+    consistently regardless of which shape the
+    consumer chose.
