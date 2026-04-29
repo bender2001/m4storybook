@@ -104,8 +104,15 @@ export const elevationClasses = {
     "shadow-elevation-1 hover:shadow-elevation-2 active:shadow-elevation-1",
 } as const;
 
-/** Disabled override applied to all variants. M3 disabled FAB = on-surface/12 + on-surface/38 content + elevation-0. */
+/**
+ * Disabled override applied to all variants. M3 spec calls for an
+ * on-surface@12% container with on-surface@38% content; we approximate
+ * that with the surface-variant role plus a 38% opacity fade so the
+ * FAB still has a visible container shape (token-driven, no rgba
+ * literals).
+ */
 export const disabledClasses = [
-  "bg-on-surface/[0.12] text-on-surface/[0.38]",
+  "bg-surface-variant text-on-surface-variant",
+  "opacity-[0.38]",
   "shadow-elevation-0 hover:shadow-elevation-0 active:shadow-elevation-0",
 ].join(" ");

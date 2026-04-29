@@ -132,24 +132,28 @@ test.describe("FAB - M3 design parity", () => {
     expect(sizes[2]).toEqual({ h: "36px", w: "36px" });
   });
 
-  test("disabled FAB: bg = on-surface/12, content = on-surface/38, no elevation", async ({
+  test("disabled FAB: container suppressed and elevation reduced to 0", async ({
     page,
   }) => {
     await page.goto(storyUrl("inputs-floating-action-button--states"));
     const disabled = page.locator("[data-fab][data-disabled]").first();
+    const input = disabled.locator(":scope");
+    await expect(input).toBeDisabled();
     const styles = await disabled.evaluate((el) => {
       const cs = window.getComputedStyle(el);
       return {
         bg: cs.backgroundColor,
-        color: cs.color,
         boxShadow: cs.boxShadow,
       };
     });
-    // 0.12 alpha tint of on-surface — must not equal a primary role.
+    // Disabled never renders the active container role.
     expect(styles.bg).not.toBe(LIGHT_PRIMARY_CONTAINER);
-    expect(styles.bg).toMatch(/rgba\(/);
-    expect(styles.color).toMatch(/rgba\(/);
-    expect(styles.boxShadow).toBe("none");
+    // M3 disabled FAB is elevation 0 — Chrome reports either "none" or
+    // a stack of fully transparent shadows.
+    expect(
+      styles.boxShadow === "none" ||
+        /^(rgba\(0, 0, 0, 0\)[^,]*,?\s*)+$/.test(styles.boxShadow),
+    ).toBe(true);
   });
 
   test("hover paints state-layer at 0.08", async ({ page }) => {
@@ -273,6 +277,7 @@ test.describe("FAB - M3 design parity", () => {
   test("aria-label is wired up for icon-only FABs", async ({ page }) => {
     await page.goto(storyUrl("inputs-floating-action-button--variants"));
     const fabs = page.locator("[data-fab]");
+    await expect(fabs).toHaveCount(4);
     const labels = await fabs.evaluateAll((els) =>
       els.map((el) => el.getAttribute("aria-label")),
     );

@@ -353,3 +353,100 @@ Notes for next session
   * `aria-checked="mixed"` is the correct ARIA value for the
     indeterminate state; assert it in tests rather than reading
     the DOM `indeterminate` property.
+
+Session 2026-04-29 (FAB slice):
+  Goal: complete the 13 fab-* features as one self-contained slice
+  (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/Fab/{types,anatomy,Fab,index}.ts implementing the
+  M3 Expressive Floating Action Button. Four color variants
+  (surface / primary / secondary / tertiary), three sizes
+  (sm 40dp / md 56dp / lg 96dp) with matching radii (shape-md 12dp
+  / shape-lg 16dp / shape-xl 28dp) and icon sizes (24/24/36dp).
+  Extended FAB renders when `label` is set on size="md" — keeps
+  the 56dp height + shape-lg radius and pads to fit the label.
+  Lowered prop drops elevation rest=1 / hover=2; default rest=3 /
+  hover=4 / press=3.
+- All motion routes through motion/react: whileHover scale 1.04 +
+  whileTap scale 0.94 with the springy preset; reduced-motion
+  collapses transitions to 0. State-layer reads the M3 opacities
+  directly from src/tokens/motion.ts.
+- Fab.stories.tsx exports Default, Variants, Sizes, States,
+  WithIcons, Playground, and Interaction (play() asserts pointer
+  click + Enter + Space all fire onClick).
+- tests/visual/fab.spec.ts has 16 design-parity assertions: default
+  dimensions/radius/elevation, surface variant role, primary/
+  secondary/tertiary container roles, size scale heights/radii/
+  icon dims, disabled container + elevation suppression, hover
+  state-layer 0.08, focus state-layer 0.10, disabled state-layer
+  suppressed, click + keyboard activation, extended FAB stays
+  56dp tall + label-l type role, M3 emphasized motion 300ms /
+  cubic-bezier(0.2,0,0,1), lowered elevation distinct from
+  resting, aria-label wired up, dark theme primary-container
+  swap.
+- tests/visual/fab.visual.spec.ts captures 8 deterministic
+  baselines (variants/sizes/states/with-icons × light/dark).
+  Reduced-motion + animations:'disabled' + maxDiffPixelRatio
+  0.02 keep them stable. Baselines committed.
+- Bug fix: First disabled treatment used
+  `bg-on-surface/[0.12] text-on-surface/[0.38]` to match the
+  Button + Checkbox convention. Tailwind v3 with var()-based
+  colors in the theme.colors map (no <alpha-value> placeholder)
+  silently DROPS those utilities — they generate no CSS at all.
+  The disabled FAB rendered with no container, just a floating
+  icon. Fixed by switching the FAB's disabled state to
+  `bg-surface-variant text-on-surface-variant opacity-[0.38]`,
+  which uses opaque token roles + a working opacity utility.
+  The disabled container is now a clearly-faded low-emphasis
+  pill. NOTE: Button + Checkbox have the same broken disabled
+  CSS (assertions for "rgba(...)" pass spuriously because
+  rgba(0, 0, 0, 0) is transparent and matches the regex). Worth
+  fixing globally on a future pass — likely needs the colors
+  map to switch to `rgb(var(--md-sys-color-...-rgb) / <alpha-value>)`
+  with new RGB-triplet CSS variables, OR switching every
+  `/[opacity]` utility to a token-based opaque fallback.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright fab.spec        ✓ (16 / 16)
+- playwright fab.visual      ✓ (8 / 8)
+- full playwright suite      ✓ (114 / 114)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 fab-* features. 77 / 872 passing
+(was 64 / 872).
+
+Notes for next session
+----------------------
+- Next up: Inputs alphabet continues with Icon Button
+  (icon-button--atom-anatomy through icon-button--playwright-spec).
+  Same 13-feature shape as FAB.
+- Re-usable lessons from this slice:
+  * `bg-{role}/[opacity]` utilities silently no-op when the
+    color comes from `var(--md-sys-color-{role})` without
+    an `<alpha-value>` substitution. Confirm the disabled or
+    state-layer styling actually renders in a Playwright
+    probe — don't rely on `expect(bg).toMatch(/rgba\(/)`,
+    because `rgba(0, 0, 0, 0)` (fully transparent) matches
+    that regex too. Use opaque role tokens for token-driven
+    color tints, or apply opacity to the whole element.
+  * For Storybook stories that pass arrays-of-objects-with-
+    ReactNode props (like FAB's icon + label), keep the array
+    out of `args` and define it as a module-level constant in
+    the render function, OR set
+    `parameters: { controls: { disable: true }, actions: { disable: true } }`.
+    Top-level ReactNode props in args are fine.
+  * The Tailwind `disabled:opacity-[0.38]` utility DOES work
+    (it's in the generated CSS); it's the `bg-{role}/[0.38]`
+    variant that silently fails. Combine
+    `disabled:opacity-[0.38]` with an opaque disabled bg
+    (e.g. `bg-surface-variant`) for a token-driven disabled
+    treatment that actually renders.
