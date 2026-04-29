@@ -27,43 +27,61 @@ What landed
 - tests/visual/button.spec.ts - design-parity Playwright spec template.
 - playwright.config.ts boots `pnpm storybook --ci` on port 6006.
 
+Session 2026-04-29 (Button Playwright slice):
+  Goal: complete the two outstanding Button features
+  (button--playwright-visual, button--playwright-spec) and ship them
+  verified end-to-end. Done.
+
+What landed
+-----------
+- tests/visual/button.spec.ts now has 11 design-parity assertions:
+  filled/tonal/outlined/text/elevated variants check role colors,
+  border, elevation, type weight; sizes story checks sm=32 / md=40 /
+  lg=56; disabled story checks state-layer is suppressed; hover/focus/
+  press tests assert state-layer opacity matches stateLayerOpacity
+  tokens (0.08 / 0.10 / 0.10). Final test verifies dark theme swaps
+  the role color on the filled button.
+- tests/visual/button.visual.spec.ts captures 8 deterministic
+  baselines (variants, sizes, states, with-icons × light/dark).
+  reducedMotion=reduce + animations:'disabled' + maxDiffPixelRatio:
+  0.02 keeps the snapshots stable. Baselines committed under
+  tests/visual/button.visual.spec.ts-snapshots/.
+- Tailwind config bug fix: transitionDuration values were unitless
+  ("300"), which Tailwind compiled to invalid `transition-duration:
+  300` rules. Changed all 12 entries to "300ms" form so the
+  `duration-medium2` etc. utilities now actually emit valid CSS.
+  Caught by the design-parity test reading 150ms (browser default)
+  on the filled button.
+
 Quality gates (all passing locally)
 ----------------------------------
-- pnpm typecheck   ✓
-- pnpm lint        ✓ (0 errors, 0 warnings)
-- pnpm test        ✓ (4 token tests)
-- pnpm build       ✓
-- pnpm build-storybook ✓
-- pnpm storybook --ci serves http 200 on / and on /iframe.html?id=inputs-button--default
+- pnpm typecheck            ✓
+- pnpm lint                 ✓ (0 errors, 0 warnings)
+- pnpm test                 ✓ (4 token tests)
+- pnpm build                ✓
+- pnpm build-storybook      ✓
+- playwright button.spec    ✓ (11 / 11)
+- playwright button.visual  ✓ (8 / 8)
 
 feature_list.json
 -----------------
-Flipped passes:true for: foundation-001..005, tokens-001..005, theme-001..002,
-and the Button atom/molecule/story slice (anatomy, base, variants, sizes, states,
-slots, motion, a11y, story-default, story-variants, story-interaction).
-23/872 passing.
-
-Button slice details
---------------------
-- Split into Button.tsx + types.ts + anatomy.ts (anatomy as a slot→token map).
-- State layer span renders at hover 0.08 / focus 0.10 / pressed 0.10 opacities,
-  exactly matching `stateLayerOpacity` from src/tokens/motion.ts.
-- useReducedMotion() collapses the springy press to a duration-0 transition.
-- @storybook/test play() function in Default story clicks and asserts onClick.
-- Button--playwright-visual + button--playwright-spec are still false because
-  Playwright browsers aren't installed and screenshots aren't committed.
+Flipped passes:true for button--playwright-visual and
+button--playwright-spec. 25 / 872 passing.
 
 Notes for next session
 ----------------------
-- Vitest 2 ships with vite 5 types; vitest.config.ts deliberately omits the
-  React plugin so tsc doesn't see two Vite versions. Add it back only when
-  vitest 3 lands.
-- Tailwind dynamic class names are NOT scanned. The ElevationLadder uses a
-  literal class map (`shadow-elevation-1` etc.) - keep that pattern.
-- Playwright browsers were not installed this session. Run
-  `pnpm exec playwright install --with-deps` before flipping any
-  *--playwright-* feature to passes:true.
-- Next up: implement Button's remaining feature_list IDs
-  (button--atom-anatomy through button--playwright-spec) so Button is fully
-  shipped end-to-end, then move down the Inputs alphabet (Autocomplete,
-  ButtonGroup, Checkbox, ...).
+- Button slice is now fully shipped. Next up: Inputs alphabet,
+  starting with Autocomplete (autocomplete--atom-anatomy through
+  autocomplete--playwright-spec).
+- The pattern is now established: each component gets
+  src/components/<Name>/<Name>.tsx + types.ts + anatomy.ts +
+  <Name>.stories.tsx + index.ts, plus tests/visual/<name>.spec.ts
+  (M3 spec assertions) and tests/visual/<name>.visual.spec.ts
+  (light + dark baselines). Use the Variants story for
+  hover/focus/press tests to avoid the Default story's play()
+  function pre-focusing the first button.
+- M3 component spec links live at
+  https://m3.material.io/components/<component>/specs.
+- transitionDuration in tailwind.config.ts MUST include "ms" suffix
+  (e.g. "300ms" not "300"). Trying to use bare numbers silently
+  produces invalid CSS and Tailwind's default 150ms wins.
