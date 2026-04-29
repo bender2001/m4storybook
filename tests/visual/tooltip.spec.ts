@@ -250,7 +250,7 @@ test.describe("Tooltip - M3 design parity", () => {
     page,
   }) => {
     await page.goto(
-      `/iframe.html?id=data-display-tooltip--playground&viewMode=story&globals=theme:light;reducedMotion:no-preference&args=label:Animated;showDelayMs:0;hideDelayMs:0`,
+      `/iframe.html?id=data-display-tooltip--playground&viewMode=story&globals=theme:light;reducedMotion:no-preference&args=label:Animated;showDelayMs:0;hideDelayMs:0;defaultOpen:!false`,
     );
     const trigger = page.getByRole("button", { name: "Playground" });
     const wrapper = page.locator("[data-component='tooltip']");

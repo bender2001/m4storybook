@@ -15843,7 +15843,7 @@
     "depends_on": [
       "theme-002"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -15896,7 +15896,7 @@
     "depends_on": [
       "tooltip--atom-anatomy"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -15949,7 +15949,7 @@
     "depends_on": [
       "tooltip--atom-base"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -16002,7 +16002,7 @@
     "depends_on": [
       "tooltip--atom-variants"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -16055,7 +16055,7 @@
     "depends_on": [
       "tooltip--atom-sizes"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -16108,7 +16108,7 @@
     "depends_on": [
       "tooltip--atom-states"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -16161,7 +16161,7 @@
     "depends_on": [
       "tooltip--molecule-slots"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -16215,7 +16215,7 @@
     "depends_on": [
       "tooltip--molecule-motion"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -16268,7 +16268,7 @@
     "depends_on": [
       "tooltip--molecule-a11y"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -16321,7 +16321,7 @@
     "depends_on": [
       "tooltip--story-default"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -16374,7 +16374,7 @@
     "depends_on": [
       "tooltip--story-variants"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -16427,7 +16427,7 @@
     "depends_on": [
       "tooltip--story-interaction"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",
@@ -16481,7 +16481,7 @@
     "depends_on": [
       "tooltip--playwright-visual"
     ],
-    "passes": false,
+    "passes": true,
     "agent_profile": {
       "id": "m3-storybook-frontend-agent",
       "agent": "M3 Expressive Storybook frontend agent",

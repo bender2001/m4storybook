@@ -18,12 +18,12 @@ const InfoGlyph = () => (
 /** Standardised trigger so every story exercises the same tab stop. */
 const TriggerButton = ({
   children = "Hover me",
-}: {
-  children?: React.ReactNode;
-}) => (
+  ...rest
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
   <button
     type="button"
     className="rounded-shape-sm bg-primary text-on-primary px-4 py-2 text-label-l"
+    {...rest}
   >
     {children}
   </button>
@@ -34,7 +34,7 @@ const meta: Meta<typeof Tooltip> = {
   component: Tooltip,
   tags: ["autodocs"],
   parameters: {
-    layout: "centered",
+    layout: "padded",
     docs: {
       description: {
         component:
@@ -85,7 +85,7 @@ export const Default: Story = {
 export const Variants: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
-    <div className="flex items-center gap-12 py-10">
+    <div className="flex w-[640px] items-start justify-around gap-16 px-16 pb-16 pt-24">
       <Tooltip
         variant="plain"
         label="Plain tooltip"
@@ -96,6 +96,7 @@ export const Variants: Story = {
       </Tooltip>
       <Tooltip
         variant="rich"
+        placement="bottom"
         subhead="Quick guide"
         label="Rich tooltips can wrap to multiple lines."
         supportingText="They also accept supporting text and a trailing action."
@@ -173,9 +174,10 @@ export const States: Story = {
 export const Slots: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
-    <div className="py-10">
+    <div className="flex w-[480px] items-start justify-center px-12 py-16">
       <Tooltip
         variant="rich"
+        placement="bottom"
         subhead="Filters"
         label="Refine results by tag, date, or author."
         supportingText="Selections are saved to your account so they persist across sessions."

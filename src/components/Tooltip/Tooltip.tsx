@@ -256,11 +256,12 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(function Tooltip
       data-placement={placement}
       data-open={open ? "" : undefined}
       data-disabled={disabled ? "" : undefined}
-      className={anatomy.trigger}
       onPointerEnter={handleTriggerEnter}
       onPointerLeave={handleTriggerLeave}
       onFocus={onWrapperFocus}
       onBlur={onWrapperBlur}
+      {...rest}
+      className={cn(anatomy.trigger, className)}
     >
       {trigger}
       <AnimatePresence>
@@ -283,9 +284,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(function Tooltip
               placementClass[placement],
               variant === "rich" ? "pointer-events-auto" : null,
               panelClass,
-              className,
             )}
-            {...rest}
           >
             {variant === "plain" ? label : richPanel}
           </motion.div>

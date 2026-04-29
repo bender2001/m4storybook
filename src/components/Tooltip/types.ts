@@ -1,5 +1,4 @@
-import type { HTMLMotionProps } from "motion/react";
-import type { ReactNode } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 
 /**
  * M3 Tooltip variants. The plain tooltip paints `inverse-surface`
@@ -35,7 +34,7 @@ type TooltipOwnKey =
   | "id";
 
 export interface TooltipProps
-  extends Omit<HTMLMotionProps<"div">, "ref" | TooltipOwnKey> {
+  extends Omit<HTMLAttributes<HTMLSpanElement>, TooltipOwnKey> {
   variant?: TooltipVariant;
   size?: TooltipSize;
   placement?: TooltipPlacement;

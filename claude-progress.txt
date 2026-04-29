@@ -1854,3 +1854,109 @@ Notes for next session
     no-op at the component level; the Storybook globals
     decorator and the user agent reduce-motion media query
     handle the rest.
+
+
+==============================================================
+Iter 21: Tooltip slice complete
+==============================================================
+272 / 872 features passing (was 259). +13 (all tooltip-* atoms,
+molecules, stories, and playwright specs flipped).
+
+What shipped
+------------
+- src/components/Tooltip/{Tooltip.tsx,types.ts,anatomy.ts,
+  index.ts,Tooltip.stories.tsx} — full M3 Tooltip:
+    * variants:   plain (inverse-surface chip, body-s, shape-xs)
+                  rich  (surface-container panel, elevation-2,
+                         optional subhead/supporting/action slots)
+    * sizes:      sm/md/lg → 24/28/32dp min-height (plain)
+                  and matching padding + max-width (rich)
+    * placements: top | right | bottom | left, with 8dp gap
+                  between trigger and panel
+    * lifecycle:  hover dwell (500ms M3 default) + focus open
+                  immediately, blur and Escape dismiss, hover
+                  hide-delay 1500ms (plain) / 0ms (rich)
+    * controlled: open / defaultOpen / onOpenChange + delays
+    * a11y:       role=tooltip on panel, aria-describedby
+                  forwarded to the trigger child via cloneElement,
+                  aria-hidden on decorative slots
+    * motion:     fade+scale enter (M3 emphasized-decelerate),
+                  fade+scale exit (M3 standard-accelerate);
+                  reduced-motion collapses both to duration:0
+    * rich-only:  pointer-events:auto on the panel + entry-keeps-
+                  open semantics so users can interact with the
+                  trailing action button without dismissing
+- Stories: Default, Variants, Sizes, Placements, States, Slots,
+  Motion, Accessibility, Playground, InteractionSpec.
+  InteractionSpec drives userEvent.hover → assert role=tooltip
+  visible → assert aria-describedby forwarded → unhover →
+  assert panel removed + onOpenChange(false) called.
+- tests/visual/tooltip.spec.ts: 14 design-parity assertions
+  (default container/text/shape, variant container roles, rich
+  slot rendering, size matrix, placement positioning, disabled
+  suppression, closed state, hover-opens lifecycle, escape
+  dismiss, focus-no-dwell, rich pointer-events:auto, motion
+  data-open contract, dark theme, playground args).
+- tests/visual/tooltip.visual.spec.ts: 10 deterministic
+  baselines (variants/sizes/placements/slots/states × light/
+  dark) with reduced-motion + animations:'disabled' +
+  maxDiffPixelRatio 0.02.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck                 ✓
+- pnpm lint                      ✓ (0 errors, 0 warnings)
+- pnpm test                      ✓ (4 token tests)
+- pnpm build                     ✓
+- pnpm build-storybook           ✓
+- playwright tooltip.spec        ✓ (14 / 14)
+- playwright tooltip.visual      ✓ (10 / 10)
+- full playwright suite          ✓ (525 / 525)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 tooltip-* features. 272 / 872
+passing (was 259 / 872).
+
+Notes for next session
+----------------------
+- Data Display category remaining: Icons, Material Icons, List,
+  Table. Icons + Material Icons are atomic (just glyph wrappers
+  + the M3 Symbols ligature font integration). The List and
+  Table slices are the meatiest remaining Data Display chunks.
+- Re-usable lessons from this slice:
+  * For composed components that wrap a trigger (Tooltip,
+    Popover, Menu): user-supplied props (data-testid, id,
+    aria-*) MUST land on the always-mounted wrapper, not on
+    the conditionally-mounted panel. Otherwise tests can't
+    locate the wrapper while the panel is closed, and the
+    test-id collides with the panel role/data attrs.
+    Fix: Omit motion/HTMLMotionProps from the public type;
+    use plain HTMLAttributes<HTMLSpanElement> and spread
+    onto the wrapper. The panel keeps its internal class +
+    motion config private.
+  * cloneElement for aria-describedby ONLY drills into the
+    direct React child. If a story wraps the trigger in a
+    function component (e.g. <TriggerButton>), the cloneElement
+    forwards aria-describedby to TriggerButton's React props,
+    NOT to the underlying <button>. The wrapper component must
+    spread props onto its DOM element. This is the exact bug
+    that made the hover-dwell parity test fail until I made
+    TriggerButton accept and spread `...rest`.
+  * Tailwind v3 dev server caches arbitrary value scans.
+    Adding new `min-h-[24px]`-style classes after Storybook
+    has booted requires a full SB restart — HMR will hot-
+    reload component code but the JIT-built CSS misses the
+    new arbitrary tokens. (Same family as the typeRoleClass
+    bug from the Typography slice — Tailwind's static scanner
+    is the common culprit.)
+  * Storybook URL args parser: booleans use the `!` prefix
+    syntax (`defaultOpen:!false` / `defaultOpen:!true`).
+    A bare `defaultOpen:false` parses as the string "false"
+    and silently truthy-coerces. Use `!false`/`!true`.
+  * For absolute-positioned floating panels with placement,
+    `layout: centered` Storybook param will vertically center
+    the trigger and clip panels that extend off-screen.
+    Switch the meta to `layout: padded` and let stories
+    manage their own padding (top/bottom) so panels with
+    placement=top get vertical headroom.
