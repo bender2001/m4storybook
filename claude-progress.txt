@@ -3616,3 +3616,61 @@ Key learnings filed for next iteration:
 
 Next: pick up the next lowest-id feedback feature whose
 deps are now satisfied (Skeleton or Snackbar).
+
+[2026-04-29T23:41:50Z] Iteration 2: Skeleton slice complete — atomic-design layered (atom anatomy → molecule motion → organism stories) with full Playwright spec + visual baselines passing. 441/872 features flipped.
+
+Slice content:
+  - src/components/Skeleton/{Skeleton,types,anatomy,index,
+    Skeleton.stories}.tsx covers four geometric types
+    (text / rectangular / rounded / circular) × four
+    token-driven variants (filled / tonal / outlined /
+    text) × three densities (sm / md / lg) × seven shape
+    tokens, with three animation modes (pulse / wave /
+    none) re-skinning the MUI Skeleton API.
+  - Filled body paints in surface-container-high (light
+    #ECE6F0 / dark #2B2930) so the skeleton reads as a
+    tonal recess on the surface host, matching M3
+    loading-pattern guidance rather than a disabled wash.
+  - Multi-line text mode renders N stacked lines and
+    tapers the last to 70% width per the MUI convention.
+  - Pulse oscillates opacity 1 → 0.4 via a motion/react
+    keyframe loop; wave sweeps a linear-gradient highlight
+    via a clipped <motion.span>; reduced motion collapses
+    both to a static placeholder.
+  - role="status" + aria-busy="true" + aria-live="polite"
+    + customizable aria-label so AT announces the loading
+    state.
+  - tests/visual/skeleton.spec.ts: 19 design-parity
+    assertions covering variant body color tokens, type
+    height scale, circular diameter scale, shape scale +
+    per-type defaults, disabled-opacity 0.38, error-
+    container body color, multi-line rendering, wave
+    gradient presence, animation=none clipping the
+    shimmer, ARIA wiring, motion easing/duration tokens,
+    and dark-theme tonal-step swap.
+  - tests/visual/skeleton.visual.spec.ts: 10 baselines
+    (variants/types/sizes/shapes/states × light/dark).
+
+Key learnings filed for next iteration:
+  * inline-flex hosts that contain `w-full` children
+    collapse to zero width, which Playwright reports as
+    "hidden" rather than as a visible element with zero
+    size. Mirror Progress's pattern: keep the root as
+    inline-flex (so circular skeletons don't stretch
+    block-wide) but conditionally append `w-full` for
+    text/rectangular/rounded so the body's `w-full`
+    resolves against an explicit host width.
+  * The MUI Skeleton last-line-tapers-to-70% convention
+    is hard to assert via computed style because a
+    Tailwind `w-[70%]` class resolves to a percentage, not
+    a pixel value, in the parent's measurement axis.
+    Reading `.className` for the 70% literal is a more
+    deterministic assertion than reading
+    `getComputedStyle(...).width`.
+  * `motion/react`'s wave keyframe `[ -100%, 100% ]`
+    interpolates against the shimmer span's offsetWidth,
+    so the gradient sweep stays inside the clipped body
+    and never bleeds outside even if the host grows.
+
+Next: pick up the next lowest-id feedback feature whose
+deps are now satisfied (Snackbar slice).

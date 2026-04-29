@@ -10,7 +10,7 @@ import {
   shapeClasses,
   sizeMatrix,
 } from "./anatomy";
-import type { SkeletonProps, SkeletonSize, SkeletonType } from "./types";
+import type { SkeletonProps, SkeletonType } from "./types";
 
 export type {
   SkeletonAnimation,
@@ -107,6 +107,7 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
           transition={reduce ? { duration: 0 } : tweens.standard}
           className={cn(
             anatomy.root,
+            "w-full",
             disabled && anatomy.disabled,
             className,
           )}
@@ -121,7 +122,6 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
                 <SkeletonBody
                   key={idx}
                   type="text"
-                  size={size}
                   shape={resolvedShape}
                   animation={animation}
                   reduce={reduce}
@@ -157,6 +157,7 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
         transition={reduce ? { duration: 0 } : tweens.standard}
         className={cn(
           anatomy.root,
+          type !== "circular" && "w-full",
           disabled && anatomy.disabled,
           className,
         )}
@@ -166,7 +167,6 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
         {leadingNode}
         <SkeletonBody
           type={type}
-          size={size}
           shape={resolvedShape}
           animation={animation}
           reduce={reduce}
