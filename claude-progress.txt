@@ -2174,3 +2174,125 @@ Notes for next session
     should be guarded behind both `interactive=true` AND
     `selected=true` - announcing pressed on a non-
     interactive glyph is a screen-reader bug.
+
+==========================================
+Iter 24 - Material Symbols slice (variable-font glyph)
+==========================================
+Flipped 13 features. 311 / 872 passing (was 298 / 872).
+
+Files added
+-----------
+- src/components/MaterialIcons/{anatomy.ts,types.ts,
+  MaterialIcon.tsx,MaterialIcon.stories.tsx,index.ts}
+  M3 Material Symbols ligature wrapper. Distinct from
+  Icon (inline SVG) - this paints a glyph from Google's
+  Material Symbols variable font so the same name can
+  morph through FILL/wght/GRAD/opsz axes.
+    * iconStyles: outlined (default), rounded, sharp
+                  (selected via three Material Symbols
+                  font-families loaded once at :root)
+    * variants:   standard / primary / filled / tonal /
+                  outlined-box / error - same color
+                  matrix as Icon, with `outlined-box`
+                  renamed so the M3 outlined STYLE
+                  axis stays orthogonal to the
+                  outlined CONTAINER variant
+    * sizes:      sm = 24dp box / 20dp glyph (opsz 20)
+                  md = 24dp box / 24dp glyph (opsz 24)
+                  lg = 48dp box / 40dp glyph (opsz 40)
+    * states:     default, selected (auto-toggles
+                  FILL=1 + on-secondary-container +
+                  aria-pressed), disabled (opacity
+                  0.38), error (error glyph color)
+    * axes:       FILL 0|1, wght 100..700, GRAD
+                  -25|0|200, opsz tied to size
+    * slots:      leadingLabel + trailingLabel renders
+                  flanking the ligature span
+    * motion:     same springy press scale as Icon,
+                  collapses under reduced motion
+    * a11y:       label => role=img + aria-label;
+                  no label => aria-hidden (the literal
+                  ligature text is hidden from AT);
+                  decorative forces aria-hidden;
+                  interactive promotes to a focusable
+                  region with Enter/Space activation
+- Stories: Default, Variants, Styles, Sizes, States,
+  Axes (FILL + wght swatches), Slots, Motion,
+  Accessibility, Playground, InteractionSpec.
+  InteractionSpec asserts data-component, data-name,
+  data-icon-style, role/aria-label, tabindex=0, three
+  activation paths (Enter, Space, click).
+- tests/visual/material-icons.spec.ts: 21 design-parity
+  assertions (default data attrs, six variants by
+  computed bg/color/border, three styles by
+  font-family, three sizes by box+glyph dimensions +
+  opsz axis + radius, four states by color + aria +
+  data-fill, axes round-trip into
+  font-variation-settings, leading/trailing slots,
+  focusable interactive, decorative aria-hidden,
+  M3 standard easing, dark theme color swap,
+  playground args).
+- tests/visual/material-icons.visual.spec.ts: 10
+  deterministic baselines (default/variants/styles/
+  sizes/states x light/dark) waiting on
+  document.fonts.ready before screenshot so the
+  variable font has loaded.
+
+CSS bootstrap
+-------------
+- src/index.css now @imports the three Material
+  Symbols variable-font families from Google Fonts
+  (Outlined / Rounded / Sharp) with the full FILL +
+  wght + GRAD + opsz axis ranges. Loaded once at
+  :root so every MaterialIcon usage just selects
+  the right family via font-family.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck                 PASS
+- pnpm lint                      PASS (0 errors, 0 warnings)
+- pnpm test                      PASS (4 token tests)
+- pnpm build                     PASS
+- pnpm build-storybook           PASS
+- playwright material-icons.spec PASS (21 / 21)
+- playwright material-icons.visual PASS (10 / 10)
+- full playwright suite          PASS (613 / 613)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 material-icons--*
+features. 311 / 872 passing (was 298 / 872).
+
+Notes for next session
+----------------------
+- Data Display category remaining: Table is the
+  largest chunk left. Will need thead/tbody
+  semantics, sticky-header support, sortable columns,
+  density variants, plus interaction tests for
+  sort-direction toggling.
+- Reusable lessons from this slice:
+  * The `outlined` STYLE axis (Material Symbols
+    family) is orthogonal to the `outlined` CONTAINER
+    variant (transparent + border). Renamed the
+    container variant to `outlined-box` to keep both
+    namespaces unambiguous when reading the data
+    attributes off a rendered element.
+  * Browsers normalize font-variation-settings axis
+    names to DOUBLE quotes in computed style
+    (e.g. `"FILL" 1` not `'FILL' 1`). Authored CSS
+    can use single quotes; assertions must read
+    double-quoted.
+  * Visual baselines for font-driven components
+    must wait on `document.fonts.ready` before the
+    screenshot, otherwise the ligature briefly
+    renders as the literal name text and the
+    baseline is not deterministic.
+  * The Material Symbols opsz axis should track the
+    rendered size (opsz 20 for 20px, opsz 24 for
+    24px, opsz 40 for 40px) so the drawn weight
+    stays consistent across sizes - DON'T just
+    set opsz to 24 and scale the box.
+  * Selected glyphs auto-toggle FILL=1 unless the
+    caller explicitly sets fill - that's the M3
+    selected-state rule and it lets toggle UIs
+    flip filled/unfilled without juggling two props.

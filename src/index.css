@@ -1,3 +1,13 @@
+/*
+ * Material Symbols variable-font families. Loaded once at the root so
+ * every MaterialIcon usage can pick a style (outlined / rounded /
+ * sharp) without per-component font management. Axes: opsz 20..48,
+ * wght 100..700, FILL 0..1, GRAD -50..200.
+ *
+ * https://fonts.google.com/icons
+ */
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
