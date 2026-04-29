@@ -3552,3 +3552,67 @@ Notes for next session
     pnpm storybook --ci --quiet` block in
     playwright.config.ts spawns a fresh
     server.
+
+[2026-04-29T23:29:23Z] Iteration 33: implemented full Progress
+slice (Feedback). 13 features flipped:
+
+  progress--atom-anatomy, progress--atom-base,
+  progress--atom-variants, progress--atom-sizes,
+  progress--atom-states, progress--molecule-slots,
+  progress--molecule-motion, progress--molecule-a11y,
+  progress--story-default, progress--story-variants,
+  progress--story-interaction, progress--playwright-visual,
+  progress--playwright-spec.
+
+Result: 428/872 features passing.
+
+Slice content:
+  - src/components/Progress/{Progress,types,anatomy,index,
+    Progress.stories}.tsx already scaffolded by previous
+    iteration; this run added the Playwright design-parity
+    + visual-regression coverage and verified the slice
+    end-to-end.
+  - Linear (4/8/12dp) + circular (24/48/64dp) variants
+    with filled / tonal / outlined / text token-driven
+    color matrix + error override.
+  - M3 stop-indicator dot rendered at the end of the
+    determinate linear track.
+  - Indeterminate sweeps via motion/react with reduced-
+    motion fallback; aria-valuenow dropped per ARIA 1.2
+    when mode=indeterminate.
+  - tests/visual/progress.spec.ts: 19 design-parity
+    assertions covering variant color tokens, size scale,
+    shape scale, disabled opacity 0.38, error color,
+    determinate width tracking, indeterminate ARIA,
+    stop dot, label aria-labelledby wiring, motion
+    duration/easing, and dark-theme primary swap.
+  - tests/visual/progress.visual.spec.ts: 10 baselines
+    (variants/sizes/shapes/slots/states × light/dark).
+
+Key learnings filed for next iteration:
+  * motion/react's useReducedMotion() reads the OS
+    prefers-reduced-motion media query — not the
+    Storybook URL globals (`reducedMotion:reduce`).
+    Use `await page.emulateMedia({ reducedMotion:
+    "reduce" })` in Playwright when a test needs the
+    motion.div animate prop to settle synchronously.
+    Without it, tests catching opacity/transform mid-
+    animation will see intermediate frames (e.g. 0.98
+    when waiting for 0.38).
+  * React's `useId()` produces colon-bearing IDs
+    (e.g. ":r0:") that break naive `#${id}` selectors
+    in Playwright. Use `[id="${id}"]` attribute
+    selectors instead — works regardless of CSS
+    escaping.
+  * `getBoundingClientRect().height` on a styled
+    `<span>` track defaults to `auto`; you have to
+    measure with `getComputedStyle(...).height` to
+    see the actual `h-[4px]` / `h-[8px]` / `h-[12px]`
+    pixel values.
+  * SVG attributes (`stroke-width`, `width`, `height`)
+    are easier to assert via `getAttribute()` than
+    via computed style — Chromium does not expose them
+    consistently through `getComputedStyle`.
+
+Next: pick up the next lowest-id feedback feature whose
+deps are now satisfied (Skeleton or Snackbar).
