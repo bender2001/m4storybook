@@ -25,6 +25,41 @@ jq '[.[] | select(.passes==true)] | length' feature_list.json    # done
   motion easings + durations) — never hardcode colors / radii / type sizes.
 - Component priority: M3 Expressive > M3 > MUI re-skinned with M3 tokens.
 
+### STEP 2.5 — ATOMIC DESIGN TAXONOMY (CANONICAL)
+
+Use this exact definition when classifying components and laying out
+source folders:
+
+- **Atom** — basic component. A single semantic UI primitive with no
+  composition. Wraps roughly one native HTML element with M3 token-driven
+  styling and state-layer behavior. Examples: Button, Icon, Label, Input,
+  Switch thumb, Badge dot, Divider, Avatar, Chip leading icon.
+- **Molecule** — mid-complexity generic component built from atoms.
+  Examples: TextField (Label atom + Input atom + helper Text atom), Chip
+  (Icon atom + Label atom + remove Button atom), ListItem (Avatar atom +
+  Text atom + trailing Icon atom), Search bar, Form field, Menu item.
+- **Organism** — most complex generic component. Composes molecules +
+  atoms + native elements into a meaningful, mostly self-contained UI
+  region. Examples: AppBar, Navigation Drawer/Rail, Bottom Navigation,
+  Dialog (header + body + actions), Stepper, Tabs container, Data Grid,
+  Speed Dial, Card-with-media.
+
+Rules:
+
+- A molecule MUST compose atoms; never reimplement atom logic inline.
+- An organism MUST compose molecules (and may compose atoms + native
+  elements); it must NOT skip the molecule layer to wire atoms directly
+  when a molecule already exists.
+- Source layout: `src/components/atoms/<Name>/`, `src/components/molecules/<Name>/`,
+  `src/components/organisms/<Name>/`. Each component owns its own folder
+  with `Name.tsx`, `Name.stories.tsx`, `types.ts`, and `anatomy.ts`.
+- Each `feature_list.json` entry has an `atomic_level` field — honor it.
+  Atomic-design slice ordering inside a single component:
+  anatomy (atom) → base (atom) → variants (molecule) → sizes (atom) →
+  states (atom) → slots (molecule) → motion (molecule) → a11y (molecule)
+  → stories (organism-level docs) → interaction test (organism) →
+  playwright visual (organism) → playwright spec (organism).
+
 ### STEP 3 — PICK THE NEXT FEATURE
 
 Find the lowest-id feature in `feature_list.json` with `"passes": false`
