@@ -2723,3 +2723,159 @@ Notes for next session
     is paired with elevated/filled in Variants
     story so the border width assertion stays
     stable).
+
+==========================================
+Iter 28 - Accordion slice (surfaces: M3 Expressive Expansion Panel)
+==========================================
+Flipped 13 features. 363 / 872 passing (was 350 / 872).
+
+Files added
+-----------
+- src/components/Accordion/{anatomy.ts,types.ts,
+  Accordion.tsx,Accordion.stories.tsx,index.ts}
+  M3 Expressive Accordion / Expansion Panel per
+  https://m3.material.io/components/expansion-panels.
+  Three M3 variants (elevated / filled / outlined),
+  three density sizes, seven shape steps, single +
+  multi-panel expansion modes, complete leading-
+  icon / title / subhead / chevron / panel slot
+  matrix.
+    * variants:   elevated  = surface-container-low
+                              + elevation-1
+                              (resting),
+                              elevation-2 on hover
+                  filled    = surface-container-
+                              highest, no shadow
+                  outlined  = surface +
+                              1dp outline-variant
+                              border
+    * sizes:      sm = 48dp header / 12dp gutter
+                  md = 56dp / 16dp (default)
+                  lg = 72dp / 24dp
+    * shapes:     none / xs / sm / md / lg / xl /
+                  full mapped to shape-* tokens.
+                  Default is shape-md (12dp).
+    * single vs multi: <Accordion multiple>
+                  controls whether one or many
+                  panels can be expanded at once.
+                  Single-mode collapses the prior
+                  open panel on toggle.
+    * controlled / uncontrolled: defaultExpanded
+                  + expanded + onExpandedChange on
+                  the parent; defaultExpanded +
+                  expanded + onChange on individual
+                  AccordionItem (standalone mode).
+    * disabled:   opacity 0.38 + aria-disabled +
+                  pointer-events:none on the
+                  header button. The button is
+                  also `disabled` so Tab skips it.
+    * slots:      leading-icon (24dp glyph in
+                  on-surface-variant), title
+                  (title-m), subhead (body-m /
+                  on-surface-variant), trailing
+                  (default chevron, override via
+                  `trailingIcon`), panel
+                  (body-m / on-surface-variant).
+    * a11y:       header is a real <button> with
+                  aria-expanded + aria-controls +
+                  aria-disabled. Panel renders as
+                  role=region with aria-labelledby
+                  pointing at the header id.
+                  Enter + Space toggle via the
+                  native button click.
+    * motion:     chevron rotates 180deg using the
+                  emphasized tween (medium4 /
+                  cubic-bezier(0.2, 0, 0, 1)).
+                  Panel height + opacity animate
+                  via AnimatePresence with the
+                  same emphasized tween. Reduced-
+                  motion users get duration: 0.
+- Stories: Default, Variants, Sizes, States,
+  Shapes, Slots, Motion, Accessibility, Multiple,
+  Playground, InteractionSpec.
+- tests/visual/accordion.spec.ts: 23 design-parity
+  assertions (variant color matrix + shape radius
+  matrix + size header height (48 / 56 / 72 px) +
+  outlined 1dp border + elevated elevation-1
+  shadow + button role / aria-expanded / aria-
+  controls + click expands + chevron 180deg
+  rotation + role=region with aria-labelledby +
+  hover (0.08) / focus (0.10) state-layer
+  opacity + disabled aria-disabled + opacity 0.38
+  + slots matrix + title-m type role +
+  body-m / on-surface-variant subhead + body-m
+  panel content + emphasized motion on container
+  transitions + standard motion on opacity +
+  multi-mode keeps two panels open + single-mode
+  collapses prior + Enter toggles via keyboard +
+  dark theme color swap + playground controls).
+- tests/visual/accordion.visual.spec.ts: 10
+  deterministic baselines (variants/sizes/states/
+  shapes/slots × light/dark).
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck                 PASS
+- pnpm lint                      PASS (0 errors, 0 warnings)
+- pnpm test                      PASS (4 token tests)
+- pnpm build                     PASS
+- pnpm build-storybook           PASS
+- playwright accordion.spec      PASS (23 / 23)
+- playwright accordion.visual    PASS (10 / 10)
+- full playwright suite          PASS (746 / 746)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 accordion--*
+features. 363 / 872 passing (was 350 / 872).
+
+Notes for next session
+----------------------
+- Surfaces slice progress: paper + card + accordion
+  complete. Remaining: app-bar (13 left).
+- Largest remaining slices by component (counts
+  from `passes: false` grouping; 509 total):
+  * Utils       : 130
+  * Navigation  : 117
+  * Advanced    : 104
+  * Feedback    :  78
+  * Layout      :  65
+  * Surfaces    :  13 (paper+card+accordion done
+                       -> app-bar next)
+  * Quality     :   2
+- Reusable lessons from this slice:
+  * When a parent container AND its children both
+    carry the same identifying data attributes
+    (data-variant / data-size / data-shape),
+    Playwright locators that target either can
+    accidentally match BOTH. Solution applied:
+    use `data-component="accordion"` on the root
+    and `data-component="accordion-item"` on the
+    items, then put the variant/size/shape attrs
+    only on the items. Card avoided this because
+    Card has no parent group container, but
+    Accordion / Tabs / List / Drawer all need
+    this kind of disambiguation when the parent
+    propagates a contract via context.
+  * For `motion/react` AnimatePresence + height
+    auto + opacity, the M3 emphasized tween
+    (cubic-bezier(0.2,0,0,1) over medium4 / 400ms)
+    is the right preset — `tweens.emphasized` in
+    the motion presets module — because spring
+    overshoot would make the panel overshoot its
+    final height. Reuse that tween for the
+    chevron rotation so they stay phase-locked.
+  * Native <button> already exposes Enter + Space
+    activation, so the AccordionItem header does
+    NOT need to synthesize a click on key down —
+    setting `data-state-layer-opacity` to the
+    pressed token on Space-down is enough to
+    paint the M3 pressed state-layer wash. Card's
+    pattern of synthesizing a click was needed
+    because Card uses a div with role=button.
+  * Test the chevron rotation by reading
+    getComputedStyle().transform on the chevron
+    span — after a 180deg rotation it returns
+    `matrix(-1, 0, 0, -1, 0, 0)` (with FP drift
+    `-?0` in the cross terms). Use a regex with
+    the optional sign to keep the test stable.
