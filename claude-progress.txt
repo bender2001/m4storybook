@@ -1,0 +1,57 @@
+M3 Expressive Storybook - Claude progress
+
+Session 2026-04-29 (initial scaffold):
+  Started from a blank repo. Previous 25 codex iterations had failed because
+  ANTHROPIC_API_KEY was unset, so this was effectively a green-field session.
+
+What landed
+-----------
+- package.json with all required pnpm scripts (dev, build, storybook,
+  build-storybook, test, test:storybook, test:e2e, test:e2e:update,
+  typecheck, lint).
+- Vite + React 18 + TS strict scaffold (tsconfig.json/.app/.node references).
+- Tailwind v3 wired to M3 token CSS variables. tailwind.config.ts holds the
+  authoritative token mirror; src/index.css emits :root + [data-theme=dark].
+- src/tokens/* exports color, typography, shape, elevation, motion tokens
+  plus state-layer opacities. Vitest unit test asserts shape/role coverage.
+- src/motion/presets.ts exports springs (springy/gentle/snappy) and tween
+  presets keyed off M3 easings.
+- src/theme/ - ThemeProvider with data-theme toggle + useTheme hook split
+  across files to keep react-refresh happy.
+- .storybook/main.ts + preview.tsx with theme + reduced-motion globalTypes,
+  storySort starting with Foundations.
+- src/foundations/ MDX pages for Color/Type/Shape/Elevation/Motion with
+  matching demo components.
+- src/components/Button - first M3 Expressive component, uses motion/react
+  whileHover/whileTap with the springy preset. Five variants + three sizes.
+- tests/visual/button.spec.ts - design-parity Playwright spec template.
+- playwright.config.ts boots `pnpm storybook --ci` on port 6006.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck   ✓
+- pnpm lint        ✓ (0 errors, 0 warnings)
+- pnpm test        ✓ (4 token tests)
+- pnpm build       ✓
+- pnpm build-storybook ✓
+- pnpm storybook --ci serves http 200 on / and on /iframe.html?id=inputs-button--default
+
+feature_list.json
+-----------------
+Flipped passes:true for: foundation-001..005, tokens-001..005, theme-001..002.
+12/872 passing.
+
+Notes for next session
+----------------------
+- Vitest 2 ships with vite 5 types; vitest.config.ts deliberately omits the
+  React plugin so tsc doesn't see two Vite versions. Add it back only when
+  vitest 3 lands.
+- Tailwind dynamic class names are NOT scanned. The ElevationLadder uses a
+  literal class map (`shadow-elevation-1` etc.) - keep that pattern.
+- Playwright browsers were not installed this session. Run
+  `pnpm exec playwright install --with-deps` before flipping any
+  *--playwright-* feature to passes:true.
+- Next up: implement Button's remaining feature_list IDs
+  (button--atom-anatomy through button--playwright-spec) so Button is fully
+  shipped end-to-end, then move down the Inputs alphabet (Autocomplete,
+  ButtonGroup, Checkbox, ...).
