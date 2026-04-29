@@ -44,7 +44,7 @@ export const anatomy = {
   ].join(" "),
   /** Floating label (animates between resting and floating positions). */
   label: [
-    "pointer-events-none absolute z-[1] origin-left",
+    "absolute z-[1] origin-left cursor-text",
     "transition-[transform,color,font-size,top] duration-medium2 ease-emphasized",
     "select-none",
   ].join(" "),
@@ -54,8 +54,8 @@ export const anatomy = {
   /** Trailing icon slot. */
   trailingIcon:
     "relative z-[1] inline-flex shrink-0 items-center justify-center text-on-surface-variant",
-  /** Helper text row beneath the field. */
-  helperText: "px-4 text-body-s text-on-surface-variant",
+  /** Helper text row beneath the field. Color is set per-instance. */
+  helperText: "px-4 text-body-s",
 } as const;
 
 interface VariantClasses {
@@ -121,9 +121,8 @@ export const sizeSpec: Record<TextFieldSize, SizeSpec> = {
     paddingX: "px-3",
     inputPadding: "py-2",
     inputType: "text-body-m",
-    label: "top-1/2 -translate-y-1/2 text-body-m text-on-surface-variant",
-    labelFloating:
-      "-top-1.5 text-label-s bg-background px-1 -translate-y-0 text-primary",
+    label: "top-1/2 -translate-y-1/2 text-body-m",
+    labelFloating: "-top-1.5 text-label-s bg-background px-1 -translate-y-0",
     labelLeft: "left-3",
     labelLeftWithIcon: "left-10",
     labelLeftFloating: "left-3",
@@ -136,9 +135,8 @@ export const sizeSpec: Record<TextFieldSize, SizeSpec> = {
     paddingX: "px-4",
     inputPadding: "py-4",
     inputType: "text-body-l",
-    label: "top-1/2 -translate-y-1/2 text-body-l text-on-surface-variant",
-    labelFloating:
-      "-top-2 text-label-m bg-background px-1 -translate-y-0 text-primary",
+    label: "top-1/2 -translate-y-1/2 text-body-l",
+    labelFloating: "-top-2 text-label-m bg-background px-1 -translate-y-0",
     labelLeft: "left-4",
     labelLeftWithIcon: "left-14",
     labelLeftFloating: "left-4",
@@ -151,9 +149,8 @@ export const sizeSpec: Record<TextFieldSize, SizeSpec> = {
     paddingX: "px-5",
     inputPadding: "py-5",
     inputType: "text-title-m",
-    label: "top-1/2 -translate-y-1/2 text-body-l text-on-surface-variant",
-    labelFloating:
-      "-top-2 text-label-m bg-background px-1 -translate-y-0 text-primary",
+    label: "top-1/2 -translate-y-1/2 text-body-l",
+    labelFloating: "-top-2 text-label-m bg-background px-1 -translate-y-0",
     labelLeft: "left-5",
     labelLeftWithIcon: "left-16",
     labelLeftFloating: "left-5",

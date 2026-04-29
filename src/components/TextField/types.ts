@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, ReactNode, Ref } from "react";
+import type { InputHTMLAttributes, ReactNode } from "react";
 
 /**
  * M3 Text Field variants. The two M3 specs are `filled` (default,
@@ -47,6 +47,4 @@ export interface TextFieldProps
   id?: string;
   /** Custom className passed to the root wrapper. */
   className?: string;
-  /** Forwarded ref for the underlying native input. */
-  inputRef?: Ref<HTMLInputElement>;
 }
