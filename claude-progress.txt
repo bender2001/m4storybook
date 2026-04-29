@@ -640,3 +640,113 @@ Notes for next session
     to Radio: outer `<label htmlFor>`, inner `<div data-radio-
     control>` with absolutely-positioned input, and a `<span
     data-state-layer>` painted under the visual element.
+
+Session 2026-04-29 (Rating slice):
+  Goal: complete the 13 rating-* features as one self-contained slice
+  (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/Rating/{types,anatomy,Rating,index}.ts implementing
+  Rating as a MUI fallback re-skinned with M3 tokens (M3 has no
+  native Rating spec). Two variants (default = primary, accent =
+  tertiary), three sizes (sm 32 hit / 18 icon, md 40 / 24, lg 48 / 32),
+  configurable `max` (default 5), `precision` of 1 (full only) or 0.5
+  (half-precision), label + helper-text slots, custom icon +
+  emptyIcon slots, full controlled + uncontrolled support, click-to-
+  toggle-off (matching MUI's behavior), read-only and disabled
+  states, full keyboard a11y (Space toggles focused option, Tab
+  walks the row).
+- All motion routes through motion/react: whileTap scale=0.92 with
+  the springy preset on each symbol's icon-wrap. Reduced-motion
+  collapses transitions to 0. State-layer reads M3 opacities (0.08
+  hover, 0.10 focus/pressed) directly from src/tokens/motion.ts.
+- Half-precision rendering: each symbol slot hosts two radios — a
+  half-value input that covers the left half of the slot, and a
+  full-value input that covers the whole slot. The visual fill is
+  driven by a `clip-path` inset on a stacked filled icon (full =
+  inset(0,0,0,0); half = inset(0,50%,0,0); empty = inset(0,100%,0,0)).
+- Rating.stories.tsx exports Default, Variants, Sizes, States,
+  WithIcons, Playground, and Interaction (play() clicks the 4th
+  star, asserts onChange(4) + checked flip, clicks again to toggle
+  off, then drives Space-key activation on the 2nd star).
+- tests/visual/rating.spec.ts has 19 design-parity assertions:
+  role=radiogroup with max symbols, filled = primary / empty =
+  on-surface-variant, accent variant uses tertiary, size scale
+  hit-targets (32/40/48) + icon glyph (18/24/32), disabled +
+  read-only opacity 0.38 + state-layer suppression, hover paints
+  0.08, focus paints 0.10, click toggles selection on + off, Space
+  activates focused option, aria-label per input follows the
+  getLabelText pattern, native inputs invisible but receive clicks,
+  M3 emphasized motion 300ms / cubic-bezier(0.2,0,0,1), half-fill
+  data-fill="0.5" with clip-path inset(0px,50%,0px,0px), transparent
+  slot background, aria-describedby resolves to helper text, and
+  dark theme swaps the filled role color.
+- tests/visual/rating.visual.spec.ts captures 8 deterministic
+  baselines (variants/sizes/states/with-icons × light/dark) with
+  reduced-motion + animations:'disabled' + maxDiffPixelRatio 0.02.
+  Baselines committed under
+  tests/visual/rating.visual.spec.ts-snapshots/.
+- Bug fix: First implementation drove the input's `checked`
+  attribute from the visual `fill` value (which folds in hover
+  preview). That broke the toggle-off click — the input would still
+  read as `checked` while the cursor was inside the just-clicked
+  slot. Fixed by deriving `fullChecked` / `halfChecked` directly
+  from the canonical `current` value in the parent and passing them
+  into RatingItem as separate props. The `fill` value still drives
+  the icon clip-path (so hover preview can preview a value before
+  the click commits it).
+- Bug fix: Clicking an already-checked native radio doesn't fire a
+  `change` event — so toggle-off-via-click was a dead path under
+  the change handler. Switched both inputs to `onClick` (with a
+  noop `onChange` to keep React's controlled-input contract happy).
+  Native click events still fire when an input activates via Space,
+  so keyboard a11y works the same way.
+- Tailwind cache miss after adding the new component: the dev
+  server had been running before src/components/Rating/anatomy.ts
+  existed, so the new `text-tertiary` literal wasn't in the
+  scanned source and the class generated no CSS. Killing the
+  storybook process and restarting picked up the new file.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright rating.spec        ✓ (19 / 19)
+- playwright rating.visual      ✓ (8 / 8)
+- full playwright suite         ✓ (195 / 195)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 rating-* features. 116 / 872
+passing (was 103 / 872).
+
+Notes for next session
+----------------------
+- Next up: Inputs alphabet continues with Select
+  (select--atom-anatomy through select--playwright-spec). Same
+  13-feature shape as Rating.
+- Re-usable lessons from this slice:
+  * Native `<input type="radio">` does NOT fire a change event
+    when clicking an already-checked radio. If you need a "click
+    again to deselect" flow, listen on `onClick` and pair it with
+    a noop `onChange` so React doesn't warn about an
+    uncontrolled-to-controlled transition.
+  * Separate visual fill from input checked state. When a
+    component derives both visuals and DOM attributes from the
+    same source-of-truth, hover/preview state will leak into
+    aria-checked / native checked, which then breaks toggle-off
+    interactions and keyboard a11y assertions.
+  * Half-precision rating is cheap to render: stack a
+    full-coverage filled icon over the empty icon, drive the
+    visible portion with a `clip-path: inset(0 50% 0 0)`. No
+    extra layout, no half-glyph SVG to maintain.
+  * After adding a new component file, the running storybook
+    process may not re-scan Tailwind content immediately for
+    fresh utility classes. If a literal class like
+    `text-tertiary` looks set on the element but computes the
+    wrong color, kill and restart `pnpm storybook` before
+    chasing the bug elsewhere.
