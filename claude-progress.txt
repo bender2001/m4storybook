@@ -1434,3 +1434,123 @@ Notes for next session
     so the role=status group shows up cleanly in the a11y tree
     (otherwise screen-reader output is just "online" with no
     context).
+
+Session 2026-04-29 (Badge slice):
+  Goal: complete the 13 badge-* features as one self-contained
+  slice (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/Badge/{types,anatomy,Badge,index}.ts implementing
+  a MUI-fallback Badge re-skinned with M3 Expressive tokens. Four
+  color variants (filled / tonal / outlined / elevated), three
+  sizes (sm 8 dot / md 16 pill / lg 24 pill matching M3's
+  small/large badge spec), four anchor origins (top-right /
+  top-left / bottom-right / bottom-left), two overlap modes
+  (rectangular / circular — circular shifts the anchor inward by
+  ~14% so the badge lands cleanly on the diagonal of an avatar),
+  numeric-content max clamp ("99+"), showZero opt-in, invisible
+  (animated scale-0 + opacity-0 collapse), interactive (button)
+  mode with state layer, selected mode (swaps to inverse role),
+  optional leading + trailing icon slots for the large badge,
+  and a standalone (no anchored target) inline pill mode.
+- M3 Expressive motion: motion/react drives an entrance/exit
+  scale spring (springs.springy preset) plus a whileHover scale=
+  1.06, whileTap scale=0.94 for interactive badges. Reduced-
+  motion sets transition.duration=0 and skips the hover/tap
+  animations.
+- Color matrix: filled = error / on-error (M3 default badge
+  color), tonal = secondary-container / on-secondary-container,
+  outlined = transparent + 1dp outline + on-surface text,
+  elevated = surface-container-high + on-surface + elevation-1.
+  Selected variants flip to the inverse pair so a "selected"
+  tonal badge reads as on-secondary-container / secondary-
+  container.
+- Anchored-mode positioning: the wrapper is relative + inline-
+  flex; the badge is absolutely positioned at the named corner
+  with a translate(±50%, ±50%) so half overflows the target.
+  Non-interactive anchored badges get pointer-events-none so
+  clicks pass through to the wrapped target; interactive badges
+  get pointer-events-auto so they receive their own clicks.
+- Badge.stories.tsx exports Default, Variants, Sizes, States,
+  Slots, Counts, Anchored, Standalone, Interactive, Playground,
+  InteractionSpec (play() asserts onClick fires on click + Enter).
+  The Anchored story wraps an Avatar with an online dot to
+  demonstrate the circular-overlap geometry.
+- tests/visual/badge.spec.ts has 20 design-parity assertions:
+  default role=status + variant/size data attrs, filled = error/
+  on-error, tonal = secondary-container/on-secondary-container,
+  outlined transparent + 1dp outline, elevated = surface-
+  container-high + elevation-1 shadow, sm/md/lg = 8/16/24px
+  heights, all sizes use shape-full (pill / circle radius),
+  disabled opacity 0.38, selected swaps to inverse role pair
+  (asserts both bg + color), invisible collapses scale + opacity
+  to 0, interactive role=button + tabindex=0 + state-layer span,
+  hover layer 0.08, focus layer 0.10, click + Enter on the
+  interactive badge both fire onClick, M3 emphasized motion
+  (medium2 300ms / cubic-bezier(0.2,0,0,1)), max-clamp content
+  shows "99+", showZero opts in (data-visible flag flips), leading
+  + trailing icon slots render, standalone has no wrapper, dark
+  theme swaps the filled-role colors.
+- tests/visual/badge.visual.spec.ts captures 10 deterministic
+  baselines (variants/sizes/states/anchored/standalone × light/
+  dark) with reduced-motion + animations:'disabled' +
+  maxDiffPixelRatio 0.02. Baselines committed under
+  tests/visual/badge.visual.spec.ts-snapshots/.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright badge.spec      ✓ (20 / 20)
+- playwright badge.visual    ✓ (10 / 10)
+- full playwright suite      ✓ (418 / 418)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 badge-* features. 220 / 872
+passing (was 207 / 872).
+
+Notes for next session
+----------------------
+- Data Display category has 10 components in the MUI nav: Avatar
+  (done), Badge (done), Chip, Divider, Icons, Material Icons,
+  List, Table, Tooltip, Typography. Next slice should be Chip —
+  same 13-feature shape (chip--atom-anatomy through chip--
+  playwright-spec). Chip is M3 Expressive (assist / filter /
+  input / suggestion variants, leading icon + trailing dismiss,
+  selectable filter chips with shape morph) so it gets the M3
+  Expressive treatment, not MUI fallback.
+- Re-usable lessons from this slice:
+  * motion/react's animate prop sets inline `style.opacity` on
+    the element. That inline style WINS over Tailwind opacity
+    utilities like `opacity-[0.38]`. To apply a "disabled" 38%
+    fade on a motion.span, fold it into the animate prop:
+    `animate={{ opacity: visible ? (disabled ? 0.38 : 1) : 0 }}`.
+    Don't try to combine Tailwind's opacity-[0.38] with motion's
+    animate.opacity — the motion value silently overrides.
+  * For a wrapping/anchored badge, do NOT include
+    `pointer-events-none` in the base "anchored" class — instead
+    apply it conditionally only when the badge is non-
+    interactive. Otherwise the Tailwind utility ordering can
+    keep `pointer-events-none` over `pointer-events-auto` from
+    the interactive class, and Playwright clicks get intercepted
+    by the wrapper. The clean pattern: badgeAnchored = "absolute
+    z-[1]"; pointer-events-none lives in a separate
+    `badgePassThrough` class applied only when (anchored &&
+    !interactive); pointer-events-auto stays inside the
+    interactive class.
+  * Tailwind v3 JIT does NOT regenerate utilities when you add a
+    new class to a source file IF the dev server has been
+    running with that class never seen before AND the class
+    isn't in the cache yet. After adding a new color utility
+    like `text-secondary-container` (where only `text-on-
+    secondary-container` was previously used), kill the running
+    Storybook server and let Playwright's webServer start a
+    fresh one — the JIT will rescan and the rule will appear in
+    the generated CSS. Symptom: bg-X works but text-X (or
+    border-X) silently has no effect even though the class is
+    in className.

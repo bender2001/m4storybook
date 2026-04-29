@@ -249,7 +249,7 @@ test.describe("Badge - M3 design parity", () => {
 
   test("numeric content above max clamps to ${max}+", async ({ page }) => {
     await page.goto(storyUrl("data-display-badge--counts"));
-    const badge = page.getByRole("status", { name: "Badge: 99+" });
+    const badge = page.getByRole("status", { name: "Over ninety-nine" });
     await expect(badge).toBeVisible();
     const label = badge.locator("[data-slot='label']");
     await expect(label).toHaveText("99+");

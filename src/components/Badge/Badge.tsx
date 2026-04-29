@@ -173,7 +173,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
       initial={false}
       animate={{
         scale: visible ? 1 : 0,
-        opacity: visible ? 1 : 0,
+        opacity: visible ? (disabled ? 0.38 : 1) : 0,
       }}
       whileHover={interactive && !disabled && !reduced ? { scale: 1.06 } : undefined}
       whileTap={interactive && !disabled && !reduced ? { scale: 0.94 } : undefined}
@@ -217,6 +217,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
         !standalone && anatomy.badgeAnchored,
         !standalone && anchor.position,
         !standalone && anchor.transform,
+        !standalone && !interactive && anatomy.badgePassThrough,
         interactive && !disabled && anatomy.badgeInteractive,
         disabled && anatomy.badgeDisabled,
         !visible && anatomy.badgeInvisible,

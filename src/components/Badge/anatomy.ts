@@ -28,7 +28,9 @@ export const anatomy = {
     "duration-medium2 ease-emphasized origin-center",
   ].join(" "),
   /** Adds the absolute anchor positioning when wrapping a child target. */
-  badgeAnchored: "absolute z-[1] pointer-events-none",
+  badgeAnchored: "absolute z-[1]",
+  /** Lets clicks pass through the badge to a wrapped (clickable) target. */
+  badgePassThrough: "pointer-events-none",
   /** Re-enable interaction for an interactive badge. */
   badgeInteractive: [
     "outline-none cursor-pointer pointer-events-auto",
