@@ -2074,3 +2074,103 @@ Notes for next session
     reuse the stale server. Fixed by `kill -9 <pid>` of the
     existing storybook dev process and letting Playwright
     cold-boot a fresh one.
+
+
+==========================================
+Iter 23 - Icon slice (atomic glyph wrapper)
+==========================================
+Flipped 13 features. 298 / 872 passing (was 285 / 872).
+
+Files added
+-----------
+- src/components/Icon/{anatomy.ts,types.ts,Icon.tsx,
+  Icon.stories.tsx,index.ts} - bare-glyph M3 Icon
+  wrapper. Distinct from IconButton (which is the
+  interactive button-with-state-layer affordance).
+    * variants:   standard (transparent + on-surface),
+                  primary (transparent + primary glyph),
+                  filled (primary-container + on-prim-cont),
+                  tonal (secondary-container + on-sec-cont),
+                  outlined (transparent + 1dp outline border),
+                  error (transparent + error glyph)
+    * sizes:      sm = 24dp box / 18dp glyph (shape-xs)
+                  md = 24dp box / 24dp glyph (shape-sm)
+                  lg = 48dp box / 40dp glyph (shape-md)
+    * states:     default, selected (on-secondary-container
+                  + aria-pressed when interactive),
+                  disabled (opacity 0.38 + aria-disabled),
+                  error (error glyph color override)
+    * slots:      leadingLabel + trailingLabel render
+                  flanking the glyph as label-l text spans;
+                  presence collapses the box to h-auto/w-auto
+                  so labelled icons grow to fit content
+    * motion:     springy press scale (whileTap 0.94) on the
+                  M3 springy spring preset; collapses to a
+                  no-op transition under reduced motion
+    * a11y:       label set => role="img" + aria-label;
+                  no label => aria-hidden=true; decorative
+                  prop forces aria-hidden even with a label
+                  set; interactive promotes to a tabIndex=0
+                  focusable region with keyboard activation
+                  on Enter + Space and the M3 focus ring
+- Stories: Default, Variants, Sizes, States, Slots,
+  Motion, Accessibility, Playground, InteractionSpec.
+  InteractionSpec asserts role=img + aria-label projection,
+  data-* contract, tabindex=0, and three activation paths
+  (Enter, Space, click) all routing to onActivate.
+- tests/visual/icon.spec.ts: 19 design-parity assertions
+  (default role/data attrs, all 6 variants by computed
+  bg/color/border, 3 sizes by box+glyph dimensions and
+  shape radius, 3 states by color+aria, leading/trailing
+  slots by data-slot, focusable interactive, decorative
+  aria-hidden, M3 standard easing, dark theme color swap,
+  playground args).
+- tests/visual/icon.visual.spec.ts: 10 deterministic
+  baselines (default/variants/sizes/states/slots x
+  light/dark) with reduced-motion + animations:'disabled'
+  + maxDiffPixelRatio 0.02.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck                 PASS
+- pnpm lint                      PASS (0 errors, 0 warnings)
+- pnpm test                      PASS (4 token tests)
+- pnpm build                     PASS
+- pnpm build-storybook           PASS
+- playwright icon.spec            PASS (19 / 19)
+- playwright icon.visual          PASS (10 / 10)
+- full playwright suite           PASS (582 / 582)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 icons--* features.
+298 / 872 passing (was 285 / 872).
+
+Notes for next session
+----------------------
+- Data Display category remaining: Material Symbols + Table.
+  * Material Symbols: variable font (FILL/wght/GRAD/opsz)
+    via the Google Fonts CDN; the wrapper is a span with
+    the symbol name as text content. Mirror Icon.tsx but
+    swap the children-as-SVG slot for a font-ligature
+    span. Keep the same variant/size/state matrix.
+  * Table is the largest remaining Data Display chunk
+    (thead/tbody semantics, sticky-header support,
+    sortable columns, density variants).
+- Reusable lessons from this slice:
+  * The Icon component intentionally does NOT use a
+    state-layer overlay - that's IconButton's job. Don't
+    layer them; pick the right wrapper based on whether
+    the M3 spec calls for hover/focus/pressed translucent
+    layers (=> IconButton) or just a tinted glyph
+    container (=> Icon).
+  * When a state class needs to override a variant's text
+    color (e.g. `selected` -> on-secondary-container while
+    variant is `tonal`), pick EXACTLY ONE text-color class
+    in the resolver. Tailwind's source-order is not a
+    reliable tiebreaker between two utilities backed by
+    var() colors. (Same lesson as the List slice.)
+  * For interactive non-button wrappers, `aria-pressed`
+    should be guarded behind both `interactive=true` AND
+    `selected=true` - announcing pressed on a non-
+    interactive glyph is a screen-reader bug.
