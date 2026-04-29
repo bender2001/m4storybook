@@ -3674,3 +3674,41 @@ Key learnings filed for next iteration:
 
 Next: pick up the next lowest-id feedback feature whose
 deps are now satisfied (Snackbar slice).
+
+[2026-04-29T23:55:50Z] Iteration 3:
+implemented BottomNavigation slice (13 features: anatomy / base / variants /
+sizes / states / slots / motion / a11y / story-default / story-variants /
+story-interaction / playwright-visual / playwright-spec).
+
+  - 4 variants (filled = surface-container / tonal = secondary-container /
+    outlined = surface + 1dp top divider / elevated = surface-container-low
+    + elevation-2)
+  - 3 densities (sm 64dp / md 80dp / lg 96dp) with the active-indicator
+    scaling 56×24 / 64×32 / 72×40 px and label typography stepping
+    label-s → label-m → label-l per the M3 Navigation Bar spec
+    https://m3.material.io/components/navigation-bar/specs
+  - 7 shape tokens (none / xs / sm / md / lg / xl / full) on the host bar
+  - Active indicator pill in `secondary-container` with springy slide via
+    motion/react (`springs.springy`) — collapses under reduced-motion
+  - State-layer painted inside the indicator footprint at the M3
+    opacities (hover 0.08 / focus 0.10 / pressed 0.10)
+  - Selected destinations switch icon to `on-secondary-container` and
+    label to `on-surface` (medium weight); rest paints both in
+    `on-surface-variant`
+  - showLabels = true / false / "selected" exposes the M3 selection-only
+    label mode (label height/opacity transition uses standard-decelerate)
+  - Per-destination badge slot anchored to the icon-wrap top-right
+  - Roving tab-index keyboard nav: ArrowRight/Left wrap, Home/End jump,
+    Enter/Space activate; aria-selected + aria-current="page" on the
+    selected destination, aria-disabled on per-item disabled
+  - Playwright spec covers 21 design-parity assertions (height matrix,
+    indicator dims, color tokens, typography, shapes, motion tokens,
+    keyboard nav, dark theme); visual baselines committed for variants
+    × sizes × states × shapes × slots in light + dark
+  - Full e2e suite: 956/956 passing.
+
+Feature counter: 441 → 454 / 872 passing.
+
+Next: pick up the next lowest-id navigation feature whose deps are
+satisfied — likely `breadcrumbs--atom-anatomy` (or whatever sorts
+first among unfinished navigation entries).
