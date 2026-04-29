@@ -1248,3 +1248,94 @@ Notes for next session
     moved item still has lingering selection state when it lands in
     the other column. Resetting the source side's set after each
     move prevents this.
+
+Session 2026-04-29 (Toggle Button slice):
+  Goal: complete the 13 toggle-button-* features as one self-contained
+  slice (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/ToggleButton/{types,anatomy,ToggleButton,index}.ts
+  implementing a single M3 Expressive Toggle Button (MUI fallback
+  re-skinned with M3 tokens): a button that flips between rest and
+  selected with shape morphing. Five variants (filled / tonal /
+  outlined / text / elevated), three sizes (sm 32 / md 40 / lg 56)
+  matching the standalone Button. Selected swaps to the secondary-
+  container role for tonal/outlined/text/elevated and to full
+  secondary for filled, mirroring Button Group's segmented-active
+  treatment.
+- M3 Expressive shape morph: rest = rounded-shape-full (pill),
+  selected = rounded-shape-md (12dp). border-radius is on the
+  transition list so the morph animates over the medium2 (300ms)
+  emphasized easing token.
+- All motion routes through motion/react: whileHover scale=1.02,
+  whileTap scale=0.95 with the springy preset. Reduced-motion sets
+  transition duration to 0 and skips the hover/tap animations.
+- Controlled (`selected`) + uncontrolled (`defaultSelected`) APIs,
+  `onChange(selected)` callback, optional `value` surfaced via
+  data-value, and ReactNode children for the label so icon-only
+  toggles work (children prop is rendered conditionally).
+- ToggleButton.stories.tsx exports Default, Variants, Sizes, States,
+  WithIcons, Playground, Interaction (play() asserts aria-pressed
+  flips to true on click and back to false on second click, with
+  onChange called twice).
+- tests/visual/toggle-button.spec.ts has 19 design-parity assertions:
+  role=button + aria-pressed=false default, outlined transparent +
+  1dp outline border, filled rest = primary, filled selected =
+  secondary, outlined selected = secondary-container, shape morph
+  rest pill ↔ selected 12dp, sm/md/lg 32/40/56 heights, disabled
+  opacity 0.38 + suppressed state-layer, hover layer at 0.08, focus
+  layer at 0.10, click flips aria-pressed and morphs the shape,
+  Space/Enter keys toggle, M3 emphasized 300ms / cubic-bezier(0.2,0,0,1),
+  text variant transparent + zero border, elevated variant non-
+  transparent bg + multi-layer elevation-1 shadow, icon-only WithIcons
+  toggle, controlled defaultSelected starts at aria-pressed=true with
+  shape-md radius, dark theme swaps role colors.
+- tests/visual/toggle-button.visual.spec.ts captures 8 deterministic
+  baselines (variants/sizes/states/with-icons × light/dark) with
+  reduced-motion + animations:'disabled' + maxDiffPixelRatio 0.02.
+  Baselines committed under
+  tests/visual/toggle-button.visual.spec.ts-snapshots/.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright toggle-button.spec    ✓ (19 / 19)
+- playwright toggle-button.visual  ✓ (8 / 8)
+- full playwright suite            ✓ (360 / 360)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 toggle-button-* features. 194 / 872
+passing (was 181 / 872).
+
+Notes for next session
+----------------------
+- Inputs alphabet is now complete (Autocomplete, Button, Button Group,
+  Checkbox, Floating Action Button, Radio Group, Rating, Select,
+  Slider, Switch, Text Field, Transfer List, Toggle Button — all 13
+  inputs from the MUI nav). Next category in the spec ordering is
+  Data Display, starting with Avatar (avatar--atom-anatomy through
+  avatar--playwright-spec), the same 13-feature shape.
+- Re-usable lessons from this slice:
+  * The component prop interface has to extend HTMLMotionProps<"button">
+    (not ButtonHTMLAttributes), because spreading regular DOM event
+    types onto a motion.button hits a conflict on `onDrag` (motion's
+    PanInfo handler differs from React's DragEventHandler). The
+    Button component already uses HTMLMotionProps — copy that pattern
+    for any motion.* component that re-exports DOM event handlers.
+  * elevation-1's box-shadow has 4 layers in computed style: 2
+    transparent stubs from the transition declaration plus 2 visible
+    drop-shadows from the token. Asserting "shadow has N comma-
+    separated entries" is brittle; instead match for /rgba?\([^)]*0\.\d+\)/
+    to count only the visible (non-transparent) layers.
+  * border-radius needs to be on the transition list when the
+    component morphs shape on a state change (e.g. shape-full ↔
+    shape-md). Without it the radius snaps and the M3 Expressive
+    morph effect is lost. anatomy.root contains
+    "transition-[box-shadow,background-color,border-color,color,border-radius]"
+    so the medium2/emphasized tokens drive the shape change too.
