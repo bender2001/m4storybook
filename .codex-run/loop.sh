@@ -1,18 +1,28 @@
 #!/usr/bin/env bash
-# Continuously runs the autocode autonomous loop against /home/meir/Desktop/m4storybook
-# using Claude Opus 4.7 single agent, and pushes to GitHub after every iteration.
+# Continuously runs the Claude Code CLI (Opus 4.7) as the autonomous coding
+# agent against /home/meir/Desktop/m4storybook, pushing to GitHub after every
+# iteration.
 #
-# Logs to .codex-run/loop.log and writes per-iteration logs to
-# .codex-run/iterations/<iso>.log
+# Each iteration:
+#   1. Loads the coding prompt from the autocodev1 prompts/ folder.
+#   2. Pipes it to `claude -p` with --model claude-opus-4-7 and bypassed
+#      permissions, working in the project directory.
+#   3. Captures the run to .codex-run/iterations/<ts>.log.
+#   4. Stages, commits, and pushes whatever changed.
+#   5. Updates .codex-run/health.json so the watchdog knows the loop is alive.
 set -u
 PROJECT="/home/meir/Desktop/m4storybook"
 HARNESS="/home/meir/Desktop/autocodev1"
+PROMPT_FILE="$HARNESS/prompts/coding_prompt.md"
 LOG_DIR="$PROJECT/.codex-run"
 ITER_DIR="$LOG_DIR/iterations"
 HEALTH="$LOG_DIR/health.json"
 mkdir -p "$ITER_DIR"
 
-cd "$HARNESS" || exit 1
+if [[ ! -f "$PROMPT_FILE" ]]; then
+  echo "[loop] missing prompt $PROMPT_FILE" | tee -a "$LOG_DIR/loop.log"
+  exit 1
+fi
 
 iter=0
 while true; do
@@ -21,15 +31,17 @@ while true; do
   log="$ITER_DIR/${ts}-iter${iter}.log"
   echo "[loop] iteration ${iter} starting at ${ts}" | tee -a "$LOG_DIR/loop.log"
 
-  # Run a single autocode iteration. Capped at 1 iteration so we get back
-  # control between runs and can push.
   start_epoch="$(date +%s)"
-  pnpm dev run \
-    --project-dir "$PROJECT" \
-    --provider claude \
+  cd "$PROJECT" || exit 1
+  # claude CLI: print mode, Opus 4.7, OAuth (no API key needed), bypass
+  # permissions so the agent can edit/run freely.
+  claude -p \
     --model claude-opus-4-7 \
-    --max-iterations 1 \
-    --max-runtime-hours 4 \
+    --dangerously-skip-permissions \
+    --add-dir "$PROJECT" \
+    --output-format text \
+    --no-session-persistence \
+    < "$PROMPT_FILE" \
     >"$log" 2>&1
   exit_code=$?
   end_epoch="$(date +%s)"
@@ -37,7 +49,7 @@ while true; do
 
   echo "[loop] iteration ${iter} exited ${exit_code} after ${duration}s" | tee -a "$LOG_DIR/loop.log"
 
-  # Capture quick health snapshot the watchdog can read.
+  # Health snapshot for the watchdog.
   passes=$(jq '[.[] | select(.passes==true)] | length' "$PROJECT/feature_list.json" 2>/dev/null || echo 0)
   total=$(jq 'length' "$PROJECT/feature_list.json" 2>/dev/null || echo 0)
   cat >"$HEALTH" <<EOF
@@ -52,31 +64,27 @@ while true; do
 }
 EOF
 
-  # Push whatever the agent produced. Use --no-verify avoidance: rely on
-  # the hooks the agent already validated (none currently).
+  # Stage, commit, push whatever the agent produced.
   cd "$PROJECT" || exit 1
   if [[ -n "$(git status --porcelain)" ]]; then
     git add -A
-    git commit -q -m "autocode iteration ${iter}: ${passes}/${total} features passing
+    git commit -q -m "autocode iter ${iter}: ${passes}/${total} features passing
 
 Iteration log: .codex-run/iterations/$(basename "$log")
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>" || true
   fi
-  # Always push (even if agent committed itself).
   git push origin main >>"$LOG_DIR/loop.log" 2>&1 || echo "[loop] push failed (will retry next iteration)" | tee -a "$LOG_DIR/loop.log"
-  cd "$HARNESS" || exit 1
 
-  # Stop if everything passes.
+  # All features green? stop.
   if [[ "$passes" -gt 0 && "$passes" == "$total" ]]; then
     echo "[loop] all ${total} features pass - stopping" | tee -a "$LOG_DIR/loop.log"
     break
   fi
 
-  # If autocode crashed instantly (<10s), back off briefly so we don't
-  # spin against a permanent error before the watchdog catches it.
+  # Fast crash protection.
   if [[ "$duration" -lt 10 && "$exit_code" -ne 0 ]]; then
-    echo "[loop] autocode failed fast, backing off 30s" | tee -a "$LOG_DIR/loop.log"
+    echo "[loop] claude failed fast, backing off 30s" | tee -a "$LOG_DIR/loop.log"
     sleep 30
   fi
 done
