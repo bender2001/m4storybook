@@ -450,3 +450,93 @@ Notes for next session
     `disabled:opacity-[0.38]` with an opaque disabled bg
     (e.g. `bg-surface-variant`) for a token-driven disabled
     treatment that actually renders.
+
+Session 2026-04-29 (Icon Button slice):
+  Goal: complete the 13 icon-button-* features as one self-contained
+  slice (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/IconButton/{types,anatomy,IconButton,index}.ts
+  implementing the M3 Expressive Icon Button. Four variants
+  (filled / tonal / outlined / standard), three sizes
+  (sm 32dp / md 40dp / lg 56dp), with matching icon dims
+  (18 / 24 / 28dp). Optional toggle mode via `selected` prop:
+  exposes `aria-pressed`, paints the matching selected role
+  (filled→primary, tonal→secondary-container, outlined→
+  inverse-surface, standard→primary), and morphs the corner
+  radius from shape-full (circular at rest) to shape-sm/md/lg
+  (squircle when selected) per M3 Expressive shape-morph spec.
+- All motion routes through motion/react: whileHover scale 1.06
+  + whileTap scale 0.92 with the springy preset. Reduced-motion
+  collapses transitions to 0. State-layer reads the M3 opacities
+  (0.08 hover, 0.10 focus/pressed) directly from
+  src/tokens/motion.ts.
+- IconButton.stories.tsx exports Default, Variants, Sizes,
+  States, WithIcons, Playground, Toggle, and Interaction. The
+  Toggle story is a static stateful harness (no play()) so
+  Playwright can drive a click and verify aria-pressed flips +
+  radius morphs. The Interaction story uses the same harness
+  with a play() function for @storybook/test.
+- tests/visual/icon-button.spec.ts has 19 design-parity
+  assertions: default 40dp circular shape-full / transparent
+  bg / on-surface-variant content, filled/tonal rest =
+  surface-container-highest, outlined = transparent + outline
+  border, standard = transparent, size scale heights
+  (32/40/56) + icon dims (18/24/28) + circle radii, selected
+  toggle morphs to shape-md squircle + primary/on-primary,
+  disabled opacity 0.38, hover/focus state-layer 0.08/0.10,
+  disabled state-layer suppressed, click + keyboard activation,
+  M3 emphasized motion 300ms / cubic-bezier(0.2,0,0,1), aria
+  labels wired up, dark theme swaps surface-container-highest.
+- tests/visual/icon-button.visual.spec.ts captures 8
+  deterministic baselines (variants/sizes/states/with-icons
+  × light/dark) with reduced-motion + animations:'disabled' +
+  maxDiffPixelRatio 0.02. Baselines committed.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright icon-button.spec        ✓ (19 / 19)
+- playwright icon-button.visual      ✓ (8 / 8)
+- full playwright suite              ✓ (141 / 141)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 icon-button-* features. 90 / 872
+passing (was 77 / 872).
+
+Notes for next session
+----------------------
+- Next up: Inputs alphabet continues with Radio Group
+  (radio-group--atom-anatomy through radio-group--playwright-spec).
+  Same 13-feature shape as Icon Button.
+- Re-usable lessons from this slice:
+  * For toggleable components, build a static
+    stateful-harness story without play() so Playwright can
+    drive the click directly. The play()-equipped version
+    (Interaction) belongs to @storybook/test, but Playwright
+    iframe runs play() too — it leaves the component in an
+    indeterminate state by the time the Playwright spec
+    interacts. Solution: Toggle story = pure render, no play();
+    Interaction story = same harness + play().
+  * `rounded-shape-full` compiles to `border-radius: 9999px`,
+    not the visually-clamped half-height. Tests should assert
+    `>= height/2` (or just check the literal style) rather
+    than expecting Chrome to report the visual radius.
+  * For toggle morph, transition `border-radius` alongside
+    background/color in the root anatomy; otherwise the radius
+    snaps even when reduced-motion is off. The Tailwind
+    arbitrary `transition-[box-shadow,background-color,...]`
+    list must include `border-radius` for the squircle morph
+    to animate.
+  * `getComputedStyle(document.documentElement).getPropertyValue(
+    '--md-sys-color-*')` returned empty in the Playwright
+    iframe. The CSS vars are defined on `:root` but querying
+    them through Playwright was unreliable. Prefer asserting
+    the resolved color via a real DOM element's `backgroundColor`
+    rather than reading the variable directly.
