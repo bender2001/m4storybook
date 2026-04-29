@@ -249,3 +249,107 @@ Notes for next session
     assert outer corners >= height/2 and inner corners < small
     threshold (8px) — works even when the inner uses shape-xs
     rather than 0.
+
+Session 2026-04-29 (Checkbox slice):
+  Goal: complete the 13 checkbox-* features as one self-contained
+  slice (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/Checkbox/{types,anatomy,Checkbox,index}.ts
+  implementing the M3 Checkbox: an 18dp shape-xs box, a 40dp
+  circular state-layer, an outline rest treatment using the
+  on-surface-variant role, and a primary-filled selected state
+  with an animated check glyph (motion/react with the springy
+  preset; collapses to no transition under reduced motion).
+  Three sizes (sm 32 / md 40 / lg 48 hit area; box 16/18/24dp),
+  two variants (default / error), label + helper-text + leading
+  / trailing icon slots, label-placement start/end, indeterminate
+  state with aria-checked="mixed", and full controlled +
+  uncontrolled support including default-checked + indeterminate
+  defaults.
+- Outer wrapper is `<label htmlFor={inputId}>` so clicking
+  anywhere on the row toggles the input. The inner control is a
+  `<div>` (not `<span>`) hosting the visually-hidden native
+  input, the state-layer, and the visual box.
+- Checkbox.stories.tsx exports Default, Variants, Sizes, States,
+  WithIcons, Playground, and Interaction (play() clicks the
+  checkbox, asserts onChange(true), clicks again for false, then
+  drives Space-key activation to verify keyboard a11y).
+- tests/visual/checkbox.spec.ts has 17 design-parity assertions:
+  default outline = on-surface-variant + 2dp width + shape-xs
+  radius, checked = primary fill + on-primary glyph,
+  indeterminate horizontal bar + aria-checked="mixed", error
+  variant uses the error role, sm/md/lg hit-target heights
+  (32/40/48), sm/md/lg box sizes (16/18/24), disabled suppresses
+  state-layer + disables input, hover paints 0.08, focus paints
+  0.10, click toggles aria-checked, keyboard Space toggles
+  aria-checked, label-placement="start" reverses flex direction,
+  label uses body-l type role, native input is opacity 0 but
+  receives clicks via the control wrapper, M3 emphasized motion
+  300ms / cubic-bezier(0.2,0,0,1), disabled-selected box uses
+  on-surface/0.38 (rgba) instead of primary, and dark theme
+  swaps the checked role color.
+- tests/visual/checkbox.visual.spec.ts captures 8 deterministic
+  baselines (variants/sizes/states/with-icons × light/dark)
+  with reduced-motion + animations:'disabled' + maxDiffPixelRatio
+  0.02. Baselines committed under
+  tests/visual/checkbox.visual.spec.ts-snapshots/.
+- Bug fix: First implementation used `<span>` for the control
+  wrapper. Playwright's hover/click visibility checks failed even
+  though the span had explicit h-10 w-10 dimensions and laid out
+  correctly (`evaluate()`-only assertions still passed). Switching
+  the control element from `<span>` to `<div>` and the outer
+  wrapper from a generic `<div>` to a `<label htmlFor>` resolved
+  the visibility check. Lesson: prefer `<div>` for interactive
+  visual containers that host absolutely-positioned children.
+- Bug fix: A stale storybook dev server was serving previous
+  source. After killing leftover processes (port 6006 was held
+  by two parallel storybook dev servers from earlier loop
+  iterations), the Vite-served iframe finally picked up the
+  new component code. Lesson: when Playwright tests fail with
+  visibility errors after a structural change, kill any leftover
+  storybook processes before assuming a code bug.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright checkbox.spec        ✓ (17 / 17)
+- playwright checkbox.visual      ✓ (8 / 8)
+- full playwright suite           ✓ (90 / 90)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 checkbox-* features. 64 / 872
+passing (was 51 / 872).
+
+Notes for next session
+----------------------
+- Next up: Inputs alphabet continues with Floating Action Button
+  (fab--atom-anatomy through fab--playwright-spec). Same
+  13-feature shape as Checkbox.
+- Re-usable lessons from this slice:
+  * For interactive visual containers that wrap an
+    absolutely-positioned input (the M3 "hidden input + visual
+    box" pattern), use `<div>` not `<span>` for the wrapper.
+    Playwright's visibility check sometimes rejects `<span>`
+    elements with the same dimensions, even when CSS computed
+    values look correct.
+  * Wrap the control in a `<label htmlFor={inputId}>` so the
+    label area is a click target and screen readers get the
+    input/label association for free. Avoid nested `<label>`
+    elements (the inner label-text becomes a `<span>` instead).
+  * A leftover storybook dev server can serve stale code under
+    Playwright's reuseExistingServer. If a test fails right
+    after a structural change, `lsof -i :6006` and kill any
+    lingering processes before debugging the component.
+  * Native `<input type="checkbox">` does not honor the
+    `indeterminate` attribute via JSX — sync it imperatively
+    via `useEffect` whenever the value prop changes.
+  * `aria-checked="mixed"` is the correct ARIA value for the
+    indeterminate state; assert it in tests rather than reading
+    the DOM `indeterminate` property.
