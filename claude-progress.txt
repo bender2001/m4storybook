@@ -38,8 +38,20 @@ Quality gates (all passing locally)
 
 feature_list.json
 -----------------
-Flipped passes:true for: foundation-001..005, tokens-001..005, theme-001..002.
-12/872 passing.
+Flipped passes:true for: foundation-001..005, tokens-001..005, theme-001..002,
+and the Button atom/molecule/story slice (anatomy, base, variants, sizes, states,
+slots, motion, a11y, story-default, story-variants, story-interaction).
+23/872 passing.
+
+Button slice details
+--------------------
+- Split into Button.tsx + types.ts + anatomy.ts (anatomy as a slot→token map).
+- State layer span renders at hover 0.08 / focus 0.10 / pressed 0.10 opacities,
+  exactly matching `stateLayerOpacity` from src/tokens/motion.ts.
+- useReducedMotion() collapses the springy press to a duration-0 transition.
+- @storybook/test play() function in Default story clicks and asserts onClick.
+- Button--playwright-visual + button--playwright-spec are still false because
+  Playwright browsers aren't installed and screenshots aren't committed.
 
 Notes for next session
 ----------------------
