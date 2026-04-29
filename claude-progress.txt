@@ -1162,3 +1162,89 @@ Notes for next session
     target the element they're on, not the root. Putting the prop
     once on the root and assuming descendants inherit will silently
     lose styles.
+
+Session 2026-04-29 (Transfer List slice):
+  Goal: complete the 13 transfer-list-* features as one self-contained
+  slice (atom anatomy through playwright spec). Done.
+
+What landed
+-----------
+- src/components/TransferList/{types,anatomy,TransferList,index}.ts
+  implementing the M3-tokenized Transfer List as an MUI fallback
+  re-skinned with M3 tokens (no native M3 Expressive spec exists).
+  Layout is a 3-column grid (source card | center action rail |
+  target card). Each card paints surface-container-low (filled) or
+  transparent-with-1dp-outline-variant (outlined), rounded-shape-md
+  corners. The card header renders an M3 select-all Checkbox + label
+  + "selected/total" count chip; the body is a scrollable listbox
+  of rows that pair a 24dp M3 Checkbox with the row label + optional
+  description. Rows paint the on-surface state-layer at the M3
+  opacities (hover 0.08, focus 0.10, pressed 0.10).
+- The center rail renders 4 M3 Icon-Button-shaped arrows
+  (40dp circle, on-surface text, shape-full, primary focus ring):
+  ⪼ all-right, → selected-right, ← selected-left, ⪻ all-left.
+  Buttons disable themselves when their column has no movable items.
+- Sizes drive both the card height (sm 192/md 240/lg 288) and the
+  row height (sm h-8 / md h-10 / lg h-12) plus the row label type
+  role (sm body-m / md+lg body-l).
+- Disabled at the root level wraps everything in opacity-[0.38] +
+  pointer-events-none. Per-item disabled flips the row's data-disabled
+  + aria-disabled + opacity-[0.38] without disabling the column.
+- TransferList.stories.tsx exports Default, Variants, Sizes, States,
+  WithDescriptions, Playground, Interaction (play() selects the first
+  two source rows, clicks "Move selected to target", and asserts
+  both rows now live in the target column).
+- tests/visual/transfer-list.spec.ts has 20 design-parity assertions
+  covering: 3-column grid, filled/outlined card colors + radius +
+  border, size scale 192/240/288, 4 arrow buttons at 40dp circle,
+  row aria-selected toggle, right-arrow + left-arrow row movement,
+  double-arrow move-all, disabled move-selected when nothing
+  selected, hover/focus state-layer opacities, root-disabled dim,
+  Space-key row toggle, header select-all checkbox, listbox
+  semantics, count chip text, disabled item aria-disabled, motion
+  uses emphasized 300ms, dark theme swaps role colors.
+- tests/visual/transfer-list.visual.spec.ts captures 8 deterministic
+  baselines (variants/sizes/states/with-descriptions × light/dark)
+  with reduced-motion + animations:'disabled' + maxDiffPixelRatio
+  0.02. Baselines committed under
+  tests/visual/transfer-list.visual.spec.ts-snapshots/.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright transfer-list.spec    ✓ (20 / 20)
+- playwright transfer-list.visual  ✓ (8 / 8)
+- full playwright suite            ✓ (333 / 333)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 transfer-list-* features. 181 / 872
+passing (was 168 / 872).
+
+Notes for next session
+----------------------
+- Next up: Inputs alphabet continues with Toggle Button
+  (toggle-button--atom-anatomy through toggle-button--playwright-spec),
+  the same 13-feature shape.
+- Re-usable lessons from this slice:
+  * Storybook story IDs use the EXPORT NAME, not the `name` field.
+    Setting `name: "With Descriptions"` on an export called `WithIcons`
+    keeps the URL slug as `--with-icons`. If a Playwright spec
+    references the URL, rename the export to match the desired slug.
+  * The shared M3 Checkbox component spreads `{...rest}` onto the
+    inner native <input>, so a custom `data-foo` prop lands on the
+    input. Use `input[data-foo]` not `[data-foo] input` when targeting
+    such checkboxes inside a wrapper.
+  * Playwright's `count()` does NOT auto-wait; use
+    `expect(locator).toHaveCount(N)` instead, which retries until the
+    DOM stabilizes. Critical for tests that run immediately after
+    page.goto() before hydration completes.
+  * For dual-list selection components, keep the `selected` set
+    sharded by side. Sharing one set across both columns means a
+    moved item still has lingering selection state when it lands in
+    the other column. Resetting the source side's set after each
+    move prevents this.

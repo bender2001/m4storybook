@@ -48,7 +48,9 @@ test.describe("Transfer List - visual baselines", () => {
     });
 
     test(`with descriptions - ${theme}`, async ({ page }) => {
-      await page.goto(storyUrl("inputs-transfer-list--with-descriptions", theme));
+      await page.goto(
+        storyUrl("inputs-transfer-list--with-descriptions", theme),
+      );
       await page.waitForLoadState("networkidle");
       const root = page.locator("#storybook-root");
       await expect(root).toHaveScreenshot(
