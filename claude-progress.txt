@@ -1679,3 +1679,78 @@ Notes for next session
     calls stopPropagation. That keeps clicking dismiss from
     triggering the chip's onClick, but the dismiss button stays
     keyboard-reachable (Tab onto it, Enter dismisses).
+
+
+==============================================================
+Iter 19: Divider slice complete
+==============================================================
+246 / 872 features passing (was 233). +13 (all divider-* atoms,
+molecules, stories, and playwright specs flipped).
+
+What shipped
+------------
+- src/components/Divider/{Divider.tsx,types.ts,anatomy.ts,
+  index.ts,Divider.stories.tsx} — full M3 Divider:
+    * variants: full | inset (16dp lead) | middle (16dp both)
+    * sizes:    sm 1dp | md 2dp | lg 4dp
+    * orientation: horizontal | vertical
+    * label slot with leading/trailing icons + label-align
+      (start | center | end)
+    * Decorative role=separator + aria-orientation reflects
+      the orientation prop
+    * Plain (label-less) form renders a single token-driven
+      bg-outline-variant rule; labelled form wraps the rule in
+      two flex spans around an inline label-m label
+    * M3 emphasized opacity fade-in via tweens.standard
+      (medium2 / standard easing); honors prefers-reduced-motion
+- Stories: Default, Variants, Sizes, States, Slots, Vertical,
+  Motion, Accessibility, Playground, InteractionSpec
+  (assert role=separator + data attrs + label slot mounts).
+- tests/visual/divider.spec.ts: 17 design-parity assertions
+  (variant/size/orientation/inset/color-role/label-type/motion
+  /a11y).
+- tests/visual/divider.visual.spec.ts: 10 deterministic
+  baselines (variants/sizes/slots/vertical/states × light/dark)
+  with reduced-motion + animations:'disabled' +
+  maxDiffPixelRatio 0.02. Baselines committed under
+  tests/visual/divider.visual.spec.ts-snapshots/.
+
+Quality gates (all passing locally)
+----------------------------------
+- pnpm typecheck             ✓
+- pnpm lint                  ✓ (0 errors, 0 warnings)
+- pnpm test                  ✓ (4 token tests)
+- pnpm build                 ✓
+- pnpm build-storybook       ✓
+- playwright divider.spec    ✓ (17 / 17)
+- playwright divider.visual  ✓ (10 / 10)
+- full playwright suite      ✓ (475 / 475)
+
+feature_list.json
+-----------------
+Flipped passes:true on the 13 divider-* features. 246 / 872
+passing (was 233 / 872).
+
+Notes for next session
+----------------------
+- Data Display category remaining: Icons, Material Icons, List,
+  Table, Tooltip, Typography. Next slice should be Typography
+  (atomic, no interactions, 13-feature shape) — it is the
+  cheapest follow-up and unblocks all the "type role" assertions
+  used by Tooltip / List / Table.
+- Re-usable lessons from this slice:
+  * Storybook story IDs are kebab-cased from the export name.
+    Numeric exports like `A11y` get sluggified to `a-11-y`,
+    which broke a getByRole assertion. Always use alphabetic
+    export names — rename `A11y` → `Accessibility`.
+  * For typed font-size assertions, read the inner `[data-slot=
+    'label']` span, NOT the role=separator root. The root
+    inherits the body font-size (16px) from the page; only the
+    inner span carries the label-m token (12px / weight 500).
+    This is a generalisable rule for any wrapper-with-inline-
+    label component (will also apply to Tooltip + Stepper).
+  * For label-less aria-label override stories, set the label
+    on the Divider directly. Storybook's accessibility name
+    computation for role=separator only reads aria-label /
+    aria-labelledby — children inside the separator do NOT
+    contribute to the accessible name.
