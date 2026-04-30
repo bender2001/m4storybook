@@ -5077,3 +5077,56 @@ Feature counter: 873 -> 874 / 882 passing.
 
 Next: lowest-id false-feature after this commit (check feature_list.json
 for `passes:false` — expressive-003-bouncy-press is next in the queue).
+
+[2026-04-30T12:46:22Z] Iteration 16: implemented expressive-003-bouncy-press
+(M3 Expressive bouncy press scale) — feature flipped to passes:true.
+Total: 875/882 passing.
+
+Added a new `bouncyPress` motion preset (stiffness 600, damping 25,
+mass 1 → ratio ~0.51) to src/motion/presets.ts and wired it as the
+per-channel `scale` transition on every interactive surface the M3
+Expressive press-feedback spec calls out: Button, IconButton, FAB,
+Chip, ToggleButton. The press scale was previously sharing the
+`springs.springy` (spatial, ratio ~0.62) transition with the rest of
+the animated channels. With the new preset, the release from
+`whileTap={{ scale: 0.92–0.97 }}` overshoots by ~3–4% and settles
+within ~300ms — the snappy, single-bounce tactile feedback that
+distinguishes M3 Expressive from baseline M3.
+
+The other animated channels (borderRadius, y, box-shadow) keep
+their existing transitions (shapeMorphTransition / springs.springy)
+because they target different M3 motion tokens — the per-channel
+transition map keeps the bounce scoped to the press scale.
+
+Switch handle: replaced the lone `springs.snappy` transition with a
+per-channel map that routes width/height through `bouncyPress` while
+keeping `left` (the slide between off/on) on the existing snappy
+spring. The handle's 24dp→28dp grow on press and 28dp→24dp release
+now overshoots, matching the M3 Expressive press feedback for the
+handle's tactile feel.
+
+Reduced-motion guard: every transition ternary still collapses to
+`{ duration: 0 }` when `useReducedMotion()` returns true, matching
+the existing project-wide pattern. No new code paths bypass the
+guard.
+
+Tests:
+- src/motion/presets.test.ts: added one vitest assertion that
+  verifies bouncyPress is a spring with stiffness ∈ [500, 800],
+  damping ∈ [20, 35], damping ratio in (0.4, 1) (must overshoot
+  but not floppy), and stiffness > expressiveSprings.spatial
+  (snappier than the everyday spatial preset).
+- pnpm test --run: 14/14 (4 token + 10 motion preset).
+
+Quality gates: pnpm typecheck (green), pnpm lint (green), pnpm
+build-storybook (10.09s, clean), pnpm test:e2e tests/visual/{button,
+icon-button,fab,chip,toggle-button,switch}.spec.ts (106/106
+design-parity), pnpm test:e2e tests/visual/{button,icon-button,fab,
+chip,toggle-button,switch}.visual.spec.ts (50/50 light/dark visual
+baselines, no re-baseline), full pnpm test:e2e (2054/2054 passing
+in 5.4m).
+
+Feature counter: 874 -> 875 / 882 passing.
+
+Next: lowest-id false-feature after this commit
+(expressive-004-indicator-layout).
