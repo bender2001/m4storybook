@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
 import {
@@ -8,6 +8,7 @@ import {
   springs,
 } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
+import { IconAxisContext } from "@/components/MaterialIcons/iconAxisContext";
 import {
   anatomy,
   disabledClasses,
@@ -114,6 +115,17 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
     const radiusPx = pressed ? pressedRadiusPx : baseRadiusPx;
     const radiusClass = isSelected ? sizes.selectedRadius : "rounded-shape-full";
 
+    // M3 Expressive variable-icon axis hints. The IconButton owns the
+    // only icon slot, so we publish the parent's hover + selected
+    // state to drive a child MaterialIcon's FILL / wght axes.
+    const axisHints = useMemo(
+      () => ({
+        hovered: !disabled && (hovered || pressed),
+        selected: !disabled && isSelected,
+      }),
+      [disabled, hovered, isSelected, pressed],
+    );
+
     return (
       <motion.button
         ref={ref}
@@ -180,13 +192,15 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
           className={cn(anatomy.stateLayer, stateLayerStyles)}
           style={{ opacity: stateLayer }}
         />
-        <span
-          aria-hidden
-          data-icon-button-icon
-          className={cn(anatomy.icon, sizes.icon)}
-        >
-          {icon}
-        </span>
+        <IconAxisContext.Provider value={axisHints}>
+          <span
+            aria-hidden
+            data-icon-button-icon
+            className={cn(anatomy.icon, sizes.icon)}
+          >
+            {icon}
+          </span>
+        </IconAxisContext.Provider>
       </motion.button>
     );
   },

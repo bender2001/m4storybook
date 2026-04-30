@@ -12,6 +12,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
 import { springs } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
+import { IconAxisContext } from "@/components/MaterialIcons/iconAxisContext";
 import {
   anatomy,
   errorClasses,
@@ -372,6 +373,15 @@ function Tab({
   const tabId = `${tablistId}-tab-${item.key}`;
   const panelId = `${tablistId}-panel-${item.key}`;
 
+  // M3 Expressive variable-icon axis hints for the tab's icon slot.
+  const axisHints = useMemo(
+    () => ({
+      hovered: interactive && (hovered || pressed),
+      selected: interactive && isSelected,
+    }),
+    [hovered, interactive, isSelected, pressed],
+  );
+
   return (
     <button
       ref={(node) => registerRef(item.key, node)}
@@ -437,7 +447,9 @@ function Tab({
             data-slot="tab-icon"
             className={cn(anatomy.icon, sizes.iconBox)}
           >
-            {item.icon}
+            <IconAxisContext.Provider value={axisHints}>
+              {item.icon}
+            </IconAxisContext.Provider>
           </span>
         ) : null}
         <span

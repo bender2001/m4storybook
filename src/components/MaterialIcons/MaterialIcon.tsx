@@ -1,11 +1,18 @@
 import {
   forwardRef,
   useCallback,
+  useEffect,
   useMemo,
   type CSSProperties,
   type KeyboardEvent,
 } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import {
+  animate,
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useReducedMotion,
+} from "motion/react";
 import { cn } from "@/lib/cn";
 import { springs } from "@/motion/presets";
 import {
@@ -15,6 +22,13 @@ import {
   stateClasses,
   variantClasses,
 } from "./anatomy";
+import {
+  ICON_AXIS_ACTIVE_WEIGHT,
+  ICON_AXIS_HOVER_FILL,
+  ICON_AXIS_REST_FILL,
+  ICON_AXIS_REST_WEIGHT,
+  useIconAxisHints,
+} from "./iconAxisContext";
 import type { MaterialIconProps, MaterialIconState } from "./types";
 
 export type {
@@ -75,6 +89,7 @@ export const MaterialIcon = forwardRef<HTMLSpanElement, MaterialIconProps>(
     ref,
   ) {
     const reduced = useReducedMotion();
+    const axisHints = useIconAxisHints();
 
     // Resolve effective state. Explicit `state` always wins; otherwise
     // derive from the boolean shortcuts (`selected` / `disabled`).
@@ -101,9 +116,31 @@ export const MaterialIcon = forwardRef<HTMLSpanElement, MaterialIconProps>(
         ? stateClasses.error
         : variantStyles.glyph;
 
+    // M3 Expressive variable-font axis driving: when an interactive
+    // parent (Button, IconButton, BottomNavigation item, Tab, Chip
+    // leading slot) provides `IconAxisContext`, we compute the target
+    // FILL / wght axis values from the parent's hover + selected
+    // hints. Otherwise, fall back to the static prop values so direct
+    // consumers of `<MaterialIcon fill={…} weight={…} />` keep working.
+    const parentDriven = axisHints !== null;
+    const baseFill: number = fill !== undefined ? fill : isSelected ? 1 : 0;
+    const baseWeight: number = weight;
+    const targetFill: number = parentDriven
+      ? axisHints.hovered || axisHints.selected
+        ? ICON_AXIS_HOVER_FILL
+        : ICON_AXIS_REST_FILL
+      : baseFill;
+    const targetWeight: number = parentDriven
+      ? axisHints.selected
+        ? ICON_AXIS_ACTIVE_WEIGHT
+        : ICON_AXIS_REST_WEIGHT
+      : baseWeight;
+
     // Selected glyphs are filled by default per the M3 spec, unless
     // the caller explicitly sets `fill`.
-    const effectiveFill: 0 | 1 = fill !== undefined ? fill : isSelected ? 1 : 0;
+    const effectiveFill: 0 | 1 = (
+      targetFill >= 0.5 ? 1 : 0
+    ) as 0 | 1;
 
     // Aria semantics: `decorative` forces aria-hidden, otherwise the
     // presence of `label` controls whether the icon is announced.
@@ -145,12 +182,42 @@ export const MaterialIcon = forwardRef<HTMLSpanElement, MaterialIconProps>(
       interactive && !reduced && !isDisabled ? { scale: 0.94 } : undefined;
     const transition = reduced ? { duration: 0 } : springs.springy;
 
-    // Compose font-variation-settings for the four axes. Order does
-    // not affect the rendered glyph but stays stable for snapshot
-    // testing.
+    // Variable-font axes can't be reliably tweened via CSS transitions
+    // (Safari + Firefox round mid-tween values to discrete steps), so
+    // we drive FILL + wght through motion/react motion values and
+    // recompose `font-variation-settings` via `useMotionTemplate`.
+    // GRAD + opsz stay static (no Expressive guidance to tween them).
+    const fillMV = useMotionValue<number>(targetFill);
+    const weightMV = useMotionValue<number>(targetWeight);
+
+    useEffect(() => {
+      if (reduced) {
+        fillMV.set(targetFill);
+        return;
+      }
+      const controls = animate(fillMV, targetFill, {
+        duration: 0.18,
+        ease: "easeOut",
+      });
+      return () => controls.stop();
+    }, [fillMV, reduced, targetFill]);
+
+    useEffect(() => {
+      if (reduced) {
+        weightMV.set(targetWeight);
+        return;
+      }
+      const controls = animate(weightMV, targetWeight, {
+        duration: 0.2,
+        ease: "easeOut",
+      });
+      return () => controls.stop();
+    }, [reduced, targetWeight, weightMV]);
+
+    const fontVariationSettings = useMotionTemplate`"FILL" ${fillMV}, "wght" ${weightMV}, "GRAD" ${grade}, "opsz" ${sizes.opsz}`;
+
     const glyphStyle: CSSProperties = {
       fontFamily: fontFamily[iconStyle],
-      fontVariationSettings: `'FILL' ${effectiveFill}, 'wght' ${weight}, 'GRAD' ${grade}, 'opsz' ${sizes.opsz}`,
     };
 
     return (
@@ -163,8 +230,9 @@ export const MaterialIcon = forwardRef<HTMLSpanElement, MaterialIconProps>(
         data-size={size}
         data-state={state}
         data-fill={effectiveFill}
-        data-weight={weight}
+        data-weight={targetWeight}
         data-grade={grade}
+        data-axis-driven={parentDriven || undefined}
         data-interactive={interactive ? "" : undefined}
         tabIndex={interactive && !isDisabled ? 0 : undefined}
         aria-pressed={interactive && isSelected ? true : undefined}
@@ -194,14 +262,14 @@ export const MaterialIcon = forwardRef<HTMLSpanElement, MaterialIconProps>(
             {leadingLabel}
           </span>
         ) : null}
-        <span
+        <motion.span
           data-slot="glyph"
           aria-hidden
           className={cn(anatomy.glyph, sizes.glyph)}
-          style={glyphStyle}
+          style={{ ...glyphStyle, fontVariationSettings }}
         >
           {name}
-        </span>
+        </motion.span>
         {trailingLabel ? (
           <span data-slot="trailing-label" className={anatomy.label}>
             {trailingLabel}

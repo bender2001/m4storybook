@@ -1,6 +1,7 @@
 import {
   forwardRef,
   useCallback,
+  useMemo,
   useState,
   type KeyboardEvent,
   type MouseEvent,
@@ -15,6 +16,7 @@ import {
   springs,
 } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
+import { IconAxisContext } from "@/components/MaterialIcons/iconAxisContext";
 import {
   anatomy,
   elevatedClasses,
@@ -151,6 +153,15 @@ export const Chip = forwardRef<HTMLButtonElement, ChipProps>(function Chip(
   const isToggle = variant === "filter";
   const role = isToggle ? "button" : undefined;
 
+  // M3 Expressive variable-icon axis hints for the chip's leading slot.
+  const leadingAxisHints = useMemo(
+    () => ({
+      hovered: !disabled && (hovered || pressed),
+      selected: !disabled && selected,
+    }),
+    [disabled, hovered, pressed, selected],
+  );
+
   const handleClick = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
       if (disabled) return;
@@ -271,7 +282,9 @@ export const Chip = forwardRef<HTMLButtonElement, ChipProps>(function Chip(
           data-slot="leading"
           className={cn(anatomy.iconLeading, sizes.iconBox)}
         >
-          {resolvedLeading}
+          <IconAxisContext.Provider value={leadingAxisHints}>
+            {resolvedLeading}
+          </IconAxisContext.Provider>
         </span>
       ) : null}
       <span data-slot="label" className={anatomy.label}>

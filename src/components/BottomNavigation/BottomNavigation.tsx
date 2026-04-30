@@ -12,6 +12,7 @@ import { motion, useReducedMotion, type Transition } from "motion/react";
 import { cn } from "@/lib/cn";
 import { springs, tweens } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
+import { IconAxisContext } from "@/components/MaterialIcons/iconAxisContext";
 import {
   anatomy,
   shapeClasses,
@@ -257,6 +258,16 @@ function BottomNavigationDestination({
 
   const glyph = selected && item.selectedIcon ? item.selectedIcon : item.icon;
 
+  // M3 Expressive variable-icon axis hints: drive a child MaterialIcon's
+  // FILL axis on hover/pressed and wght axis on selected.
+  const axisHints = useMemo(
+    () => ({
+      hovered: !itemDisabled && (hovered || pressed),
+      selected: !itemDisabled && selected,
+    }),
+    [hovered, itemDisabled, pressed, selected],
+  );
+
   return (
     <button
       ref={setButtonRef}
@@ -355,7 +366,7 @@ function BottomNavigationDestination({
           animate={{ scale: pressed && !reduced ? 0.92 : 1 }}
           transition={reduced ? { duration: 0 } : springs.snappy}
         >
-          {glyph}
+          <IconAxisContext.Provider value={axisHints}>{glyph}</IconAxisContext.Provider>
         </motion.span>
         {item.badge ? (
           <span data-slot="badge" className={anatomy.badge}>

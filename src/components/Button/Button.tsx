@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
 import {
@@ -8,6 +8,7 @@ import {
   springs,
 } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
+import { IconAxisContext } from "@/components/MaterialIcons/iconAxisContext";
 import { anatomy, variantClasses, stateLayerClasses, sizeClasses } from "./anatomy";
 import type { ButtonProps } from "./types";
 
@@ -53,6 +54,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     // when pressed (full pill → shape-lg). Driven by motion/react so
     // the corner spring-overshoots on release, matching the spec.
     const radius = pressed ? shapePx.lg : shapePx.full;
+
+    // M3 Expressive variable-icon axis hints: hover/pressed → FILL 1,
+    // selected → wght 700. Stable identity so MaterialIcon children
+    // don't re-mount their motion values when unrelated state flips.
+    const axisHints = useMemo(
+      () => ({
+        hovered: !disabled && (hovered || pressed),
+        selected: !disabled && Boolean(selected),
+      }),
+      [disabled, hovered, pressed, selected],
+    );
 
     return (
       <motion.button
@@ -112,17 +124,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           className={cn(anatomy.stateLayer, stateLayerClasses[variant])}
           style={{ opacity: disabled ? 0 : stateLayer }}
         />
-        {startIcon ? (
-          <span aria-hidden className={anatomy.icon}>
-            {startIcon}
-          </span>
-        ) : null}
-        <span className={anatomy.label}>{children}</span>
-        {endIcon ? (
-          <span aria-hidden className={anatomy.icon}>
-            {endIcon}
-          </span>
-        ) : null}
+        <IconAxisContext.Provider value={axisHints}>
+          {startIcon ? (
+            <span aria-hidden className={anatomy.icon}>
+              {startIcon}
+            </span>
+          ) : null}
+          <span className={anatomy.label}>{children}</span>
+          {endIcon ? (
+            <span aria-hidden className={anatomy.icon}>
+              {endIcon}
+            </span>
+          ) : null}
+        </IconAxisContext.Provider>
       </motion.button>
     );
   },

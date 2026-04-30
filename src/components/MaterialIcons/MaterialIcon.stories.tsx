@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
+import { type ReactNode, useState } from "react";
+import { Button } from "@/components/Button";
+import { Chip } from "@/components/Chip";
+import { IconButton } from "@/components/IconButton";
 import { MaterialIcon } from "./MaterialIcon";
+import { IconAxisContext } from "./iconAxisContext";
 
 const meta: Meta<typeof MaterialIcon> = {
   title: "Data Display/Material Symbols",
@@ -309,6 +314,158 @@ export const Playground: Story = {
   },
   render: (args) => <MaterialIcon {...args} />,
 };
+
+/**
+ * M3 Expressive variable-font axis demo. Hover the swatch to drive the
+ * FILL axis 0 → 1; the second row stays "selected" and demonstrates
+ * the wght 400 → 700 jump. The animation is a motion/react number
+ * tween on the FILL / wght axes (CSS cannot reliably tween variable
+ * font axes in Safari + Firefox).
+ */
+export const ExpressiveAxes: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <span className="text-label-l text-on-surface-variant">
+          Hover → FILL 0 → 1
+        </span>
+        <div className="flex items-center gap-6">
+          <HoverSwatch label="favorite" iconName="favorite" />
+          <HoverSwatch label="home" iconName="home" />
+          <HoverSwatch label="search" iconName="search" />
+        </div>
+      </div>
+      <div className="flex flex-col gap-2">
+        <span className="text-label-l text-on-surface-variant">
+          Selected → wght 400 → 700
+        </span>
+        <div className="flex items-center gap-6">
+          <SelectedSwatch label="rest" hovered={false} selected={false} />
+          <SelectedSwatch label="hovered" hovered selected={false} />
+          <SelectedSwatch label="selected" hovered={false} selected />
+          <SelectedSwatch label="hover+selected" hovered selected />
+        </div>
+      </div>
+      <div className="flex flex-col gap-2">
+        <span className="text-label-l text-on-surface-variant">
+          Interactive parents drive a child MaterialIcon's axes
+        </span>
+        <div
+          data-testid="interactive-parents"
+          className="flex flex-wrap items-center gap-4"
+        >
+          <Button
+            data-testid="parent-button"
+            startIcon={
+              <MaterialIcon
+                name="favorite"
+                data-testid="parent-button-icon"
+              />
+            }
+          >
+            Hover me
+          </Button>
+          <IconButton
+            data-testid="parent-icon-button"
+            aria-label="Toggle bookmark"
+            icon={
+              <MaterialIcon
+                name="bookmark"
+                data-testid="parent-icon-button-icon"
+              />
+            }
+          />
+          <Chip
+            data-testid="parent-chip"
+            variant="filter"
+            selected
+            label="Filter"
+            leadingIcon={
+              <MaterialIcon name="check" data-testid="parent-chip-icon" />
+            }
+          />
+        </div>
+      </div>
+    </div>
+  ),
+};
+
+function HoverSwatch({
+  label,
+  iconName,
+}: {
+  label: string;
+  iconName: string;
+}) {
+  return (
+    <ExpressiveSwatchButton label={label} dataTestId={`hover-${label}`}>
+      {(hovered) => (
+        <IconAxisContext.Provider value={{ hovered, selected: false }}>
+          <MaterialIcon
+            name={iconName}
+            variant="primary"
+            size="lg"
+            data-testid={`hover-glyph-${label}`}
+          />
+        </IconAxisContext.Provider>
+      )}
+    </ExpressiveSwatchButton>
+  );
+}
+
+function SelectedSwatch({
+  label,
+  hovered,
+  selected,
+}: {
+  label: string;
+  hovered: boolean;
+  selected: boolean;
+}) {
+  return (
+    <div
+      data-testid={`selected-${label}`}
+      className="flex flex-col items-center gap-2"
+    >
+      <IconAxisContext.Provider value={{ hovered, selected }}>
+        <MaterialIcon
+          name="bolt"
+          variant="primary"
+          size="lg"
+          data-testid={`selected-glyph-${label}`}
+        />
+      </IconAxisContext.Provider>
+      <span className="text-label-s text-on-surface-variant">{label}</span>
+    </div>
+  );
+}
+
+function ExpressiveSwatchButton({
+  label,
+  dataTestId,
+  children,
+}: {
+  label: string;
+  dataTestId: string;
+  children: (hovered: boolean) => ReactNode;
+}) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      type="button"
+      data-testid={dataTestId}
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
+      className="flex flex-col items-center gap-2 rounded-shape-md p-4 outline-none ring-primary/40 hover:bg-surface-container-high focus-visible:ring-2"
+    >
+      {children(hovered)}
+      <span className="text-label-s text-on-surface-variant">{label}</span>
+    </button>
+  );
+}
 
 /**
  * Storybook interaction test. Drives an interactive Material Symbol:
