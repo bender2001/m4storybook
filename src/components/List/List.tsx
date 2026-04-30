@@ -7,7 +7,9 @@ import {
   type KeyboardEvent,
   type MouseEvent,
 } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
+import { staggerVariants } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
 import {
   anatomy,
@@ -29,11 +31,13 @@ export type {
 interface ListContextValue {
   variant: ListVariant;
   size: ListSize;
+  staggered: boolean;
 }
 
 const ListContext = createContext<ListContextValue>({
   variant: "standard",
   size: "md",
+  staggered: false,
 });
 
 /**
@@ -54,7 +58,9 @@ export const List = forwardRef<HTMLUListElement, ListProps>(function List(
   },
   ref,
 ) {
-  const ctx: ListContextValue = { variant, size };
+  const reduced = useReducedMotion();
+  const { parent } = staggerVariants(reduced);
+  const ctx: ListContextValue = { variant, size, staggered: true };
   const variantClass = variantClasses[variant].container;
   const sharedProps = {
     role: "list" as const,
@@ -62,22 +68,25 @@ export const List = forwardRef<HTMLUListElement, ListProps>(function List(
     "data-variant": variant,
     "data-size": size,
     className: cn(anatomy.root, variantClass, className),
+    variants: parent,
+    initial: "closed" as const,
+    animate: "open" as const,
     ...rest,
   };
 
   return (
     <ListContext.Provider value={ctx}>
       {ordered ? (
-        <ol
+        <motion.ol
           ref={ref as unknown as React.Ref<HTMLOListElement>}
           {...sharedProps}
         >
           {children}
-        </ol>
+        </motion.ol>
       ) : (
-        <ul ref={ref} {...sharedProps}>
+        <motion.ul ref={ref} {...sharedProps}>
           {children}
-        </ul>
+        </motion.ul>
       )}
     </ListContext.Provider>
   );
@@ -123,6 +132,8 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
     const ctx = useContext(ListContext);
     const variant = variantProp ?? ctx.variant;
     const size = sizeProp ?? ctx.size;
+    const reduced = useReducedMotion();
+    const { child: childVariants } = staggerVariants(reduced);
 
     const interactive = interactiveProp ?? Boolean(onClick);
     const sizes = sizeClasses[size];
@@ -240,7 +251,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
 
     if (interactive) {
       return (
-        <li
+        <motion.li
           ref={ref}
           role="listitem"
           data-component="list-item"
@@ -250,6 +261,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
           data-disabled={disabled || undefined}
           data-error={error || undefined}
           className="contents"
+          variants={ctx.staggered ? childVariants : undefined}
         >
           <button
             type="button"
@@ -291,7 +303,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
           >
             {inner}
           </button>
-        </li>
+        </motion.li>
       );
     }
 
@@ -299,7 +311,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
     // button-only handlers / aria.
     const liRest = rest as React.LiHTMLAttributes<HTMLLIElement>;
     return (
-      <li
+      <motion.li
         ref={ref}
         role="listitem"
         data-component="list-item"
@@ -310,10 +322,11 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
         data-error={error || undefined}
         aria-disabled={disabled || undefined}
         className={rowClass}
+        variants={ctx.staggered ? childVariants : undefined}
         {...liRest}
       >
         {inner}
-      </li>
+      </motion.li>
     );
   },
 );

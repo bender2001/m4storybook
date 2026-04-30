@@ -1,4 +1,4 @@
-import type { Transition } from "motion/react";
+import type { Transition, Variants } from "motion/react";
 import { easing, duration } from "@/tokens/motion";
 import { shapeScale, type ShapeRole } from "@/tokens/shape";
 
@@ -158,3 +158,86 @@ export const bouncyPress = {
   damping: 25,
   mass: 1,
 } as const satisfies Transition;
+
+/**
+ * M3 Expressive stagger entrance. The Expressive motion guidance for
+ * lists / menus / radial action groups / queued snackbars calls for
+ * children to fade-and-rise in sequence on the `emphasized-decelerate`
+ * easing token, with a 30ms inter-child delay (small enough to read as
+ * one synchronized gesture, large enough to perceive the cascade).
+ *
+ * The variants are authored in the parent/child split required by
+ * motion/react's `staggerChildren`: the parent owns the schedule, the
+ * child owns the animated properties. Consumers wire them as
+ *
+ *   <motion.ul variants={parent} initial="closed" animate="open" exit="closed">
+ *     {items.map(it => <motion.li variants={child} ... />)}
+ *   </motion.ul>
+ *
+ * Reduced-motion: pass `reduced=true` to {@link staggerVariants} and
+ * the `staggerChildren` collapses to 0 plus the child y-offset
+ * collapses to 0, so the cascade plays back instantly while leaving
+ * the AnimatePresence enter/exit hooks intact.
+ */
+export const STAGGER_DELAY_S = 0.03;
+export const STAGGER_DELAY_INITIAL_S = 0.02;
+export const STAGGER_CHILD_OFFSET_PX = 6;
+
+const childTween: Transition = {
+  duration: ms(duration.medium2),
+  ease: cubic(easing["emphasized-decelerate"]),
+};
+
+export const staggerParent: Variants = {
+  closed: {
+    transition: {
+      staggerChildren: STAGGER_DELAY_S,
+      staggerDirection: -1,
+    },
+  },
+  open: {
+    transition: {
+      staggerChildren: STAGGER_DELAY_S,
+      delayChildren: STAGGER_DELAY_INITIAL_S,
+    },
+  },
+};
+
+export const staggerChild: Variants = {
+  closed: {
+    opacity: 0,
+    y: STAGGER_CHILD_OFFSET_PX,
+    transition: {
+      duration: ms(duration.short4),
+      ease: cubic(easing["emphasized-accelerate"]),
+    },
+  },
+  open: {
+    opacity: 1,
+    y: 0,
+    transition: childTween,
+  },
+};
+
+const instantParent: Variants = {
+  closed: { transition: { staggerChildren: 0 } },
+  open: { transition: { staggerChildren: 0 } },
+};
+
+const instantChild: Variants = {
+  closed: { opacity: 0, y: 0, transition: { duration: 0 } },
+  open: { opacity: 1, y: 0, transition: { duration: 0 } },
+};
+
+/**
+ * Returns the stagger parent + child variant pair, collapsing to
+ * instant when the reduced-motion preference is on. Components that
+ * already gate on `useReducedMotion()` should hand the boolean
+ * straight to this helper rather than reimplementing the collapse.
+ */
+export function staggerVariants(
+  reduced: boolean | null | undefined,
+): { parent: Variants; child: Variants } {
+  if (reduced) return { parent: instantParent, child: instantChild };
+  return { parent: staggerParent, child: staggerChild };
+}

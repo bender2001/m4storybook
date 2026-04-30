@@ -10,7 +10,7 @@ import {
 } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { springs } from "@/motion/presets";
+import { springs, staggerVariants } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
 import {
   anatomy,
@@ -204,7 +204,14 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
               <span data-slot="label">{label}</span>
             </div>
           ) : null}
-          <ul role="none" data-slot="list" className={anatomy.list}>
+          <motion.ul
+            role="none"
+            data-slot="list"
+            className={anatomy.list}
+            variants={staggerVariants(reduced).parent}
+            initial="closed"
+            animate="open"
+          >
             {items.map((item) => {
               const isSelected =
                 Boolean(item.selected) || selectedId === item.id;
@@ -217,6 +224,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
                     iconColor={colors.iconColor}
                     isSelected={isSelected}
                     isFocused={isFocused}
+                    reduced={Boolean(reduced)}
                     onActivate={activate}
                     onFocusItem={setFocusedId}
                   />
@@ -230,7 +238,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
                 </Fragment>
               );
             })}
-          </ul>
+          </motion.ul>
         </motion.div>
       ) : null}
     </AnimatePresence>
@@ -243,6 +251,7 @@ interface MenuRowProps {
   iconColor: string;
   isSelected: boolean;
   isFocused: boolean;
+  reduced: boolean;
   onActivate: (item: MenuItem) => void;
   onFocusItem: (id: string) => void;
 }
@@ -253,6 +262,7 @@ function MenuRow({
   iconColor,
   isSelected,
   isFocused,
+  reduced,
   onActivate,
   onFocusItem,
 }: MenuRowProps) {
@@ -298,7 +308,11 @@ function MenuRow({
       : anatomy.itemDefaultText;
 
   return (
-    <li role="none" className="contents">
+    <motion.li
+      role="none"
+      className="contents"
+      variants={staggerVariants(reduced).child}
+    >
       <button
         ref={buttonRef}
         type="button"
@@ -397,6 +411,6 @@ function MenuRow({
           </span>
         ) : null}
       </button>
-    </li>
+    </motion.li>
   );
 }

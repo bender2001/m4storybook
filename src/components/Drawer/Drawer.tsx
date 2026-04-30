@@ -17,7 +17,7 @@ import {
 } from "motion/react";
 import { Backdrop } from "@/components/Backdrop";
 import { cn } from "@/lib/cn";
-import { springs, tweens } from "@/motion/presets";
+import { springs, staggerVariants, tweens } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
 import {
   anatomy,
@@ -199,6 +199,8 @@ export const Drawer = forwardRef<HTMLElement, DrawerProps>(function Drawer(
   const slideTransition: Transition = reduced
     ? { duration: 0 }
     : tweens.emphasized;
+  const { parent: staggerParentVariants, child: staggerChildVariants } =
+    staggerVariants(reduced);
 
   const widthVar = `${sizes.width}px`;
   const slideOffset = anchor === "start" ? -sizes.width : sizes.width;
@@ -276,16 +278,24 @@ export const Drawer = forwardRef<HTMLElement, DrawerProps>(function Drawer(
                   {section.headline}
                 </div>
               ) : null}
-              <ul role="list" data-slot="list" className={anatomy.list}>
+              <motion.ul
+                role="list"
+                data-slot="list"
+                className={anatomy.list}
+                variants={staggerParentVariants}
+                initial="closed"
+                animate="open"
+              >
                 {section.items.map((item) => {
                   const selected =
                     item.id === activeId && !disabled && !item.disabled;
                   return (
-                    <li
+                    <motion.li
                       key={item.id}
                       data-slot="list-item"
                       role="none"
                       className="relative"
+                      variants={staggerChildVariants}
                     >
                       <DrawerDestination
                         item={item}
@@ -300,10 +310,10 @@ export const Drawer = forwardRef<HTMLElement, DrawerProps>(function Drawer(
                         onKeyDown={handleItemKeyDown(item)}
                         setButtonRef={setButtonRef(item.id)}
                       />
-                    </li>
+                    </motion.li>
                   );
                 })}
-              </ul>
+              </motion.ul>
             </div>
           </Fragment>
         );

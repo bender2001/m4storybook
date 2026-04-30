@@ -11,7 +11,12 @@ import {
 } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { springs, tweens } from "@/motion/presets";
+import {
+  springs,
+  STAGGER_DELAY_INITIAL_S,
+  STAGGER_DELAY_S,
+  tweens,
+} from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
 import {
   anatomy,
@@ -314,12 +319,18 @@ export const SpeedDial = forwardRef<HTMLDivElement, SpeedDialProps>(
                 open: {
                   transition: reduced
                     ? { staggerChildren: 0 }
-                    : { staggerChildren: 0.04, delayChildren: 0.02 },
+                    : {
+                        staggerChildren: STAGGER_DELAY_S,
+                        delayChildren: STAGGER_DELAY_INITIAL_S,
+                      },
                 },
                 closed: {
                   transition: reduced
                     ? { staggerChildren: 0 }
-                    : { staggerChildren: 0.03, staggerDirection: -1 },
+                    : {
+                        staggerChildren: STAGGER_DELAY_S,
+                        staggerDirection: -1,
+                      },
                 },
               }}
             >
