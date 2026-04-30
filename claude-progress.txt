@@ -3868,3 +3868,54 @@ Feature counter: 480 -> 493 / 872 passing.
 
 Next: pick up the next lowest-id navigation feature whose deps
 are satisfied (drawer or charts depending on lex order).
+
+[2026-04-30T00:54:38Z] Iteration 7: implemented charts--* slice (13 features)
+— Charts component, advanced/lab category. MUI X-Charts has no
+M3 Expressive analogue, so this surface re-skins the API on the
+M3 token layer.
+
+  - 4 plot types: bar / line / area / pie
+      * bar     = grouped bars per series, scaleY draw-in spring
+      * line    = polylines + endpoint dots, pathLength draw-in
+      * area    = filled region (0.18 alpha) + stroke + draw-in
+      * pie     = SVG donut arcs animating in opacity + scale
+  - 5 host variants for the card chrome:
+      text     = transparent
+      filled   = surface-container-highest (default)
+      tonal    = secondary-container
+      outlined = transparent + 1dp outline-variant
+      elevated = surface-container-low + elevation-1
+  - 3 densities (sm/md/lg) — plot height 160 / 220 / 300px and
+    title typography stepping title-s / title-m / title-l.
+  - Full M3 7-token shape scale (default `lg`, the M3 surface
+    card radius).
+  - Series color matrix: primary / secondary / tertiary / error
+    on the M3 color roles. Error state forces every series onto
+    the error role and exposes aria-invalid="true".
+  - State coverage: resting / loading (skeleton overlay +
+    aria-busy) / empty (placeholder copy) / disabled (0.38 wash)
+    / error.
+  - Slots: title, leading + trailing icon, legend (chip row with
+    role="list" + per-series colored dot), axis labels, gridlines.
+    `legend`, `showGrid`, `showAxis` props gate visibility.
+  - Motion: container transitions ride medium2 (300ms) on
+    emphasized; series animate via motion/react with the
+    `tweens.emphasized` preset. Reduced motion collapses to
+    instant render.
+  - ARIA: role="figure" + aria-label (auto-derived from title or
+    plot kind), aria-busy when loading, aria-invalid when error.
+  - Playwright spec: 23 design-parity assertions covering role,
+    title, variant matrix, outline border, elevation shadow,
+    plot-height density, typography scale, plot kind body slots,
+    series role colors, loading/empty/disabled/error states,
+    shape scale, axis stroke, legend role + dot bg, legend/grid
+    toggles, header icons, motion easing/duration, ARIA wiring,
+    dark theme color swap, playground.
+  - Visual baselines (light + dark) for variants / sizes / types
+    / states / shapes / slots = 12 snapshots.
+  - Full e2e suite: 1084/1084 passing.
+
+Feature counter: 493 -> 506 / 872 passing.
+
+Next: pick up the next lowest-id remaining feature whose deps
+are satisfied (click-away-listener or container).
