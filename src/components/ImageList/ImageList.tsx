@@ -323,12 +323,14 @@ export const ImageListItem = forwardRef<HTMLElement, ImageListItemProps>(
       [disabled, interactive, onKeyDown],
     );
 
-    // Grid placement. The CSS rules for woven (in src/index.css) override
-    // the column span via :nth-child; masonry overrides display+margin.
-    const placement: CSSProperties = {
-      gridColumn: spanToCss(cols),
-      gridRow: spanToCss(rows),
-    };
+    // Grid placement. Only apply inline `grid-column` / `grid-row` when
+    // the consumer explicitly opted into a non-default span — leaving
+    // the defaults unset lets the woven `:nth-child` rule (src/index.css)
+    // and the masonry override take effect, since inline styles would
+    // otherwise outrank the stylesheet.
+    const placement: CSSProperties = {};
+    if (cols !== 1) placement.gridColumn = spanToCss(cols);
+    if (rows !== 1) placement.gridRow = spanToCss(rows);
 
     const MotionTag = useMemo(
       () =>

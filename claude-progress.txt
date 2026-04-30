@@ -4578,3 +4578,48 @@ Highlights:
 Feature counter: 688 -> 701 / 872 passing.
 
 Next: lowest-id false-feature is the Image List slice.
+
+[2026-04-30T07:07Z] Iteration 8: implemented image-list slice (atom-anatomy → atom-base → atom-variants → atom-sizes → atom-states → molecule-slots → molecule-motion → molecule-a11y → story-default → story-variants → story-interaction → playwright-visual → playwright-spec) — playwright spec passing.
+
+Highlights:
+- ImageList re-skins MUI's 2D image gallery primitive (no M3 spec for Image List) with the M3
+  surface / shape / elevation / motion scales: 5 host variants (text/filled/tonal/outlined/elevated)
+  × 3 densities (sm/md/lg → 8/16/24 dp pad, 120/160/200 dp tile, 4/3/2 default cols) × 7 shape
+  tokens × 4 MUI arrangements (standard / quilted / woven / masonry).
+- Standard / quilted / woven all share a CSS-grid template; quilted enables `grid-auto-flow:
+  row dense` for variable-span tile packing; woven stamps an alternating `:nth-child(odd)→span 2`
+  / `(even)→span 1` rule from src/index.css (the inline-style placement skip in ImageListItem
+  is what lets the stylesheet rule actually win — only non-default `cols`/`rows` write inline
+  `gridColumn`/`gridRow`); masonry switches to CSS multi-columns (`columnCount` + `columnGap`)
+  with `break-inside: avoid` per tile, and tile images flip from `object-cover h-full` to natural
+  `h-auto / object-contain` flow so each column track sizes itself to the image.
+- ImageListItem morphs the corner shape one notch up while hovered/focused/pressed (M3 Expressive
+  shape morph), paints the M3 state-layer at 0.08 / 0.10 / 0.10 opacities, exposes role=button +
+  tabIndex=0 + Enter/Space activation when interactive, and applies a subtle `whileHover y=-1` /
+  `whileTap scale=0.98` lift via motion/react springs.springy.
+- ImageListItemBar overlay: title + subtitle + actionIcon slot, position=top|bottom|below,
+  actionPosition=left|right, surface-container-highest/80 + backdrop-blur for legibility over
+  imagery; below position renders in flow rather than over the image.
+- Polymorphic `as` (defaults to <ul>); aria-roledescription per arrangement (`image gallery`,
+  `quilted image gallery`, etc.); aria-disabled / aria-selected / aria-invalid on the host;
+  aria-selected / aria-disabled on interactive tiles.
+
+Tests:
+- tests/visual/image-list.spec.ts: 28 design-parity assertions (variant matrix, outline border,
+  elevation-1 shadow, size pad scale + default tile rowHeight, shape token scale, arrangement
+  → grid vs multi-columns + grid-auto-flow + woven nth-child spans + tile span placement,
+  disabled opacity + pointer-events, error container + aria-invalid, selected secondary-container,
+  interactive role/tabindex/state-layer at hover 0.08, shape morph md→lg, focus-visible primary
+  ring, leading/trailing icon slots, ImageListItemBar title/subtitle/action + position/actionPosition,
+  polymorphic <section>, M3 emphasized + medium2 transition, dark theme surface swap, role=listitem
+  default, Playground controls).
+- tests/visual/image-list.visual.spec.ts: 10 baselines (variants / arrangements / sizes / states /
+  slots × light + dark) committed.
+
+Quality: typecheck + lint + vitest (4 tests) + storybook-build all green; full Playwright suite
+1642/1643 green (one pre-existing data-grid Enter-on-row flake unrelated to this slice — re-runs
+green).
+
+Feature counter: 701 -> 714 / 872 passing.
+
+Next: lowest-id false-feature is the Modal slice.
