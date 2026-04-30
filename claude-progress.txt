@@ -4301,3 +4301,21 @@ are satisfied (likely `data-grid--*`).
 - Item densities map to M3 list-item heights: sm 40dp, md 48dp, lg 56dp.
 - 21 design-parity assertions + 10 visual baselines (light + dark) committed.
 Next: lowest-id false-feature is now `pagination--*`.
+
+[2026-04-30T05:35Z] Iter 17: Pagination slice complete.
+- 5 host variants × 3 sizes × 7 shapes; selected page morphs shape-full -> shape-md
+  (M3 squircle) and rides secondary-container per the Expressive nav-rail
+  selection pattern.
+- Per-item state-layer at hover 0.08 / focus 0.10 / pressed 0.10 opacities.
+- Springy press-scale (springs.springy) with reduced-motion collapse.
+- Roving-tabindex keyboard nav (ArrowLeft/Right/Home/End/Enter/Space) plus
+  WAI-ARIA <nav role=navigation aria-label> + aria-current=page on the
+  selected item.
+- Custom slots: previousIcon / nextIcon / firstIcon / lastIcon / ellipsisIcon
+  + render-prop hook + getItemAriaLabel.
+- 22 design-parity assertions + 10 visual baselines (light + dark) committed.
+- Regression clean: menu (22) + container (21) still passing.
+
+Feature counter: 584 -> 597 / 872 passing.
+
+Next: lowest-id false-feature is now `speed-dial--*`.
