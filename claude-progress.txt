@@ -4295,3 +4295,9 @@ Feature counter: 558 -> 571 / 872 passing.
 
 Next: pick up the next lowest-id remaining feature whose deps
 are satisfied (likely `data-grid--*`).
+
+[2026-04-30T05:18Z] Iter 16: Menu slice complete: 5 variants × 3 sizes × 7 shapes + per-item M3 state-layer (hover 0.08 / focus 0.10 / pressed 0.10) + roving-tabindex keyboard nav (Arrow/Home/End/Enter/Escape) + open/close springs + Playwright = 584/872.
+- Surface defaults to elevated / surface-container / elevation-2 / shape-xs per https://m3.material.io/components/menus/specs.
+- Item densities map to M3 list-item heights: sm 40dp, md 48dp, lg 56dp.
+- 21 design-parity assertions + 10 visual baselines (light + dark) committed.
+Next: lowest-id false-feature is now `pagination--*`.
