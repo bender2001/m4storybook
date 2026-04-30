@@ -7,8 +7,9 @@ import {
 } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { springs } from "@/motion/presets";
+import { shapeMorphTransition, shapePx, springs } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
+import type { ShapeRole } from "@/tokens/shape";
 import {
   anatomy,
   elevationClasses,
@@ -17,7 +18,7 @@ import {
   sizeClasses,
   variantClasses,
 } from "./anatomy";
-import type { CardProps } from "./types";
+import type { CardProps, CardShape } from "./types";
 
 export type {
   CardElevation,
@@ -77,6 +78,22 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
 
   const morph = interactive && !disabled && (hovered || focused || pressed);
   const radiusClass = morph ? morphTarget[shape] : shapeClasses[shape];
+  // M3 Expressive shape morph driven by motion/react so the corner
+  // springs (with the spatial preset's overshoot) instead of tweening
+  // linearly. The Tailwind class above stays as a fallback for
+  // pre-hydration paint.
+  const morphTargetPxMap: Record<CardShape, ShapeRole> = {
+    none: "none",
+    xs: "sm",
+    sm: "md",
+    md: "lg",
+    lg: "xl",
+    xl: "xl",
+    full: "full",
+  };
+  const radiusPx = morph
+    ? shapePx[morphTargetPxMap[shape]]
+    : shapePx[shape as ShapeRole];
 
   const stateLayer =
     !interactive || disabled
@@ -149,13 +166,19 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
       data-error={error || undefined}
       data-state-layer-opacity={interactive ? stateLayer : undefined}
       tabIndex={tabIndex}
+      initial={false}
+      animate={{ borderRadius: radiusPx }}
       whileHover={
         interactive && !disabled && !reduced ? { y: -1 } : undefined
       }
       whileTap={
         interactive && !disabled && !reduced ? { y: 0, scale: 0.99 } : undefined
       }
-      transition={reduced ? { duration: 0 } : springs.gentle}
+      transition={
+        reduced
+          ? { duration: 0 }
+          : { default: springs.gentle, borderRadius: shapeMorphTransition }
+      }
       onPointerEnter={(e) => {
         setHovered(true);
         onPointerEnter?.(e);

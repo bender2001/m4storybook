@@ -7,7 +7,7 @@ import {
 } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { springs } from "@/motion/presets";
+import { shapeMorphTransition, shapePx, springs } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
 import {
   anatomy,
@@ -100,6 +100,13 @@ export const ToggleButton = forwardRef<HTMLButtonElement, ToggleButtonProps>(
 
     const styles = variantClasses[variant];
 
+    // M3 Expressive shape morph: rest = full pill, selected = shape-md
+    // (12dp), pressed nudges one step squarer in either state. Driven
+    // through motion/react so the spatial spring overshoots on release.
+    const baseRadius = isSelected ? shapePx.md : shapePx.full;
+    const pressedRadius = isSelected ? shapePx.sm : shapePx.lg;
+    const radius = pressed ? pressedRadius : baseRadius;
+
     return (
       <motion.button
         ref={ref}
@@ -113,9 +120,15 @@ export const ToggleButton = forwardRef<HTMLButtonElement, ToggleButtonProps>(
         data-variant={variant}
         data-size={size}
         data-value={value}
+        initial={false}
+        animate={{ borderRadius: radius }}
         whileHover={disabled || reduced ? undefined : { scale: 1.02 }}
         whileTap={disabled || reduced ? undefined : { scale: 0.95 }}
-        transition={reduced ? { duration: 0 } : springs.springy}
+        transition={
+          reduced
+            ? { duration: 0 }
+            : { default: springs.springy, borderRadius: shapeMorphTransition }
+        }
         onPointerEnter={(e) => {
           setHovered(true);
           onPointerEnter?.(e);

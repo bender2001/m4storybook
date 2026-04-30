@@ -1,5 +1,6 @@
 import type { Transition } from "motion/react";
 import { easing, duration } from "@/tokens/motion";
+import { shapeScale, type ShapeRole } from "@/tokens/shape";
 
 const ms = (d: string) => Number(d.replace("ms", "")) / 1000;
 const cubic = (e: string): [number, number, number, number] => {
@@ -79,3 +80,55 @@ export const tweens = {
     ease: cubic(easing["standard-accelerate"]),
   },
 } as const satisfies Record<string, Transition>;
+
+/**
+ * Numeric pixel values for the M3 shape tokens. motion/react needs
+ * numeric values to interpolate `borderRadius`, so the Tailwind
+ * `rounded-shape-*` strings are mirrored here for shape-morph
+ * animations driven by motion springs (M3 Expressive shape morph
+ * spec: https://m3.material.io/styles/shape/overview).
+ *
+ * Values are sourced from `src/tokens/shape.ts` (the same map that
+ * feeds Tailwind), so a token edit propagates here automatically.
+ */
+export const shapePx: Record<ShapeRole, number> = Object.fromEntries(
+  (Object.keys(shapeScale) as ShapeRole[]).map((role) => [
+    role,
+    Number.parseFloat(shapeScale[role]),
+  ]),
+) as Record<ShapeRole, number>;
+
+/**
+ * One-step-down lookup used by interactive components that morph
+ * their corner radius on press: the spec says the container should
+ * "round further" / square up on press, which in our token scale
+ * means stepping down one notch (full → lg, lg → md, …).
+ *
+ * `none` and `xs` clamp at the floor (xs) so a pressed shape never
+ * disappears entirely. `full` collapses to `lg` rather than `xl`
+ * because pill-shaped surfaces (Button, FAB extended) need a clearly
+ * visible squarer pressed state.
+ */
+export const shapePressedStep: Record<ShapeRole, ShapeRole> = {
+  none: "none",
+  xs: "xs",
+  sm: "xs",
+  md: "sm",
+  lg: "md",
+  xl: "lg",
+  full: "lg",
+};
+
+/**
+ * Shape-morph transition. M3 Expressive shape morphs (Button /
+ * IconButton / FAB / Chip / ToggleButton / Card) ride the medium2
+ * (300ms) emphasized easing token rather than a spring — the radius
+ * changes between fixed shape tokens, so a tween settles cleanly on
+ * the target value, while a spring would overshoot a near-pill
+ * (9999px) into a long-tailed oscillation. The press-feedback scale
+ * still uses the spatial spring; only the radius is tweened.
+ */
+export const shapeMorphTransition: Transition = {
+  duration: ms(duration.medium2),
+  ease: cubic(easing.emphasized),
+};

@@ -1,7 +1,7 @@
 import { forwardRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { springs } from "@/motion/presets";
+import { shapeMorphTransition, shapePx, springs } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
 import {
   anatomy,
@@ -87,10 +87,27 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         ? disabledFilledClasses
         : disabledClasses;
 
-    // Shape morph: rest = circle (shape-full), selected = squircle.
-    // Outlined toggles to inverse-surface so its squircle "fills"
-    // visually on selection.
-    const radius = isSelected ? sizes.selectedRadius : "rounded-shape-full";
+    // M3 Expressive shape morph: rest = circle (shape-full), selected
+    // = per-size squircle, pressed = one notch squarer. The corner
+    // animates through motion/react so the spatial spring overshoots
+    // on release rather than tweening linearly.
+    const selectedRadiusPx =
+      size === "sm" ? shapePx.sm : size === "md" ? shapePx.md : shapePx.lg;
+    const restRadiusPx = shapePx.full;
+    const baseRadiusPx = isSelected ? selectedRadiusPx : restRadiusPx;
+    // Pressed nudges the corner one step further toward square. For
+    // selected sm (8dp) we floor at xs (4dp) so the morph stays
+    // visible; for the circular rest state we square down to lg (16dp)
+    // to keep the press feedback within the M3 Expressive range.
+    const pressedRadiusPx = isSelected
+      ? size === "sm"
+        ? shapePx.xs
+        : size === "md"
+          ? shapePx.sm
+          : shapePx.md
+      : shapePx.lg;
+    const radiusPx = pressed ? pressedRadiusPx : baseRadiusPx;
+    const radiusClass = isSelected ? sizes.selectedRadius : "rounded-shape-full";
 
     return (
       <motion.button
@@ -104,9 +121,15 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         data-toggle={isToggle || undefined}
         data-selected={isSelected || undefined}
         data-disabled={disabled || undefined}
+        initial={false}
+        animate={{ borderRadius: radiusPx }}
         whileHover={disabled || reduced ? undefined : { scale: 1.06 }}
         whileTap={disabled || reduced ? undefined : { scale: 0.92 }}
-        transition={reduced ? { duration: 0 } : springs.springy}
+        transition={
+          reduced
+            ? { duration: 0 }
+            : { default: springs.springy, borderRadius: shapeMorphTransition }
+        }
         onPointerEnter={(e) => {
           setHovered(true);
           onPointerEnter?.(e);
@@ -135,7 +158,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         }}
         className={cn(
           anatomy.root,
-          radius,
+          radiusClass,
           sizes.container,
           disabled ? disabledTreatment : containerStyles,
           className,

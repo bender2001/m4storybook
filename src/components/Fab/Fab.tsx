@@ -1,8 +1,14 @@
 import { forwardRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { springs } from "@/motion/presets";
+import {
+  shapeMorphTransition,
+  shapePressedStep,
+  shapePx,
+  springs,
+} from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
+import type { ShapeRole } from "@/tokens/shape";
 import {
   anatomy,
   disabledClasses,
@@ -83,6 +89,16 @@ export const Fab = forwardRef<HTMLButtonElement, FabProps>(function Fab(
   const computedAriaLabel =
     ariaLabel ?? (extended ? undefined : typeof label === "string" ? label : undefined);
 
+  // M3 Expressive shape morph on press: corners step down one shape
+  // notch (size sm md→sm, md lg→md, lg xl→lg) so the press feels
+  // springy and tactile. Driven through motion/react so the radius
+  // overshoots on release with the spatial expressive spring.
+  const restShape: ShapeRole =
+    size === "sm" ? "md" : size === "md" ? "lg" : "xl";
+  const radius = pressed
+    ? shapePx[shapePressedStep[restShape]]
+    : shapePx[restShape];
+
   return (
     <motion.button
       ref={ref}
@@ -95,9 +111,15 @@ export const Fab = forwardRef<HTMLButtonElement, FabProps>(function Fab(
       data-extended={extended || undefined}
       data-lowered={lowered || undefined}
       data-disabled={disabled || undefined}
+      initial={false}
+      animate={{ borderRadius: radius }}
       whileHover={disabled || reduced ? undefined : { scale: 1.04 }}
       whileTap={disabled || reduced ? undefined : { scale: 0.94 }}
-      transition={reduced ? { duration: 0 } : springs.springy}
+      transition={
+        reduced
+          ? { duration: 0 }
+          : { default: springs.springy, borderRadius: shapeMorphTransition }
+      }
       onPointerEnter={(e) => {
         setHovered(true);
         onPointerEnter?.(e);

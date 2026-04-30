@@ -198,7 +198,15 @@ test.describe("Toggle Button - M3 design parity", () => {
     await button.click();
     await expect(button).toHaveAttribute("aria-pressed", "true");
     // After morph the shape should be shape-md (12dp).
-    await page.waitForTimeout(360);
+    await expect
+      .poll(
+        async () =>
+          button.evaluate((el) =>
+            parseFloat(window.getComputedStyle(el).borderTopLeftRadius),
+          ),
+        { timeout: 1500 },
+      )
+      .toBe(12);
     const onRadius = await button.evaluate((el) =>
       parseFloat(window.getComputedStyle(el).borderTopLeftRadius),
     );

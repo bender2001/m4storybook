@@ -250,14 +250,23 @@ test.describe("Icon Button - M3 design parity", () => {
     );
     await btn.click();
     await expect(btn).toHaveAttribute("aria-pressed", "true");
-    // Wait for the medium2 (300ms) transition to settle.
-    await page.waitForTimeout(360);
+    // Rest is shape-full (9999px clamps to circle); selected is
+    // shape-md (12px). The corner now rides the M3 Expressive
+    // spatial spring (overshoot before settle), so poll until it
+    // resolves at the token value.
+    await expect
+      .poll(
+        async () =>
+          btn.evaluate((el) =>
+            parseFloat(window.getComputedStyle(el).borderTopLeftRadius),
+          ),
+        { timeout: 1500 },
+      )
+      .toBe(12);
     const selectedRadius = await btn.evaluate((el) =>
       parseFloat(window.getComputedStyle(el).borderTopLeftRadius),
     );
-    // Rest is shape-full (9999px clamps to circle); selected is shape-md (12px).
     expect(selectedRadius).toBeLessThan(restRadius);
-    expect(selectedRadius).toBe(12);
   });
 
   test("tonal rest variant uses surface-container-highest role", async ({

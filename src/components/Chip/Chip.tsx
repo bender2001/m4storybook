@@ -8,7 +8,7 @@ import {
 } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { springs } from "@/motion/presets";
+import { shapeMorphTransition, shapePx, springs } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
 import {
   anatomy,
@@ -135,6 +135,14 @@ export const Chip = forwardRef<HTMLButtonElement, ChipProps>(function Chip(
           ? stateLayerOpacity.hover
           : 0;
 
+  // M3 Expressive shape morph: chip rest = shape-sm (8dp), selected
+  // = pill (full). Pressed nudges one step squarer in either state so
+  // the press feels tactile. Driven by motion/react with the spatial
+  // expressive spring so the corner overshoots on release.
+  const baseRadius = selected ? shapePx.full : shapePx.sm;
+  const pressedRadius = selected ? shapePx.lg : shapePx.xs;
+  const radius = pressed ? pressedRadius : baseRadius;
+
   const isToggle = variant === "filter";
   const role = isToggle ? "button" : undefined;
 
@@ -198,9 +206,14 @@ export const Chip = forwardRef<HTMLButtonElement, ChipProps>(function Chip(
       data-elevated={elevated || undefined}
       data-disabled={disabled || undefined}
       initial={false}
+      animate={{ borderRadius: radius }}
       whileHover={!disabled && !reduced ? { scale: 1.02 } : undefined}
       whileTap={!disabled && !reduced ? { scale: 0.97 } : undefined}
-      transition={reduced ? { duration: 0 } : springs.springy}
+      transition={
+        reduced
+          ? { duration: 0 }
+          : { default: springs.springy, borderRadius: shapeMorphTransition }
+      }
       onPointerEnter={(e: PointerEvent<HTMLButtonElement>) => {
         setHovered(true);
         onPointerEnter?.(e);

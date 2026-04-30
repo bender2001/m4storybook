@@ -4,9 +4,12 @@ import {
   expressiveEffects,
   expressiveSpatial,
   expressiveSprings,
+  shapePressedStep,
+  shapePx,
   springs,
   tweens,
 } from "./presets";
+import { shapeScale } from "@/tokens/shape";
 
 describe("M3 Expressive motion presets", () => {
   it("expressiveSprings exposes the three M3 Expressive roles", () => {
@@ -53,5 +56,24 @@ describe("M3 Expressive motion presets", () => {
   it("tweens map onto M3 motion duration tokens (numeric seconds)", () => {
     expect(tweens.emphasized.duration).toBeGreaterThan(0);
     expect(Array.isArray(tweens.emphasized.ease)).toBe(true);
+  });
+
+  it("shapePx mirrors the M3 shape scale as numeric pixels", () => {
+    for (const role of Object.keys(shapeScale) as Array<
+      keyof typeof shapeScale
+    >) {
+      expect(shapePx[role]).toBe(Number.parseFloat(shapeScale[role]));
+    }
+  });
+
+  it("shapePressedStep squares each shape down by one notch (no morph through 'none')", () => {
+    expect(shapePressedStep.full).toBe("lg");
+    expect(shapePressedStep.xl).toBe("lg");
+    expect(shapePressedStep.lg).toBe("md");
+    expect(shapePressedStep.md).toBe("sm");
+    expect(shapePressedStep.sm).toBe("xs");
+    // Floor: xs/none stay put so the press never erases the corner.
+    expect(shapePressedStep.xs).toBe("xs");
+    expect(shapePressedStep.none).toBe("none");
   });
 });
