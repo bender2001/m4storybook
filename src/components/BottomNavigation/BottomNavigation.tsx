@@ -1,6 +1,7 @@
 import {
   forwardRef,
   useCallback,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -72,6 +73,8 @@ export const BottomNavigation = forwardRef<HTMLElement, BottomNavigationProps>(
     const reduced = useReducedMotion();
     const styles = variantClasses[variant];
     const sizes = sizeClasses[size];
+    const reactId = useId();
+    const navId = reactId.replace(/[^a-zA-Z0-9_-]/g, "");
     const firstEnabled = useMemo(
       () => items.find((item) => !item.disabled)?.id ?? items[0]?.id,
       [items],
@@ -180,6 +183,7 @@ export const BottomNavigation = forwardRef<HTMLElement, BottomNavigationProps>(
               selected={selected}
               showLabels={showLabels}
               size={size}
+              navId={navId}
               indicatorTransition={indicatorTransition}
               labelTransition={labelTransition}
               reduced={reduced}
@@ -200,6 +204,7 @@ type DestinationProps = {
   selected: boolean;
   showLabels: BottomNavigationProps["showLabels"];
   size: NonNullable<BottomNavigationProps["size"]>;
+  navId: string;
   indicatorTransition: Transition;
   labelTransition: Transition;
   reduced: boolean | null;
@@ -217,6 +222,7 @@ function BottomNavigationDestination({
   selected,
   showLabels,
   size,
+  navId,
   indicatorTransition,
   labelTransition,
   reduced,
@@ -296,20 +302,25 @@ function BottomNavigationDestination({
         className={anatomy.iconWrap}
         style={{ width: sizes.indicator.w, height: sizes.indicator.h }}
       >
-        <motion.span
-          aria-hidden
-          data-slot="indicator"
-          className={anatomy.indicator}
-          initial={false}
-          animate={{
-            opacity: selected ? 1 : 0,
-            scaleX: selected ? 1 : 0.6,
-            x: "-50%",
-            y: "-50%",
-          }}
-          transition={indicatorTransition}
-          style={{ width: sizes.indicator.w, height: sizes.indicator.h }}
-        />
+        {selected ? (
+          <motion.span
+            layout
+            layoutId={`bn-indicator-${navId}`}
+            aria-hidden
+            data-slot="indicator"
+            className={anatomy.indicator}
+            transition={
+              reduced
+                ? { duration: 0 }
+                : { ...indicatorTransition, layout: indicatorTransition }
+            }
+            style={{
+              width: sizes.indicator.w,
+              height: sizes.indicator.h,
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+        ) : null}
         <span
           aria-hidden
           data-slot="state-layer"

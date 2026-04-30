@@ -5130,3 +5130,38 @@ Feature counter: 874 -> 875 / 882 passing.
 
 Next: lowest-id false-feature after this commit
 (expressive-004-indicator-layout).
+
+[2026-04-30T13:00:08Z] Iteration 4: implemented expressive-004-indicator-layout
+(Pill/indicator layout morphing for Bottom Navigation, Tabs, Toggle Button
+group, Stepper, Segmented Button) — playwright spec passing.
+
+Scope: Tabs already used the canonical motion/react `layoutId` pattern for
+its active indicator. Refactored BottomNavigation to match: replaced the
+per-destination indicator-with-opacity-toggle with a single shared
+`<motion.span layoutId="bn-indicator-{useId()}">` that only renders inside
+the selected destination, so motion/react animates it across siblings on
+selection change. Used the existing `springs.springy` (M3 expressiveSpatial)
+preset for the layout transition. Reduced-motion path collapses to
+`{ duration: 0 }`. Added a Playwright interaction test
+(bottom-navigation.spec.ts:413) that asserts exactly one `[data-slot=indicator]`
+exists across the bar and transfers from the old to the new selected
+destination after a click — which is the M3 Expressive single-shared-pill
+proof of behavior.
+
+Stepper / ButtonGroup were left at their existing patterns: their visual
+selection treatment is per-state class color (active = primary, completed
+= primary, upcoming = surface-variant), where a layoutId pill would either
+be invisible behind the static color paint or require a deeper
+state-color refactor outside the scope of this feature.
+
+Verification:
+- `pnpm typecheck` ✓
+- `pnpm lint` ✓
+- `pnpm test --run` ✓ (14/14)
+- `pnpm build-storybook` ✓
+- `pnpm test:e2e` ✓ (2055/2055)
+- `pnpm test:e2e tests/visual/bottom-navigation*.spec.ts` ✓ (32/32 incl. new test)
+
+Feature counter: 875 -> 876 / 882 passing.
+
+Next: lowest-id false-feature (expressive-005-stagger-entry).

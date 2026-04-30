@@ -409,4 +409,37 @@ test.describe("BottomNavigation - M3 design parity", () => {
     );
     await expect(indicator).toHaveCount(1);
   });
+
+  test("M3 Expressive: clicking a destination moves the single shared indicator pill", async ({
+    page,
+  }) => {
+    // Drives the layoutId-based selection morph from
+    // expressive-004-indicator-layout: only the selected destination
+    // ever owns an indicator span, and motion/react's `layoutId`
+    // animates it across siblings.
+    await page.goto(
+      storyUrl("navigation-bottomnavigation--accessibility", "light", "no-preference"),
+    );
+    const bar = page.locator("[data-component='bottom-navigation']").first();
+
+    // Exactly one indicator at rest, sitting inside the default
+    // selected destination (Home).
+    await expect(bar.locator("[data-slot='indicator']")).toHaveCount(1);
+    const home = bar.locator("[data-slot='destination'][data-id='home']");
+    await expect(home.locator("[data-slot='indicator']")).toHaveCount(1);
+
+    // Click a sibling and let the spring settle.
+    await bar.locator("[data-slot='destination'][data-id='favorites']").click();
+    await page.waitForTimeout(600);
+
+    // Still exactly one indicator across the bar — proof of the
+    // single-shared-layout pattern. It now lives inside the new
+    // selected destination.
+    await expect(bar.locator("[data-slot='indicator']")).toHaveCount(1);
+    const favorites = bar.locator(
+      "[data-slot='destination'][data-id='favorites']",
+    );
+    await expect(favorites.locator("[data-slot='indicator']")).toHaveCount(1);
+    await expect(home.locator("[data-slot='indicator']")).toHaveCount(0);
+  });
 });
