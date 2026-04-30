@@ -3812,3 +3812,59 @@ Feature counter: 467 -> 480 / 872 passing.
 
 Next: pick up the next lowest-id navigation feature whose deps are
 satisfied (breadcrumbs--atom-anatomy).
+
+[2026-04-30T00:42:05Z] Iteration 6: implemented breadcrumbs
+slice (anatomy → base → variants → sizes → states → slots →
+motion → a11y → stories → interaction → playwright visual →
+playwright spec) — playwright spec + visuals passing.
+
+  - MUI Breadcrumbs has no M3-Expressive component, so it is
+    re-skinned with the M3 token layer:
+      * <nav aria-label="Breadcrumb"> + <ol> per WAI-ARIA pattern
+      * link crumbs render <a>, paint M3 `primary` (link role)
+      * current crumb is a <span> with aria-current="page" + on-surface
+      * disabled crumbs fall back to <button disabled>
+  - 5 host variants:
+      text     = transparent (MUI default)
+      filled   = surface-container-highest (link) /
+                 secondary-container (current)
+      tonal    = secondary-container
+      outlined = transparent + 1dp outline-variant
+      elevated = surface-container-low + elevation-1
+  - 3 densities: sm 24dp / md 28dp / lg 36dp with type roles
+    label-m / label-l / title-s and 16/18/20px icon slots.
+  - Full M3 7-token shape scale (default `full` so the host reads
+    as a pill chip).
+  - State precedence: error (error-container + on-error-container)
+    overrides the variant matrix. Disabled wash dims to 0.38 with
+    no pointer events; trail-level disabled also dims the entire
+    nav to 0.38.
+  - State-layer painted at the M3 opacities (hover 0.08 / focus
+    0.10 / pressed 0.10) over the variant foreground role; layer
+    is suppressed for the current crumb (non-interactive).
+  - Slots: leading + trailing icon, custom separator (string or
+    ReactNode), default chevron glyph in on-surface-variant.
+  - Collapse: when items.length > maxItems, the trail collapses
+    to <itemsBeforeCollapse> + ellipsis button + <itemsAfterCollapse>;
+    clicking the ellipsis (aria-label "Show path") expands to the
+    full trail. Implemented via a single useState — keeps the
+    component pure / portable.
+  - Motion: container transitions ride the medium2 (300ms)
+    emphasized envelope; press feedback is a 0.97 scale spring on
+    the label; reduced motion collapses both to instant.
+  - Playwright spec: 23 design-parity assertions covering nav/ol
+    structure, link vs current rendering + colors, variant matrix,
+    outline border, elevation shadow, density heights + typography,
+    disabled trail + crumb, error state, shape scale + full pill,
+    separator color/non-interactivity, custom separator string,
+    leading icon slot, collapse + expand behavior, motion easing/
+    duration, hover + focus state-layer opacity, ARIA wiring,
+    keyboard activation, dark theme primary swap, playground.
+  - Visual baselines (light + dark) for variants / sizes / states /
+    shapes / slots / collapsed.
+  - Full e2e suite: 1049/1049 passing.
+
+Feature counter: 480 -> 493 / 872 passing.
+
+Next: pick up the next lowest-id navigation feature whose deps
+are satisfied (drawer or charts depending on lex order).
