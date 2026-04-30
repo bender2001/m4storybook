@@ -1,7 +1,12 @@
 import { forwardRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { shapeMorphTransition, shapePx, springs } from "@/motion/presets";
+import {
+  bouncyPress,
+  shapeMorphTransition,
+  shapePx,
+  springs,
+} from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
 import { anatomy, variantClasses, stateLayerClasses, sizeClasses } from "./anatomy";
 import type { ButtonProps } from "./types";
@@ -62,7 +67,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         transition={
           reduced
             ? { duration: 0 }
-            : { default: springs.springy, borderRadius: shapeMorphTransition }
+            : {
+                default: springs.springy,
+                borderRadius: shapeMorphTransition,
+                scale: bouncyPress,
+              }
         }
         onPointerEnter={(e) => {
           setHovered(true);

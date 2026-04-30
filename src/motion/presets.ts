@@ -132,3 +132,29 @@ export const shapeMorphTransition: Transition = {
   duration: ms(duration.medium2),
   ease: cubic(easing.emphasized),
 };
+
+/**
+ * M3 Expressive bouncy press feedback. The interactive surfaces
+ * called out by the spec — Button, IconButton, FAB, Chip,
+ * ToggleButton, Switch — scale slightly inward on press
+ * (`whileTap={{ scale: 0.92–0.97 }}`) and snap back on release with
+ * a small overshoot. A critically-damped spring (or linear tween)
+ * makes the release feel dead; the M3 Expressive press feedback
+ * pattern (https://m3.material.io/styles/motion/transitions/transition-patterns)
+ * calls for an underdamped spring that lands quickly with a single
+ * visible bounce.
+ *
+ * Tuning: stiffness 600 + damping 25 (mass 1) → damping ratio
+ * ~0.51, natural frequency ~24.5 rad/s. The release overshoots
+ * by ~3–4% and settles within ~300ms — snappy, not floppy. Apply
+ * per-channel via `transition={{ scale: bouncyPress, ... }}` so
+ * the existing spatial spring keeps driving the other animated
+ * channels (borderRadius / y / box-shadow) without being pulled
+ * into the press oscillation.
+ */
+export const bouncyPress = {
+  type: "spring",
+  stiffness: 600,
+  damping: 25,
+  mass: 1,
+} as const satisfies Transition;

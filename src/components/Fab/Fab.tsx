@@ -2,6 +2,7 @@ import { forwardRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
 import {
+  bouncyPress,
   shapeMorphTransition,
   shapePressedStep,
   shapePx,
@@ -118,7 +119,11 @@ export const Fab = forwardRef<HTMLButtonElement, FabProps>(function Fab(
       transition={
         reduced
           ? { duration: 0 }
-          : { default: springs.springy, borderRadius: shapeMorphTransition }
+          : {
+              default: springs.springy,
+              borderRadius: shapeMorphTransition,
+              scale: bouncyPress,
+            }
       }
       onPointerEnter={(e) => {
         setHovered(true);

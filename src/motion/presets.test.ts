@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  bouncyPress,
   expressiveDefault,
   expressiveEffects,
   expressiveSpatial,
@@ -64,6 +65,19 @@ describe("M3 Expressive motion presets", () => {
     >) {
       expect(shapePx[role]).toBe(Number.parseFloat(shapeScale[role]));
     }
+  });
+
+  it("bouncyPress is an underdamped spring tuned for M3 Expressive press feedback (snappy, not floppy)", () => {
+    expect(bouncyPress.type).toBe("spring");
+    const { stiffness, damping, mass } = bouncyPress;
+    expect(stiffness).toBeGreaterThanOrEqual(500);
+    expect(stiffness).toBeLessThanOrEqual(800);
+    expect(damping).toBeGreaterThanOrEqual(20);
+    expect(damping).toBeLessThanOrEqual(35);
+    const ratio = damping / (2 * Math.sqrt(stiffness * mass));
+    expect(ratio).toBeLessThan(1);
+    expect(ratio).toBeGreaterThan(0.4);
+    expect(stiffness).toBeGreaterThan(expressiveSprings.spatial.stiffness);
   });
 
   it("shapePressedStep squares each shape down by one notch (no morph through 'none')", () => {

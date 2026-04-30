@@ -9,7 +9,7 @@ import {
 import type { ChangeEvent } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { springs } from "@/motion/presets";
+import { bouncyPress, springs } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
 import {
   anatomy,
@@ -188,7 +188,15 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
             height: handleSize,
             y: "-50%",
           }}
-          transition={reduced ? { duration: 0 } : springs.snappy}
+          transition={
+            reduced
+              ? { duration: 0 }
+              : {
+                  default: springs.snappy,
+                  width: bouncyPress,
+                  height: bouncyPress,
+                }
+          }
         >
           <span
             aria-hidden
