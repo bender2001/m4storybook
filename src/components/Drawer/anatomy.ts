@@ -62,7 +62,8 @@ export const anatomy = {
     "text-title-s text-on-surface-variant",
   ].join(" "),
   /** Inter-section divider (1dp outline-variant). */
-  divider: "mx-4 my-2 h-px bg-outline-variant pointer-events-none",
+  divider:
+    "mx-4 my-2 h-px shrink-0 block bg-outline-variant pointer-events-none",
   /** Item list container. */
   list: "flex flex-col px-3 gap-0",
   /** Per-destination button. */

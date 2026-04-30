@@ -3919,3 +3919,51 @@ Feature counter: 493 -> 506 / 872 passing.
 
 Next: pick up the next lowest-id remaining feature whose deps
 are satisfied (click-away-listener or container).
+
+[2026-04-30T01:09:41Z] Iteration 8: implemented drawer--* slice (13
+features) — Navigation Drawer component, navigation category. M3 spec
+at https://m3.material.io/components/navigation-drawer/specs.
+
+  - 5 host variants:
+      standard = surface-container-low (M3 persistent default)
+      modal    = surface-container-low + elevation-1 + scrim
+                 + AnimatePresence slide-in from anchor edge
+      tonal    = secondary-container
+      outlined = surface + 1dp trailing-edge outline-variant border
+      elevated = surface-container-low + elevation-1
+  - 3 densities (sm/md/lg) — 288 / 360 / 400dp container widths,
+    48 / 56 / 64dp row heights, label-l (sm/md) → title-m (lg) text.
+  - Full M3 7-token shape scale on the trailing-edge corners. Default
+    is `lg` for modal, `none` for the other variants.
+  - Anchor-aware corner zeroing: `start` zeroes the left corners,
+    `end` zeroes the right corners so the drawer hugs its anchor edge.
+  - Active-indicator pill: shape-full / 28dp radius, secondary-container
+    fill, springy springs.springy entry transition.
+  - State coverage: rest / hover (0.08) / focus (0.10) / pressed (0.10)
+    / disabled (item + bar wash to 0.38) / selected.
+  - Slots: header (above first section), top-level headline (title-s),
+    per-section headline + 1dp outline-variant divider, leading icon
+    (24dp), label, trailing badge slot, footer.
+  - Item grouping via DrawerSection[] with optional `divider` flag and
+    per-group headline; flat `items` mode kept for the simple case.
+  - Motion: container transitions ride medium2 (300ms) on emphasized;
+    modal slide-in/out uses tweens.emphasized; reduced motion collapses
+    everything to instant.
+  - ARIA: nav with aria-label + aria-labelledby (auto-derived from
+    headline), destinations expose role="link" + aria-current="page",
+    arrow-key + Home/End roving focus, Escape dismisses modal drawer.
+  - Playwright spec: 23 design-parity assertions covering shape /
+    width / variant matrix / outlined trailing border / elevation
+    shadow / row density / indicator radius + fill / icon + label
+    color (rest + selected) / label-l typography / disabled wash +
+    aria / shape scale / link role / badge / section headlines +
+    divider / end anchor / motion easing + duration / arrow-down +
+    Enter keyboard / dark theme color swap / playground.
+  - Visual baselines (light + dark) for variants / sizes / states /
+    shapes / slots = 10 snapshots.
+  - Full e2e suite: 1117/1117 passing (33 new drawer tests).
+
+Feature counter: 506 -> 519 / 872 passing.
+
+Next: pick up the next lowest-id remaining feature whose deps are
+satisfied (click-away-listener or container).

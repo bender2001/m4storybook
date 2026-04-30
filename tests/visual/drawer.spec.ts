@@ -353,6 +353,7 @@ test.describe("Drawer - M3 design parity", () => {
     page,
   }) => {
     await page.goto(storyUrl("navigation-drawer--slots"));
+    await page.waitForSelector("[data-component='drawer'] [data-slot='section-headline']");
     const drawer = page
       .locator("[data-component='drawer']")
       .first();
