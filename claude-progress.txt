@@ -4376,3 +4376,49 @@ Next: lowest-id false-feature is now `data-grid--*` slice.
 Feature counter: 623 -> 636 / 872 passing.
 
 Next: lowest-id false-feature is now beyond the Navigation slice.
+
+[2026-04-30T05:22:12Z] Iteration 3 — Data Grid slice complete.
+
+Implemented (data-grid-- atom + molecule + organism layers):
+- atom-anatomy: src/components/DataGrid/{types,anatomy,DataGrid,index}.ts(x)
+  - 5 variants  (filled / tonal / outlined / text / elevated)
+  - 3 sizes     (36 / 52 / 72 dp row min-heights, body-s/body-m density)
+  - 7 shapes    (none / xs / sm / md / lg / xl / full on wrapper + cursor)
+  - WAI-ARIA    role=grid + role=row + role=gridcell + role=columnheader,
+                aria-rowcount/colcount on host, aria-rowindex per row,
+                aria-colindex per cell, aria-sort tristate on sortable
+                headers, aria-selected on rows
+- atom-base / atom-variants / atom-sizes / atom-states: paint matrix +
+  density + selected/disabled/error/hover/focus/pressed states each
+  paint via M3 token classes (no hardcoded color/radius/type).
+- molecule-slots: leading sort caret + leading header icon slot,
+  selectable checkbox column.
+- molecule-motion: M3 Expressive shared layoutId selection cursor —
+  3dp `bg-primary` leading bar that springs between focused rows
+  (springs.springy from src/motion/presets.ts) + shape morph from
+  shape-xs to selected shape token; sort caret rotates 180deg via
+  short4/standard easing; collapses under reduced motion.
+- molecule-a11y: roving-tabindex over Arrow / Home / End / Enter /
+  Space; Enter/Space toggle selection; multiple-mode "select all"
+  header checkbox with aria-checked.
+
+Stories (Advanced/Data Grid): Default, Variants, Sizes, Shapes,
+States, WithCheckboxes, WithHeaderIcons, Sortable, Empty, Motion,
+Accessibility, Playground, InteractionSpec.
+
+Tests:
+- tests/visual/data-grid.spec.ts: 32 design-parity assertions
+  (variant role mapping, size scale, shape scale, M3 emphasized easing,
+  state-layer 0.08 hover, secondary-container selected paint,
+  text-error error row, opacity-0.38 + pointer-events:none disabled,
+  role/aria wiring, cursor radius/width, dark-theme cursor swap,
+  ArrowDown roving focus, Enter toggling selection, sort tristate).
+- tests/visual/data-grid.visual.spec.ts: 10 baselines (variants /
+  sizes / states / shapes / with-checkboxes × light + dark).
+
+Quality: typecheck + lint + vitest (4 tests) + storybook-build all
+green; full Playwright suite 1453/1453 green (no regressions).
+
+Feature counter: 636 -> 649 / 872 passing.
+
+Next: lowest-id false-feature is the Date Picker slice.
