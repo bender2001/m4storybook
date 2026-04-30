@@ -4050,3 +4050,100 @@ Feature counter: 519 -> 532 / 872 passing.
 
 Next: pick up the next lowest-id remaining feature whose deps
 are satisfied (likely `menu--*` or another lowest-id slice).
+
+[2026-04-30T01:41Z] Iteration 13: Click-Away Listener slice complete.
+Implemented all 13 features for the Click-Away Listener
+(`click-away--atom-anatomy` through `click-away--playwright-spec`).
+
+Spec sources:
+  - MUI ClickAwayListener (behaviour primitive):
+    https://mui.com/material-ui/react-click-away-listener/
+  - M3 menu surface (re-skin source):
+    https://m3.material.io/components/menus/specs
+  - M3 elevation tokens:
+    https://m3.material.io/styles/elevation/tokens
+
+Component shape: re-skinned MUI behaviour primitive as a
+*dismissable panel* (M3 menu surface). The wrapper renders a
+focusable role="dialog" host that fires `onClickAway` when the
+user clicks/taps outside the panel + `onDismiss(source)` for
+both pointer-outside and Escape-key dismissal.
+
+  - 5 variants:
+      text     = transparent host (pure behaviour wrapper).
+      filled   = surface-container-highest panel.
+      tonal    = secondary-container + on-secondary-container.
+      outlined = transparent + 1dp outline-variant border.
+      elevated = surface-container-low + elevation-2 shadow
+                 (M3 menu/popover surface elevation).
+  - 3 densities: 56/72/96dp min-height for sm/md/lg with
+    title-s / title-m / title-l header typography and
+    12/16/24dp interior padding.
+  - Full M3 7-token shape scale (default `lg` so the panel
+    reads as the canonical M3 menu radius; `none`..`full`).
+  - States: selected (secondary-container + aria-selected),
+    disabled (opacity 0.38 + pointer-events:none + tabIndex=-1
+    + aria-disabled — opacity routed through motion/react
+    `animate` to defeat inline-style overrides), error
+    (error-container + aria-invalid).
+  - Slots: leading 24dp icon + label + trailing 24dp icon
+    (header row), free-form body slot.
+  - Behaviour:
+      mouseEvent default = `onPointerDown`
+      touchEvent default = `onTouchStart`
+      composedPath-aware contains check so portalled children
+      of the panel still count as "inside".
+  - dismissOnEscape (default true) fires `onDismiss('escape')`.
+  - Open/close rides motion/react `springs.gentle` with a
+    scale-from-96% pop. Reduced motion collapses to instant.
+  - Container transitions ride medium2 (300ms) on emphasized
+    (same envelope as Box / Chip / Breadcrumbs / Drawer / Link).
+  - Polymorphic via `motion.div`; ARIA role="dialog",
+    aria-modal=false, focus-visible ring on the panel host.
+
+Stories: Default / Variants / Sizes / States / Shapes / Slots /
+Motion / Accessibility / Playground / InteractionSpec under
+`Utils/Click-Away Listener`.
+
+Playwright design-parity (18 tests, all passing):
+  - default panel renders elevated / shape-lg / md size with
+    72dp min-height + 16dp pad
+  - variant matrix host fill (text/filled/tonal/outlined/elevated)
+  - outlined 1dp outline-variant border
+  - elevated elevation-2 shadow (M3 menu surface)
+  - 56/72/96dp size scale
+  - 12/16/24dp size pad
+  - title-s/title-m/title-l header typography
+  - disabled aria-disabled + opacity 0.38 + pointer-events:none
+    + tabIndex=-1
+  - selected secondary-container + aria-selected
+  - error error-container + aria-invalid
+  - shape scale (none/xs/sm/md/lg/xl/full)
+  - leading + trailing icon + label slots
+  - emphasized easing + medium2 (0.3s) duration
+  - Escape key surfaces without breaking the panel
+  - role=dialog + aria-modal=false + tabindex=0 + focusable
+  - dark theme swaps elevated panel to dark surface-container-low
+  - text variant transparent host + on-surface label
+  - playground story has role=dialog
+
+Visual baselines (light + dark, reduced-motion forced):
+variants / sizes / states / shapes / slots = 10 PNGs.
+
+Notes:
+  - Hit the known motion/react inline-style override on the
+    disabled wash; routed `opacity` through `animate` instead
+    of relying on the `opacity-[0.38]` Tailwind class.
+  - Hit the Tailwind utility-conflict pattern on
+    `text-title-m` baked into anatomy.header overriding the
+    size-specific `text-title-l`; dropped the baked typography
+    so the size matrix can drive font-size cleanly.
+  - No Storybook restart required this round — the new utility
+    classes (`text-title-l`, `min-h-[56px]`, etc.) were already
+    present elsewhere in the codebase.
+
+Feature counter: 532 -> 545 / 872 passing.
+
+Next: pick up the next lowest-id remaining feature whose deps
+are satisfied (likely `container--*` since `menu--*` may already
+be in motion).
