@@ -125,3 +125,40 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * ImageList arrangement-specific layout rules.
+ *
+ * Woven: alternating col-spans (2, 1, 2, 1, …) so each row contains a
+ * tall+wide image pair. MUI parity.
+ *
+ * Masonry: tiles flow inside CSS multi-columns at their natural height
+ * + a vertical rhythm that matches the gallery's column gap. Tile
+ * images switch from `object-cover h-full` to natural `h-auto` flow so
+ * the column track sizes itself to the image.
+ */
+[data-component="image-list"][data-arrangement="woven"]
+  > [data-slot="gallery"]
+  > [data-component="image-list-item"]:nth-child(odd) {
+  grid-column: span 2;
+}
+[data-component="image-list"][data-arrangement="woven"]
+  > [data-slot="gallery"]
+  > [data-component="image-list-item"]:nth-child(even) {
+  grid-column: span 1;
+}
+[data-component="image-list"][data-arrangement="masonry"]
+  > [data-slot="gallery"]
+  > [data-component="image-list-item"] {
+  display: block;
+  break-inside: avoid;
+  margin-bottom: var(--image-list-row-gap, 8px);
+}
+[data-component="image-list"][data-arrangement="masonry"]
+  > [data-slot="gallery"]
+  > [data-component="image-list-item"]
+  > img {
+  height: auto;
+  width: 100%;
+  object-fit: contain;
+}
