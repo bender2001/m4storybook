@@ -1,9 +1,9 @@
 {
-  "iteration": 7,
-  "last_iteration_started": "2026-04-30T06-21-59Z",
-  "last_iteration_duration_seconds": 1247,
+  "iteration": 1,
+  "last_iteration_started": "2026-04-30T06-58-28Z",
+  "last_iteration_duration_seconds": 607,
   "last_exit_code": 0,
-  "passes": 701,
+  "passes": 714,
   "total": 872,
-  "log": "2026-04-30T06-21-59Z-iter7.log"
+  "log": "2026-04-30T06-58-28Z-iter1.log"
 }
