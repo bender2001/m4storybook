@@ -393,7 +393,7 @@ export const NonLinear: Story = {
     <Stage>
       <Stepper
         steps={richSteps}
-        activeStep={1}
+        defaultActiveStep={1}
         linear={false}
         ariaLabel="non-linear stepper"
       />
@@ -412,6 +412,45 @@ export const Vertical: Story = {
         ariaLabel="vertical stepper"
       />
     </Stage>
+  ),
+};
+
+export const Motion: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <Stage>
+      <Stepper steps={sampleSteps} activeStep={1} ariaLabel="motion stepper" />
+    </Stage>
+  ),
+};
+
+export const Accessibility: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <Stage>
+        <span className="block text-label-l text-on-surface mb-3">
+          custom aria-label
+        </span>
+        <Stepper
+          steps={sampleSteps}
+          activeStep={1}
+          linear={false}
+          ariaLabel="Checkout progress"
+        />
+      </Stage>
+      <Stage>
+        <span className="block text-label-l text-on-surface mb-3">
+          disabled
+        </span>
+        <Stepper
+          steps={sampleSteps}
+          activeStep={1}
+          disabled
+          ariaLabel="disabled accessibility stepper"
+        />
+      </Stage>
+    </div>
   ),
 };
 

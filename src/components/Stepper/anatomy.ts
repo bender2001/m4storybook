@@ -29,6 +29,8 @@ export const anatomy = {
   root: [
     "relative isolate flex w-full",
     "outline-none",
+    "transition-[background-color,box-shadow,color]",
+    "duration-medium2 ease-emphasized",
   ].join(" "),
   /** Disabled wash. */
   disabled: "opacity-[0.38] cursor-not-allowed pointer-events-none",
@@ -52,7 +54,7 @@ export const anatomy = {
   /** Step icon wrap (paints the M3 Expressive squircle / circle). */
   icon: [
     "relative inline-flex shrink-0 items-center justify-center",
-    "transition-[background-color,color,border-color]",
+    "transition-[background-color,color,border-color,border-radius]",
     "duration-medium2 ease-emphasized",
   ].join(" "),
   /** State-layer overlay sitting on top of the icon container. */

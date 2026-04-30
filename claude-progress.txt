@@ -4345,3 +4345,17 @@ Next: lowest-id false-feature is now `speed-dial--*`.
 Feature counter: 597 -> 610 / 872 passing.
 
 Next: lowest-id false-feature is now `stepper--*` (or further beyond).
+
+[2026-04-30T04:55Z] Iteration 20: Stepper slice complete (5 variants × 3 sizes × 7 shapes × 2 orientations).
+- Re-skinned MUI <Stepper /> onto M3 navigation tokens with the Expressive selection morph: active-step icon springs from shape-full (circle) to selected shape token via motion/react springs.
+- 5 variants: filled (primary/on-primary), tonal (secondary-container), outlined (border-primary on transparent), text (text-primary glyph only), elevated (surface-container-low + elevation-1 host).
+- 3 sizes: sm 24dp / label-m, md 28dp / label-l, lg 36dp / title-m.
+- 2 orientations: horizontal (connector mid-row) + vertical (absolute connector + AnimatePresence content collapse).
+- States: hover/focus/pressed paint state-layer at canonical 0.08 / 0.10 / 0.10 opacities; error step swaps to error/on-error roles; disabled stepper opacity 0.38 + pointer-events:none.
+- Roving-tabindex keyboard nav (Arrow/Home/End/Enter/Space) with linear/non-linear gating.
+- 26 design-parity Playwright tests + 10 visual baselines (light + dark variants/sizes/shapes/states/orientations).
+- typecheck + lint + vitest + storybook-build all green.
+
+Feature counter: 610 -> 623 / 872 passing.
+
+Next: lowest-id false-feature is now `data-grid--*` slice.

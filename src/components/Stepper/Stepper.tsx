@@ -235,6 +235,7 @@ export const Stepper = forwardRef<HTMLOListElement, StepperProps>(
     return (
       <motion.ol
         ref={ref}
+        role="list"
         data-component="stepper"
         data-variant={variant}
         data-size={size}
@@ -245,6 +246,7 @@ export const Stepper = forwardRef<HTMLOListElement, StepperProps>(
         data-disabled={disabled || undefined}
         aria-label={ariaLabel}
         aria-orientation={orientation}
+        aria-disabled={disabled || undefined}
         className={cn(
           anatomy.root,
           orient.flow,
