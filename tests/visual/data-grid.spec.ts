@@ -492,7 +492,11 @@ test.describe("Data Grid - M3 design parity", () => {
         "no-preference",
       ),
     );
-    // The play() function selects p3 on load; pick a different row.
+    // The play() function clicks row p3 on load; wait for it to settle
+    // before driving our own interaction, otherwise the click may race
+    // against our focus + Enter and leave selection on p3.
+    const selectedReadout = page.getByTestId("selected-keys");
+    await expect(selectedReadout).toHaveText("selected: p3");
     const targetRow = page
       .locator("[data-component='data-grid-row'][data-key='p1']")
       .first();
