@@ -4422,3 +4422,56 @@ green; full Playwright suite 1453/1453 green (no regressions).
 Feature counter: 636 -> 649 / 872 passing.
 
 Next: lowest-id false-feature is the Date Picker slice.
+
+[2026-04-30T05:43:12Z] Iteration 4 — Grid slice complete.
+
+Implemented (grid-- atom + molecule + organism layers):
+- atom-anatomy: src/components/Grid/{types,anatomy,Grid,index}.ts(x)
+  - 5 variants  (text / filled / tonal / outlined / elevated)
+  - 3 sizes     (8 / 16 / 24 dp pad, 32 / 48 / 64 dp min-row)
+  - 7 shapes    (none / xs / sm / md / lg / xl / full)
+  - 12 columns  (1..12 explicit literal class map — JIT-safe)
+  - 6 spacing   (none / xs / sm / md / lg / xl ↔ 0/4/8/16/24/32 dp)
+  - rowSpacing + columnSpacing override axes independently
+  - flow        (row / column / row-dense / column-dense)
+- atom-base / atom-sizes: paint matrix paints via M3 token classes
+  (no hardcoded color/radius/type) on top of CSS grid.
+- atom-variants / atom-states: hover/focus/pressed paint state-layer
+  at canonical 0.08 / 0.10 / 0.10 opacities; selected → secondary-
+  container; error → error-container + aria-invalid; disabled →
+  opacity 0.38 + pointer-events:none.
+- molecule-slots: optional leading icon + label + trailing icon
+  header row spanning every column.
+- molecule-motion: M3 Expressive shape morph (md → lg) on
+  hover/focus/pressed via motion/react springs.gentle preset; ride
+  the M3 emphasized easing + medium2 duration on the host
+  background-color / box-shadow / border-color / color transitions.
+- molecule-a11y: role=button + tabIndex=0 + aria-label/-selected/-
+  invalid/-disabled; focus-visible primary ring; Enter/Space click
+  activation; reducedMotion collapse via useReducedMotion.
+- GridItem child: span / start / rowSpan / rowStart inline-style
+  placement (covers spans up to 12 without depending on Tailwind's
+  default `row-span-*` ceiling) + optional surface variant + shape
+  + selected / disabled / error per cell.
+
+Stories (Layout/Grid): Default, Variants, Sizes, Shapes, States,
+Slots, Spacing, Layout (12-col + explicit start), Motion,
+Accessibility, Playground, InteractionSpec.
+
+Tests:
+- tests/visual/grid.spec.ts: 24 design-parity assertions
+  (variant role mapping, size scale, shape scale, spacing scale,
+  split row/column gap, M3 emphasized easing + medium2 duration,
+  state-layer 0.08 hover, focus-visible primary ring, polymorphic
+  `as`, dark theme surface swap, error/selected/disabled paint,
+  GridItem grid-column resolution for span / span=full / start+span,
+  column-count map → grid-template-columns).
+- tests/visual/grid.visual.spec.ts: 10 baselines (variants / sizes /
+  shapes / states / layout × light + dark).
+
+Quality: typecheck + lint + vitest (4 tests) + storybook-build all
+green; full Playwright suite 1487/1487 green (no regressions).
+
+Feature counter: 649 -> 662 / 872 passing.
+
+Next: lowest-id false-feature is the Stack slice.
