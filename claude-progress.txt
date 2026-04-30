@@ -4958,3 +4958,25 @@ Next: lowest-id false-feature after this commit (check feature_list.json for `pa
   - 25 design-parity Playwright assertions + 10 light/dark visual baselines
   - Full e2e 2046/2046
 Next: review-001.
+
+[2026-04-30T11:05Z] Iteration 8: implemented review-001 (Quality gate) + review-002 (Atomic-design index page in Storybook) — both Playwright specs passing.
+
+Slice contents (review-001):
+- README.md (storybook + playwright run instructions; matches review-001 acceptance "README documents how to run Storybook and Playwright")
+- tests/visual/data-grid.spec.ts: stabilized the lone flaky test ("Enter on a focused row toggles selection on the interaction story"). Root cause: a race between Storybook's play() function (which clicks row p3 on load) and the Playwright test (which focused row p1 + pressed Enter). When the test won the race, Enter fired against p1 before play()'s click on p3 landed; when play() won, the click on p3 reset selection and Enter on p1 lost. Fix: wait for the data-testid="selected-keys" readout to read "selected: p3" before driving the test interaction. Stress-tested 5x in isolation, then confirmed in the full e2e (2046/2046 → 2054/2054 with the new atomic-design tests).
+
+Slice contents (review-002):
+- src/foundations/AtomicDesignIndex.tsx: typed React component listing every atom (28), molecule (19), and organism (19) with category tag, role summary, and `?path=/docs/<slug>--docs` link to its Storybook autodoc page. Cards use the M3 token classes (rounded-shape-md, bg-surface-container-low, text-title-m, text-on-surface-variant, shadow-elevation-1, transition duration-medium2 ease-emphasized).
+- src/foundations/AtomicDesign.mdx: thin MDX wrapper that mounts AtomicDesignIndex under the "Foundations/Atomic Design" story-kind. Storybook indexer registers it at id `foundations-atomic-design--docs`.
+- tests/visual/atomic-design.spec.ts: 8 design-parity tests — section count (3), per-section entry counts (28/19/19), per-section count badges, link href format, atomic-level data attribute, surfaces-card / inputs-button / inputs-text-field / navigation-tabs slug spot-checks, total = 66.
+
+Acceptance criteria check:
+- review-001: pnpm typecheck (green), pnpm lint (green), pnpm test (4/4 token tests), pnpm build (1.22s), pnpm build-storybook (10s), pnpm test:e2e 2054/2054 (5.4m). README.md added.
+- review-002: Foundations/Atomic Design MDX page renders 28+19+19 = 66 generic components with working autodoc links, grouped + counted per atomic level. Slug cross-check against storybook-static/index.json: 0 missing.
+
+Cross-checked the slug→docs mapping by parsing storybook-static/index.json after the build:
+- 66 referenced slugs, 0 missing in index, 0 missing in docs entries.
+
+Feature counter: 870 -> 872 / 872 passing.
+
+Project complete: every feature in feature_list.json now passes.
