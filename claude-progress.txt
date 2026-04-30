@@ -4147,3 +4147,107 @@ Feature counter: 532 -> 545 / 872 passing.
 Next: pick up the next lowest-id remaining feature whose deps
 are satisfied (likely `container--*` since `menu--*` may already
 be in motion).
+
+
+[2026-04-30T01:54Z] Iteration 14: Container slice complete.
+Implemented all 13 features for the Container component
+(`container--atom-anatomy` through `container--playwright-spec`).
+
+Spec sources:
+  - MUI Container (re-skin source):
+    https://mui.com/material-ui/react-container/
+  - M3 surface roles:
+    https://m3.material.io/styles/color/the-color-system/color-roles
+  - M3 elevation tokens:
+    https://m3.material.io/styles/elevation/tokens
+  - M3 layout / window-size classes:
+    https://m3.material.io/foundations/layout/applying-layout/window-size-classes
+
+Component shape: re-skinned MUI layout primitive as a token-aware
+section landmark. Polymorphic via `as` (default `<main>` so the
+Container reads as the primary landmark; non-default elements are
+rendered with `role="region"`).
+
+  - 5 variants:
+      text     = transparent host (pure layout shell).
+      filled   = surface-container-highest panel.
+      tonal    = secondary-container + on-secondary-container.
+      outlined = transparent + 1dp outline-variant border.
+      elevated = surface-container-low + elevation-1 shadow.
+  - 3 densities driving vertical padding, gap, min-height, and
+    header type role:
+      sm : 12dp pad-y / 8dp gap  / 48dp min-height / title-s
+      md : 24dp pad-y / 12dp gap / 64dp min-height / title-m
+      lg : 40dp pad-y / 16dp gap / 80dp min-height / title-l
+  - Horizontal gutters scale with density (16/24/40dp) and can be
+    dropped via `disableGutters` (matches MUI) while keeping the
+    vertical rhythm intact.
+  - Full M3 7-token shape scale (default `none` so the shell
+    behaves as a plain layout host; `none`..`full`).
+  - `maxWidth` mirrors MUI breakpoint widths (xs=444 / sm=600 /
+    md=900 / lg=1200 / xl=1536; `false` removes the clamp).
+  - `fixed` pins `min-width` to the same breakpoint so the
+    Container never shrinks below it (matches MUI).
+  - `centered` (default true) applies `mx-auto`.
+  - States: selected (secondary-container + aria-selected),
+    disabled (opacity 0.38 + pointer-events:none + aria-disabled
+    — opacity routed through motion/react `animate`+`initial`
+    so the wash beats the inline-style cascade and is locked in
+    on first paint, no in-flight tween),
+    error (error-container + aria-invalid).
+  - Slots: leading 24dp icon + label + trailing 24dp icon
+    (header row).
+  - Container transitions ride `tweens.standard` (medium2 /
+    300ms on emphasized) — same envelope as Box / Chip /
+    Breadcrumbs / Drawer / Link / Click-Away.
+  - Polymorphic via `motion.create(as)`; ARIA wiring follows the
+    landmark element (no role on `<main>`, role="region" on
+    overrides, focus-visible ring on the host).
+
+Stories: Default / Variants / Sizes / States / Shapes / Slots /
+Layout / Motion / Accessibility / Playground / InteractionSpec
+under `Layout/Container`.
+
+Playwright design-parity (21 tests, all passing):
+  - default container renders filled / shape-md / md size /
+    maxWidth=md with 64dp min-height, 24dp pad-y, 24dp gutter,
+    900px max-width, equal mx-auto margins
+  - variant matrix host fill (text/filled/tonal/outlined/elevated)
+  - outlined 1dp outline-variant border
+  - elevated elevation-1 shadow
+  - 48/64/80dp size scale
+  - 12/24/40dp size pad-y
+  - 16/24/40dp size gutter
+  - title-s/title-m/title-l header typography
+  - disabled aria-disabled + opacity 0.38 + pointer-events:none
+  - selected secondary-container + aria-selected
+  - error error-container + aria-invalid
+  - shape scale (none/xs/sm/md/lg/xl/full)
+  - max-width clamps follow MUI breakpoints (xs..lg + none)
+  - disableGutters drops horizontal padding only
+  - leading + trailing icon + label slots
+  - emphasized easing + medium2 (0.3s) duration on container
+  - polymorphic `as=section` → role=region + section tag
+  - default `as=main` → main tag, no role
+  - dark theme swaps elevated panel to dark surface-container-low
+  - text variant transparent host + on-surface label
+  - playground story renders with main tag + label slot
+
+Visual baselines (light + dark, reduced-motion forced):
+variants / sizes / states / shapes / slots = 10 PNGs.
+
+Notes:
+  - Tested `marginLeft === marginRight` instead of literal "auto"
+    string — browsers compute mx-auto to a px value once the
+    viewport exceeds the max-width clamp.
+  - Set `initial = animate` for the disabled-opacity tween so the
+    first paint locks in 0.38 instead of catching motion/react
+    mid-animation (saw 0.94 in the first run).
+  - No Storybook restart required — all utility classes already
+    in use elsewhere.
+  - Full Playwright suite re-run: 1209 / 1209 passing.
+
+Feature counter: 545 -> 558 / 872 passing.
+
+Next: pick up the next lowest-id remaining feature whose deps
+are satisfied (likely `css-baseline--*` or `data-grid--*`).
