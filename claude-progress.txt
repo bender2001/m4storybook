@@ -4251,3 +4251,47 @@ Feature counter: 545 -> 558 / 872 passing.
 
 Next: pick up the next lowest-id remaining feature whose deps
 are satisfied (likely `css-baseline--*` or `data-grid--*`).
+
+[2026-04-30T02:03:22Z] Iteration 15: implemented css-baseline--*
+(13 features) — playwright spec + visual baselines passing.
+
+CSS Baseline slice — atomic-design ladder:
+  - atom anatomy/types/base       (src/components/CssBaseline/{types,anatomy}.ts,
+                                   CssBaseline.tsx)
+  - molecule variants             (text / filled / tonal / outlined / elevated)
+  - atom sizes (sm/md/lg)         (12/24/40dp pad, body-s/body-m/body-l, 48/64/80
+                                   min-h, title-s/title-m/title-l header)
+  - atom states                   (selected / disabled / error)
+  - molecule slots                (leadingIcon + label + trailingIcon header row)
+  - molecule motion               (medium2 emphasized transition + reduced-motion)
+  - molecule a11y                 (polymorphic <section>, role=region when section,
+                                   aria-label/disabled/invalid/selected, focus ring)
+  - story Default + Playground    (controls)
+  - story Variants/Sizes/Shapes/States/Slots/ColorScheme/Motion/Accessibility
+                                  grid (controls disabled)
+  - story InteractionSpec         (@storybook/test interaction assertions)
+  - playwright design parity      (tests/visual/css-baseline.spec.ts — 23 specs:
+                                   variants, sizes, shapes, states, slots, motion,
+                                   margin reset, box-sizing reset, antialiasing,
+                                   colorScheme, polymorphic landmark, dark theme)
+  - playwright visual baselines   (tests/visual/css-baseline.visual.spec.ts —
+                                   variants/sizes/states/shapes/slots × light + dark)
+
+MUI re-skin: <CssBaseline /> body reset -> M3 surface + on-surface roles, type
+scale, motion envelope. Scoped to subtree (data-scoped) so the storybook iframe
+does not clobber the global document. enableColorScheme writes
+`color-scheme: light dark` on the host.
+
+Quality gates green:
+  pnpm typecheck   -> 0 errors
+  pnpm lint        -> 0 errors
+  pnpm test        -> tokens.test.ts 4/4
+  pnpm build-storybook -> 9.7s, all stories compile
+  pnpm exec playwright test css-baseline.spec.ts -> 23/23
+  pnpm exec playwright test css-baseline.visual.spec.ts -> 10/10
+  pnpm exec playwright test container.spec.ts -> 21/21 (regression check)
+
+Feature counter: 558 -> 571 / 872 passing.
+
+Next: pick up the next lowest-id remaining feature whose deps
+are satisfied (likely `data-grid--*`).
