@@ -3967,3 +3967,86 @@ Feature counter: 506 -> 519 / 872 passing.
 
 Next: pick up the next lowest-id remaining feature whose deps are
 satisfied (click-away-listener or container).
+
+================================================================
+[2026-04-30T01:19Z] Iteration 9: Link slice complete.
+
+Implemented all 13 features for the Link component
+(`link--atom-anatomy` through `link--playwright-spec`).
+
+Spec sources:
+  - M3 typography link guidance:
+    https://m3.material.io/styles/typography/applying-type
+  - MUI Link: https://mui.com/material-ui/react-link/
+
+Component shape: native <a> atom with M3 token-driven host.
+
+  - 5 variants:
+      text     = transparent + primary text (M3 default link).
+      filled   = surface-container-highest pill + primary label.
+      tonal    = secondary-container pill + on-secondary-container.
+      outlined = transparent + 1dp outline-variant border.
+      elevated = surface-container-low + elevation-1 shadow.
+  - 3 densities: 24/28/36dp pill heights for sm/md/lg with
+    label-m / body-m / body-l label typography.
+  - Full M3 7-token shape scale (default `full` so chip variants
+    read as pills; `none`..`xl` for square-corner shells).
+  - Underline policy: hover (default for text/outlined) /
+    always / none. M3 a11y guidance: text links underline on
+    hover so they remain perceivable without colour.
+  - State-layer overlay paints at hover 0.08 / focus 0.10 /
+    pressed 0.10 (M3 input-library opacities) of the variant
+    foreground role; selected adopts the secondary-container
+    treatment + aria-current="page".
+  - Slots: leading icon (18dp), trailing icon (18dp),
+    motion-driven label scale on press.
+  - `external` mode auto-tags target="_blank" + rel="noopener
+    noreferrer" and renders a default trailing external-arrow
+    glyph if no custom trailingIcon is set.
+  - Disabled wash dims to opacity 0.38, strips href, sets
+    aria-disabled, and pulls tabIndex to -1.
+  - Error state paints the host in error-container +
+    on-error-container (mirrors Breadcrumbs error matrix).
+  - Press feedback rides springs.gentle (M3 Expressive); reduced
+    motion collapses press scale to instant.
+  - Container transitions ride medium2 (300ms) on emphasized.
+
+Stories: Default / Variants / Sizes / States / Shapes / Slots /
+Underline / Motion / Accessibility / Playground / InteractionSpec
+under `Navigation/Link`.
+
+Playwright design-parity (21 tests, all passing):
+  - <a> tag + href + primary fg
+  - variant matrix host fill
+  - text/outlined primary fg, tonal on-secondary-container fg
+  - outlined 1dp outline-variant border
+  - elevated elevation-1 shadow
+  - 24/28/36dp size scale
+  - label-m/body-m/body-l type scale (12/400, 14/400, 16/400)
+  - disabled href stripped + aria-disabled + 0.38 opacity +
+    pointer-events:none + tabIndex=-1
+  - error host in error-container + on-error-container
+  - selected aria-current=page + secondary-container treatment
+  - shape scale (none/xs/sm/md/lg/xl/full)
+  - leading + trailing icon slots
+  - external target=_blank + rel=noopener noreferrer + glyph
+  - underline policy (none / hover / always)
+  - emphasized easing + medium2 (0.3s) duration
+  - hover state-layer 0.08
+  - focus-visible state-layer 0.10
+  - keyboard Enter follows href
+  - selected on-surface foreground + aria-current
+  - dark theme primary swap
+  - playground role=link
+
+Visual baselines (light + dark, reduced-motion forced):
+variants / sizes / states / shapes / slots / underline = 12 PNGs.
+
+Required Storybook restart to pick up new Tailwind utilities
+(`hover:underline`, `focus-visible:underline`, etc.) per the
+known HMR stale-CSS limitation.
+
+Feature counter: 519 -> 532 / 872 passing.
+
+Next: pick up the next lowest-id remaining feature whose deps
+are satisfied (likely `menu--*` or another lowest-id slice).
