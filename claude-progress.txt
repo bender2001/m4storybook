@@ -4552,3 +4552,29 @@ green; full Playwright suite 1561/1561 green (no regressions).
 Feature counter: 675 -> 688 / 872 passing.
 
 Next: lowest-id false-feature is the Image List slice.
+
+[2026-04-30T09:45Z] Iteration 7: implemented date-range-picker slice (atom-anatomy → atom-base → atom-variants → atom-sizes → atom-states → molecule-slots → molecule-motion → molecule-a11y → story-default → story-variants → story-interaction → playwright-visual → playwright-spec) — playwright spec passing.
+
+Highlights:
+- 5 variants × 3 sizes × 7 shapes × 3-state click cycle (start → end → reset) on a single-month
+  M3 panel; shape-xl 28dp default, surface-container-high panel + surface-container-highest filled
+  trigger; px-3 grid; 320dp min-width.
+- Two endpoint cursors paint bg-primary as shared `layoutId` motion spans morphing from shape-xs
+  to the picker's shape token via springs.springy — same Expressive selection morph as
+  Tabs/Stepper/Pagination/DatePicker/DataGrid. In-range days paint a continuous bg-primary-container
+  underlay strip beneath the day buttons (rangeFillStart / rangeFillEnd / rangeFillFull halves).
+- WAI-ARIA: role=dialog panel + role=grid + role=gridcell + aria-haspopup=dialog + aria-expanded
+  + aria-selected on endpoints AND in-range days + aria-current=date on today.
+- Roving-tabindex keyboard nav: Arrow ±1/±7, Home/End week, PageUp/Down month, Enter/Space confirm,
+  Escape close. Click cycle: empty → start → start+end → reset to fresh start.
+- Cancel/OK actions on the panel footer; OK commits draft to value via `formatTriggerRange`
+  ("MM/DD/YYYY – MM/DD/YYYY").
+- Playwright: 36 design-parity assertions (variants/sizes/shapes/state-layer/range fill/cursor
+  shape morph/keyboard/click cycle/dark theme); 8 visual baselines (variants/sizes/states/open-panel
+  × light + dark) committed.
+- pnpm typecheck + lint clean; vitest 4/4 green; storybook builds; 1604/1605 e2e green
+  (one pre-existing data-grid flake unrelated to this slice — re-runs green).
+
+Feature counter: 688 -> 701 / 872 passing.
+
+Next: lowest-id false-feature is the Image List slice.
