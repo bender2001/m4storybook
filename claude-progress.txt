@@ -4475,3 +4475,19 @@ green; full Playwright suite 1487/1487 green (no regressions).
 Feature counter: 649 -> 662 / 872 passing.
 
 Next: lowest-id false-feature is the Stack slice.
+
+[2026-04-30T12:00:00Z] Iteration 5: Date Picker slice complete (5 variants × 3 sizes ×
+7 shapes + M3 Expressive shape-morph day cursor + roving keyboard nav + popover panel +
+Playwright). Added src/components/DatePicker/{types,anatomy,DatePicker,index,DatePicker.stories}
+and tests/visual/date-picker{,.visual}.spec.ts. 33 design-parity specs + 8 visual
+baselines (light + dark) green. Atomic-design slice flipped: anatomy → base → variants →
+sizes → states → slots → motion → a11y → story-default → story-variants → story-interaction
+→ playwright-visual → playwright-spec.
+
+Verified locally: `pnpm typecheck` + `pnpm lint` + `pnpm test --run` + `pnpm build-storybook` +
+`pnpm test:e2e tests/visual/date-picker*` all green; full suite 1527/1528 with 1 pre-existing
+DataGrid play-function flake that passes on retry.
+
+Feature counter: 662 -> 675 / 872 passing.
+
+Next: Date Range Picker slice (atomic level: atom anatomy first).
