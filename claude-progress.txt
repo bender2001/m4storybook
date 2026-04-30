@@ -4863,3 +4863,69 @@ Feature counter: 766 -> 779 / 872 passing.
 
 Next: lowest-id false-feature after this commit (check feature_list.json
 for `passes:false`).
+
+[2026-04-30T08:45Z] Iteration 7: implemented portal--atom-anatomy through
+portal--playwright-spec (Portal slice) — playwright spec passing.
+
+Slice contents:
+- src/components/Portal/{anatomy.ts, types.ts, Portal.tsx, Portal.stories.tsx, index.ts}
+- tests/visual/portal.spec.ts (20 design-parity tests)
+- tests/visual/portal.visual.spec.ts (10 light/dark visual baselines committed)
+
+Re-skin source: MUI <Portal /> (https://mui.com/material-ui/react-portal/) —
+the structural primitive that teleports its children into a target
+container (defaults to document.body) and powers Modal / Dialog /
+Snackbar / Menu containers. M3 has no first-class portal component,
+so the slice re-skins the teleported surface onto the M3 modal /
+surface tokens
+(https://m3.material.io/styles/elevation/applying-elevation).
+5 surface variants (standard=surface-container-highest/elev-1/md,
+tonal=secondary-container/elev-1, outlined=transparent/1dp
+outline-variant border, text=transparent/no-shadow, elevated=
+surface-container-low/elev-3), 3 density sizes (sm 160..320 / md
+240..480 / lg 320..640 px, modal-band defaults), full M3 7-token
+shape scale (default md = 12dp portal/dialog surface radius),
+container resolution accepting HTMLElement | RefObject |
+() => HTMLElement | null with document.body fallback (mirrors MUI's
+container API), disablePortal escape hatch that skips createPortal
+and renders inline at the parent (data-portal='inline'),
+surface=false escape hatch that collapses Portal back to the MUI
+primitive and teleports raw children with no M3 styling
+(data-component='portal-raw'), leading + label + content + trailing
+slots, states (selected -> secondary-container, disabled -> 0.38 +
+pointer-events:none, error -> error-container). Container
+transitions ride medium2 (300ms) on emphasized; surface enter/exit
+scales 96% <-> 100% via AnimatePresence on the M3 standard tween;
+useReducedMotion collapses durations to 0. ARIA: role defaults to
+presentation (Portal is a structural utility, not interactive),
+aria-describedby auto-wired to the body content id, aria-disabled /
+aria-invalid / aria-selected mirror state props, tabIndex=-1 keeps
+the surface programmatically focusable for Escape handling.
+
+Differentiators from Popover / Popper (already shipped): Portal has
+no anchor / placement / arrow / flip / keepInViewport — Portal
+teleports content into a container, it doesn't position relative to
+an anchor. Default size md (240..480, modal band) vs sm for Popper
+(96..224, tooltip band) and md for Popover (200..360, menu band).
+Default shape md (12dp) vs xs for Popover (4dp) and sm for Popper
+(8dp). Default variant standard surface = surface-container-highest
+(distinct from Popover's surface-container and Popper's
+surface-container-high). Default elevation 1 (Portal is a generic
+structural surface) vs elevation 2 for Popper / Popover. Default
+role presentation (vs dialog for Popover, tooltip for Popper).
+Ships container / disablePortal / surface props instead of
+placement / arrow / scrim. Surface=false uniquely collapses Portal
+back to the MUI primitive — the only slice where the M3 reskin is
+optional.
+
+Quality gates: pnpm typecheck (green), pnpm lint (green), pnpm test
+(4 token tests pass), pnpm build-storybook (built in 9.5s), pnpm
+test:e2e tests/visual/portal.spec.ts (20/20 pass), pnpm test:e2e
+tests/visual/portal.visual.spec.ts (10/10 baselines stable), full
+pnpm test:e2e (1834/1835, the single failure is the pre-existing
+data-grid flake — passes on isolated retry without code changes).
+
+Feature counter: 779 -> 792 / 872 passing.
+
+Next: lowest-id false-feature after this commit (check feature_list.json
+for `passes:false`).
