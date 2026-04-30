@@ -4491,3 +4491,64 @@ DataGrid play-function flake that passes on retry.
 Feature counter: 662 -> 675 / 872 passing.
 
 Next: Date Range Picker slice (atomic level: atom anatomy first).
+
+[2026-04-30T06:21:02Z] Iteration 6: Stack slice complete (5 variants × 3 sizes ×
+7 shapes × 4 directions × 6 spacing tokens + M3 Expressive shape morph + optional
+divider slot + Playwright). Added src/components/Stack/{types,anatomy,Stack,index,
+Stack.stories} and tests/visual/stack{,.visual}.spec.ts. 23 design-parity specs +
+10 visual baselines (light + dark, variants/sizes/shapes/states/divider) green.
+Atomic-design slice flipped: anatomy → base → variants → sizes → states → slots →
+motion → a11y → story-default → story-variants → story-interaction →
+playwright-visual → playwright-spec.
+
+Stack design notes:
+- atom-anatomy: token-aware single-axis flex primitive. Matrix
+  binds rest/selected/error/border/elevation/state-layer per
+  variant (text/filled/tonal/outlined/elevated). Size matrix
+  drives padding (8/16/24px), default child gap (8/16/24px),
+  and min cross-axis (32/48/64px). Shape map covers the M3
+  scale; morphTarget ramps one notch up for shape-morph.
+- atom-base / atom-variants / atom-sizes / atom-states: M3 surface
+  fill + outline-variant border on `outlined` + elevation-1 default
+  on `elevated`. Disabled wash 0.38 + pointer-events:none. Error
+  paints error-container; selected paints secondary-container with
+  aria-selected on the host.
+- molecule-slots: optional leading/trailing icon + label header
+  row (24dp on-surface-variant glyphs) above the inner flex
+  track; MUI-parity `divider` slot interposes a presentational
+  separator wrapper between every pair of stacked children.
+- molecule-motion: M3 Expressive shape morph (md → lg) on
+  hover/focus/pressed via motion/react springs.gentle preset;
+  ride the M3 emphasized easing + medium2 duration on the host
+  background-color / box-shadow / border-color / color
+  transitions; whileHover lifts y:-1 + whileTap scales 0.99
+  (suppressed under reduced motion).
+- molecule-a11y: role=button + tabIndex=0 + aria-label / -selected /
+  -invalid / -disabled when interactive; focus-visible primary ring;
+  Enter/Space click activation; aria-orientation on the host when a
+  divider is supplied (vertical for column, horizontal for row);
+  reducedMotion collapse via useReducedMotion + presentational
+  divider wrappers so screen readers don't double-announce them.
+
+Stories (Layout/Stack): Default, Variants, Sizes, Shapes, States,
+Slots, Spacing, Direction, Divider, Motion, Accessibility,
+Playground, InteractionSpec.
+
+Tests:
+- tests/visual/stack.spec.ts: 23 design-parity assertions
+  (variant role mapping, size scale padding + default child gap,
+  shape scale, spacing scale, direction → flex-direction, M3
+  emphasized easing + medium2 duration, state-layer 0.08 hover,
+  shape-morph 12px → 16px, focus-visible primary ring,
+  polymorphic `as`, dark theme surface swap, error/selected/
+  disabled paint, divider slot count + role=presentation +
+  aria-orientation host hint).
+- tests/visual/stack.visual.spec.ts: 10 baselines (variants /
+  sizes / shapes / states / divider × light + dark).
+
+Quality: typecheck + lint + vitest (4 tests) + storybook-build all
+green; full Playwright suite 1561/1561 green (no regressions).
+
+Feature counter: 675 -> 688 / 872 passing.
+
+Next: lowest-id false-feature is the Image List slice.
