@@ -4761,3 +4761,46 @@ Feature counter: 740 -> 753 / 872 passing.
 
 Next: lowest-id false-feature is the next ungated component slice
 (check feature_list.json for `passes:false` after this commit).
+
+[2026-04-30T11:11Z] Iteration 5: implemented popover--atom-anatomy through
+popover--playwright-spec (Popover slice) — playwright spec passing.
+
+Slice contents:
+- src/components/Popover/{anatomy.ts, types.ts, Popover.tsx, Popover.stories.tsx, index.ts}
+- tests/visual/popover.spec.ts (21 design-parity tests)
+- tests/visual/popover.visual.spec.ts (10 light/dark visual baselines committed)
+
+Re-skin source: MUI <Popover /> (https://mui.com/material-ui/react-popover/) —
+floating, anchor-aligned surface that powers Menu / picker dropdowns.
+M3 has no first-class Popover spec, so the slice maps the surface onto
+the M3 menu/popover spec at https://m3.material.io/components/menus/specs.
+5 surface variants (standard=surface-container/elev-2/xs, tonal=
+secondary-container/elev-1, outlined=transparent/1dp outline-variant
+border, text=transparent/no-shadow, elevated=surface-container-low/
+elev-3), 3 density sizes (sm 160..280 / md 200..360 / lg 280..480 px),
+full M3 7-token shape scale (default xs = M3 menu surface radius), 13
+placements (top/bottom/left/right × start/center/end + center) with
+flexbox-aligned positioner + placement-aware transform-origin so the
+surface scales out of the anchor edge, configurable offset (default 8dp
+M3 menu spacing), header (leading icon + title/label + trailing icon) +
+body + actions slots, optional scrim (defaults off — popovers are
+non-modal), Escape + click-outside dismissal hooks (onClose + onDismiss
+with disambiguating source), states (selected → secondary-container,
+disabled → 0.38 + pointer-events:none, error → error-container).
+Container transitions ride medium2 (300ms) on emphasized; surface
+enter/exit scales 95% ↔ 100% via AnimatePresence on the M3 standard
+tween; useReducedMotion collapses durations to 0. ARIA: role=dialog,
+aria-labelledby auto-wired to the title id when supplied,
+aria-disabled / aria-invalid / aria-selected mirror state props,
+aria-modal added only when scrim=true.
+
+Quality gates: pnpm typecheck (green), pnpm lint (green), pnpm test
+(4 token tests pass), pnpm build-storybook (built in 9s), pnpm
+test:e2e tests/visual/popover.spec.ts (21/21 pass), pnpm test:e2e
+tests/visual/popover.visual.spec.ts (10/10 baselines stable), full
+pnpm test:e2e (1772/1773, the single failure is the pre-existing
+data-grid flake — passes on isolated retry without code changes).
+
+Feature counter: 753 -> 766 / 872 passing.
+
+Next: lowest-id false-feature is popper--atom-anatomy (Popper slice).
