@@ -14,6 +14,27 @@ set -u
 PROJECT="/home/meir/Desktop/m4storybook"
 HARNESS="/home/meir/Desktop/autocodev1"
 LOG_DIR="$PROJECT/.codex-run"
+
+# Log unexpected signals so future crashes leave a fingerprint instead of
+# vanishing silently. EXIT trap is unconditional; signal traps fire first.
+_loop_trap() {
+  local sig="$1"
+  echo "[loop] *** received signal ${sig} at $(date -u +%FT%TZ); pid=$$ iter=${iter:-pre-init}" >>"${LOG_DIR}/nohup.out"
+  echo "[loop] *** trace:" >>"${LOG_DIR}/nohup.out"
+  caller 0 >>"${LOG_DIR}/nohup.out" 2>&1 || true
+  exit 130
+}
+_loop_exit() {
+  local code=$?
+  if [[ ${code} -ne 0 ]]; then
+    echo "[loop] *** exiting with code ${code} at $(date -u +%FT%TZ); pid=$$ iter=${iter:-pre-init}" >>"${LOG_DIR}/nohup.out"
+  fi
+}
+trap '_loop_trap HUP'  HUP
+trap '_loop_trap INT'  INT
+trap '_loop_trap TERM' TERM
+trap '_loop_trap PIPE' PIPE
+trap '_loop_exit' EXIT
 PROMPT_FILE="$LOG_DIR/coding_prompt.md"
 ITER_DIR="$LOG_DIR/iterations"
 HEALTH="$LOG_DIR/health.json"
