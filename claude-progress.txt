@@ -5165,3 +5165,61 @@ Verification:
 Feature counter: 875 -> 876 / 882 passing.
 
 Next: lowest-id false-feature (expressive-005-stagger-entry).
+
+[2026-04-30T13:15:24Z] Iteration 5: implemented expressive-005-stagger-entry
+(Stagger entrance for List, Menu, Speed Dial, Snackbar queue, Drawer
+items) — playwright spec passing.
+
+Added a shared M3 Expressive stagger preset to src/motion/presets.ts
+(`staggerParent` / `staggerChild` Variants pair plus a
+`staggerVariants(reduced)` helper). The schedule matches the M3
+Expressive motion guidance: 30ms inter-child delay (`STAGGER_DELAY_S`),
+20ms initial `delayChildren`, child enters fade + 6dp rise on the
+`emphasized-decelerate` token, exit on `emphasized-accelerate`. The
+helper collapses the cascade to instant when `useReducedMotion()`
+returns true so the AnimatePresence enter/exit hooks remain wired.
+
+Wired into the components called out by the spec:
+- List: `motion.ul` (and `motion.ol`) parent with `variants={parent}` +
+  `initial="closed" animate="open"`. ListContext exposes
+  `staggered: true` to its descendants so each `<ListItem>`'s `<li>`
+  promotes to `motion.li` with the child variants only inside a List.
+- Menu: the role="none" `<ul>` becomes `motion.ul` with parent
+  variants; each MenuRow `<li>` becomes `motion.li` with the child
+  variants.
+- SpeedDial: already had a stagger pattern; aligned its inline
+  `staggerChildren` from 0.04 → `STAGGER_DELAY_S` (0.03) and shared
+  the initial delay constant so a single edit propagates.
+- Drawer: per-section `<ul>` becomes `motion.ul` with the parent
+  schedule; each item `<li>` becomes `motion.li` with the child
+  variants. Modal drawer's slide-in chains into the children's
+  cascade.
+- Snackbar: added `SnackbarStack` (new export from
+  `@/components/Snackbar`) that maps queued items into a
+  `motion.ul` + per-item `motion.li` stagger wrapper, with the
+  per-snackbar slide-in unchanged. Provides the queue API the M3
+  Expressive snackbar guidance calls for without breaking the
+  existing single-Snackbar API.
+
+Reduced-motion guard: every component routes `useReducedMotion()`
+through `staggerVariants(reduced)` so the cascade collapses to
+0-duration / 0-offset under reduced motion. The prefers-reduced-motion
+CSS reset in `src/index.css` continues to cover the CSS transition
+path.
+
+Tests:
+- src/motion/presets.test.ts: added 3 vitest cases — one verifying
+  `staggerParent` schedules at 30ms with the M3 Expressive child
+  fade+rise, one verifying the reduced-motion collapse, and one
+  pinning the helper's identity for the no-reduced path. Total
+  17/17 unit tests passing.
+- pnpm typecheck ✓
+- pnpm lint ✓
+- pnpm build-storybook ✓ (10.11s, clean)
+- pnpm test:e2e tests/visual/{list,menu,drawer,snackbar,speed-dial}*.spec.ts
+  ✓ (50 visual + 104 interaction = 154/154, no re-baselines)
+- pnpm test:e2e ✓ (2055/2055 in 5.4m)
+
+Feature counter: 876 -> 877 / 882 passing.
+
+Next: lowest-id false-feature (expressive-006-variable-icons).

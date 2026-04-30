@@ -8,9 +8,20 @@ import {
   shapePressedStep,
   shapePx,
   springs,
+  staggerChild,
+  staggerParent,
+  staggerVariants,
+  STAGGER_DELAY_INITIAL_S,
+  STAGGER_DELAY_S,
   tweens,
 } from "./presets";
 import { shapeScale } from "@/tokens/shape";
+
+type ResolvedVariant = {
+  opacity?: number;
+  y?: number;
+  transition?: { duration?: number; staggerChildren?: number };
+};
 
 describe("M3 Expressive motion presets", () => {
   it("expressiveSprings exposes the three M3 Expressive roles", () => {
@@ -78,6 +89,38 @@ describe("M3 Expressive motion presets", () => {
     expect(ratio).toBeLessThan(1);
     expect(ratio).toBeGreaterThan(0.4);
     expect(stiffness).toBeGreaterThan(expressiveSprings.spatial.stiffness);
+  });
+
+  it("staggerParent / staggerChild drive the M3 Expressive 30ms cascade", () => {
+    expect(STAGGER_DELAY_S).toBeCloseTo(0.03);
+    expect(STAGGER_DELAY_INITIAL_S).toBeCloseTo(0.02);
+
+    const openParent = staggerParent.open as ResolvedVariant;
+    expect(openParent.transition?.staggerChildren).toBeCloseTo(0.03);
+
+    const openChild = staggerChild.open as ResolvedVariant;
+    expect(openChild.opacity).toBe(1);
+    expect(openChild.y).toBe(0);
+
+    const closedChild = staggerChild.closed as ResolvedVariant;
+    expect(closedChild.opacity).toBe(0);
+    expect(closedChild.y).toBeGreaterThan(0);
+  });
+
+  it("staggerVariants(reduced=true) collapses the cascade to instant", () => {
+    const { parent, child } = staggerVariants(true);
+    const parentOpen = parent.open as ResolvedVariant;
+    expect(parentOpen.transition?.staggerChildren).toBe(0);
+
+    const childClosed = child.closed as ResolvedVariant;
+    expect(childClosed.y).toBe(0);
+    expect(childClosed.transition?.duration).toBe(0);
+  });
+
+  it("staggerVariants(reduced=false) returns the canonical M3 Expressive variants", () => {
+    const { parent, child } = staggerVariants(false);
+    expect(parent).toBe(staggerParent);
+    expect(child).toBe(staggerChild);
   });
 
   it("shapePressedStep squares each shape down by one notch (no morph through 'none')", () => {

@@ -62,6 +62,10 @@ export const List = forwardRef<HTMLUListElement, ListProps>(function List(
   const { parent } = staggerVariants(reduced);
   const ctx: ListContextValue = { variant, size, staggered: true };
   const variantClass = variantClasses[variant].container;
+  // motion components retype DOM drag handlers to motion's PanInfo
+  // signature, which collides with React's HTMLAttributes drag
+  // handlers; cast through `unknown` to widen the consumer's
+  // arbitrary attrs into the motion-compatible shape.
   const sharedProps = {
     role: "list" as const,
     "data-component": "list",
@@ -71,7 +75,7 @@ export const List = forwardRef<HTMLUListElement, ListProps>(function List(
     variants: parent,
     initial: "closed" as const,
     animate: "open" as const,
-    ...rest,
+    ...(rest as unknown as Record<string, unknown>),
   };
 
   return (
@@ -309,7 +313,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(
 
     // Non-interactive row — render directly on the <li> and drop the
     // button-only handlers / aria.
-    const liRest = rest as React.LiHTMLAttributes<HTMLLIElement>;
+    const liRest = rest as unknown as Record<string, unknown>;
     return (
       <motion.li
         ref={ref}
