@@ -4319,3 +4319,29 @@ Next: lowest-id false-feature is now `pagination--*`.
 Feature counter: 584 -> 597 / 872 passing.
 
 Next: lowest-id false-feature is now `speed-dial--*`.
+
+[2026-04-30T05:50Z] Iter 18: Speed Dial slice complete.
+- 4 trigger variants (surface / primary / secondary / tertiary) × 3 sizes
+  (40/56/96 dp) × 4 directions (up/down/left/right) × 7 shapes; trigger
+  paints as the M3 Expressive FAB and morphs to shape-md while open.
+- Actions paint as the M3 Small FAB (40dp / shape-md / 24dp icon) on
+  surface-container-high for legibility over the dim backdrop.
+- Trigger icon morph: cross-fade + 45 deg rotate when no openIcon supplied;
+  swap when openIcon is provided. Springs.springy press scale (collapses
+  under reduced motion).
+- Per-action staggered enter/exit via motion/react variants with
+  emphasized-decelerate (medium1) opening / emphasized-accelerate (short4)
+  closing. Backdrop scrim fades at standard / medium2.
+- State-layer overlay at hover 0.08 / focus 0.10 / pressed 0.10 opacities
+  on both trigger and per-action.
+- WAI-ARIA: trigger has aria-haspopup="menu" + aria-expanded + aria-controls
+  pointing at the action menu's React useId. Actions paint as role="menuitem"
+  with roving-tabindex; Arrow{Up/Down/Left/Right} step focus along the open
+  list, Home/End jumps, Enter/Space activates, Escape closes and returns
+  focus to the trigger.
+- 24 design-parity assertions + 10 visual baselines (light + dark) committed.
+- Regression clean: pagination (22) + menu (21) still passing.
+
+Feature counter: 597 -> 610 / 872 passing.
+
+Next: lowest-id false-feature is now `stepper--*` (or further beyond).
