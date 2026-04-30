@@ -3712,3 +3712,45 @@ Feature counter: 441 → 454 / 872 passing.
 Next: pick up the next lowest-id navigation feature whose deps are
 satisfied — likely `breadcrumbs--atom-anatomy` (or whatever sorts
 first among unfinished navigation entries).
+
+[2026-04-30T00:06:18Z] Iteration 4:
+implemented Snackbar slice (13 features: anatomy / base / variants /
+sizes / states / slots / motion / a11y / story-default / story-variants /
+story-interaction / playwright-visual / playwright-spec).
+
+  - 4 variants per the M3 snackbar spec
+    https://m3.material.io/components/snackbar/specs:
+      filled    = inverse-surface host + inverse-on-surface label +
+                  inverse-primary action + elevation-3 (M3 default)
+      tonal     = surface-container-highest + on-surface label
+      outlined  = surface + 1dp outline border (no shadow)
+      elevated  = surface-container-high + elevation-3 floating card
+  - 3 densities (sm 40dp / md 48dp / lg 56dp) with body type role
+    stepping body-s -> body-m -> body-l per density and the action
+    label scaling label-m -> label-l -> label-l
+  - 7 shape tokens (none / xs / sm / md / lg / xl / full); default
+    shape-xs (4dp) per the M3 spec
+  - Min-width 344dp / max-width 672dp containment per M3 sizing rules
+  - Slots: optional leading icon (24dp at md), trailing action slot
+    (single text-button label per M3 spec), optional close icon
+    button with 0.08/0.10/0.10 state-layer opacities
+  - Origin-aware motion: 6 anchor positions (bottom + top × center
+    / start / end) drive the y-axis enter/exit translation; uses
+    motion/react AnimatePresence with the M3 emphasized tween
+    (medium2 / 300ms); reduced-motion collapses duration to 0
+  - Auto-hide timer with onClose("timeout") reason; Escape keypress
+    fires onClose("escapeKeyDown"); close icon fires
+    onClose("closeClick"); MUI-compatible SnackbarCloseReason union
+  - role="status" + aria-live="polite" + aria-atomic="true" by
+    default; both overridable for assertive critical errors
+  - Playwright spec covers 18 design-parity assertions (height
+    matrix, min/max width, color tokens, typography, shapes, motion
+    tokens, leading icon, action slot, close affordance, Escape
+    dismissal, dark theme); visual baselines committed for
+    variants / sizes / states / shapes / slots in light + dark
+  - Full e2e suite: 984/984 passing.
+
+Feature counter: 454 -> 467 / 872 passing.
+
+Next: pick up the next lowest-id navigation feature whose deps are
+satisfied (breadcrumbs--atom-anatomy).
