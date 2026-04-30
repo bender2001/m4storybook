@@ -4623,3 +4623,48 @@ green).
 Feature counter: 701 -> 714 / 872 passing.
 
 Next: lowest-id false-feature is the Modal slice.
+
+[2026-04-30T07:24:11Z] Iteration 2: implemented modal--* (Modal slice, all 13 features) — playwright spec passing.
+
+Modal is the M3 primitive that powers Dialog / Drawer / Bottom Sheet.
+src/components/Modal/{types,anatomy,Modal,index}.ts + Modal.stories.tsx ship:
+
+  - 5 variants: standard (surface-container-high + elevation-3),
+    tonal (primary-container + elevation-1), outlined (surface + 1dp
+    outline + elevation-0), text (transparent + no border + no
+    elevation), elevated (surface-container-low + elevation-4).
+  - 3 sizes: sm 280..400px, md 320..560px, lg 400..720px.
+  - Full shape scale (none/xs/sm/md/lg/xl/full), default xl (28dp).
+  - Header slot (leading 24dp icon + title-l + trailing close icon),
+    body content slot, trailing actions row.
+  - Built-in scrim via the existing Backdrop component (M3 32% opacity
+    filled scrim) with click-to-dismiss + scrim=false escape hatch.
+  - Auto-focus on open, Tab focus trap, Escape-to-close, ARIA dialog
+    + aria-modal=true, aria-labelledby auto-wired to the title id.
+  - Disabled state dims to opacity 0.38 + !pointer-events-none
+    (important modifier needed to override surface's pointer-events-auto).
+  - Motion via motion/react: surface scales 95% -> 100% on enter and
+    back to 95% on exit with the M3 standard tween (medium2 / 300ms).
+    useReducedMotion collapses to duration 0.
+
+Tests: tests/visual/modal.spec.ts (24 design-parity assertions) +
+modal.visual.spec.ts (10 baselines, light + dark per story).
+
+Notes:
+  - Fix landed for the dark-theme test: bg-color transition races the
+    decorator's data-theme swap, so the assertion uses Playwright's
+    auto-retrying toHaveCSS matcher instead of a single getComputedStyle
+    read.
+  - Disabled pointer-events needs `!pointer-events-none` because
+    Tailwind utilities for pointer-events tie at the same specificity
+    and order is not guaranteed; the important modifier wins cleanly.
+
+Quality gates: pnpm typecheck (green), pnpm lint (green), pnpm test
+(4 token tests pass), pnpm build-storybook (built in 11s), pnpm
+test:e2e --grep "Modal -" (35/35 pass), full pnpm test:e2e (1677/1678,
+the single failure is a pre-existing data-grid flake unrelated to
+Modal — passes on retry).
+
+Feature counter: 714 -> 727 / 872 passing.
+
+Next: lowest-id false-feature is no-ssr--atom-anatomy (No SSR slice).
