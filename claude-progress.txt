@@ -4804,3 +4804,62 @@ data-grid flake — passes on isolated retry without code changes).
 Feature counter: 753 -> 766 / 872 passing.
 
 Next: lowest-id false-feature is popper--atom-anatomy (Popper slice).
+
+[2026-04-30T08:28Z] Iteration 6: implemented popper--atom-anatomy through
+popper--playwright-spec (Popper slice) — playwright spec passing.
+
+Slice contents:
+- src/components/Popper/{anatomy.ts, types.ts, Popper.tsx, Popper.stories.tsx, index.ts}
+- tests/visual/popper.spec.ts (22 design-parity tests)
+- tests/visual/popper.visual.spec.ts (10 light/dark visual baselines committed)
+
+Re-skin source: MUI <Popper /> (https://mui.com/material-ui/react-popper/) —
+the unstyled, anchor-positioned primitive that powers Tooltip /
+Autocomplete listbox / Menu containers. M3 has no first-class popper
+component, so the slice reskins the surface onto the M3 tooltip /
+menu spec at https://m3.material.io/components/tooltips/specs.
+5 surface variants (standard=surface-container-high/elev-2/sm,
+tonal=secondary-container/elev-1, outlined=transparent/1dp
+outline-variant, text=transparent/no-shadow, elevated=
+surface-container-low/elev-3), 3 density sizes (sm 96..224 / md
+144..320 / lg 200..400 px), full M3 7-token shape scale (default
+sm = M3 tooltip surface radius), 13 placements (top/bottom/left/right
+× start/center/end + center) with flexbox-aligned positioner +
+placement-aware transform-origin so the surface scales out of the
+anchor edge, configurable offset (default 12dp M3 tooltip spacing),
+optional caret arrow that mounts on the surface edge nearest the
+anchor, leading + label + content + trailing slots, modifier
+mirrors (data-flip / data-keep-in-viewport reflect the conceptual
+popper.js modifier choice without actually running popper.js),
+states (selected -> secondary-container, disabled -> 0.38 +
+pointer-events:none, error -> error-container). Container transitions
+ride medium2 (300ms) on emphasized; surface enter/exit scales 96% <->
+100% via AnimatePresence on the M3 standard tween; useReducedMotion
+collapses durations to 0. ARIA: role defaults to tooltip,
+aria-describedby auto-wired to the body content id, aria-disabled /
+aria-invalid / aria-selected mirror state props, tabIndex=-1 keeps
+the surface programmatically focusable for Escape handling.
+
+Differentiators from Popover (already shipped): Popper defaults to
+sm size + sm shape (M3 tooltip band, not menu band), default
+placement bottom + offset 12 (vs. bottom-start + 8 for Popover),
+ships an opt-in arrow caret, exposes flip / keepInViewport modifier
+mirrors, role defaults to tooltip (vs. dialog), drops the title /
+header / actions composition that Popover hosts (Popper hosts hint
+copy / inline list content rather than full dialogs), and never
+renders a scrim (Popper is non-modal by definition). The surface
+matrix overlaps for tonal / outlined / text / elevated; standard
+swaps surface-container -> surface-container-high to match the
+elevated tooltip spec.
+
+Quality gates: pnpm typecheck (green), pnpm lint (green), pnpm test
+(4 token tests pass), pnpm build-storybook (built in 9.6s), pnpm
+test:e2e tests/visual/popper.spec.ts (22/22 pass), pnpm test:e2e
+tests/visual/popper.visual.spec.ts (10/10 baselines stable), full
+pnpm test:e2e (1804/1805, the single failure is the pre-existing
+data-grid flake — passes on isolated retry without code changes).
+
+Feature counter: 766 -> 779 / 872 passing.
+
+Next: lowest-id false-feature after this commit (check feature_list.json
+for `passes:false`).
