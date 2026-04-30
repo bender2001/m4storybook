@@ -152,6 +152,7 @@ test.describe("Timeline - M3 design parity", () => {
   test("disabled item paints the M3 disabled wash + aria-disabled", async ({
     page,
   }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(storyUrl("advanced-timeline--states"));
     const item = page
       .locator(
@@ -159,10 +160,14 @@ test.describe("Timeline - M3 design parity", () => {
       )
       .first();
     await expect(item).toBeVisible();
-    const opacity = await item.evaluate(
-      (el) => window.getComputedStyle(el).opacity,
-    );
-    expect(parseFloat(opacity)).toBeCloseTo(0.38, 2);
+    // Opacity is routed through motion.li's `animate` prop because
+    // motion/react writes inline `opacity` that beats the CSS class.
+    // Poll until the spring settles on 0.38.
+    await expect
+      .poll(() =>
+        item.evaluate((el) => parseFloat(window.getComputedStyle(el).opacity)),
+      )
+      .toBeCloseTo(0.38, 2);
     const content = page
       .locator(
         "[data-component='timeline-content'][data-id='disabled']",
@@ -330,10 +335,13 @@ test.describe("Timeline - M3 design parity", () => {
     page,
   }) => {
     await page.goto(storyUrl("advanced-timeline--positions"));
+    await page.waitForLoadState("networkidle");
     const wrap = page
       .locator("[data-component='timeline'][data-position='alternate']")
       .first();
     const items = wrap.locator("[data-component='timeline-item']");
+    await expect(items.first()).toBeAttached();
+    await expect.poll(() => items.count()).toBeGreaterThanOrEqual(2);
     const layouts = await items.evaluateAll((nodes) =>
       nodes.map((n) => n.getAttribute("data-layout")),
     );
@@ -346,10 +354,13 @@ test.describe("Timeline - M3 design parity", () => {
     page,
   }) => {
     await page.goto(storyUrl("advanced-timeline--positions"));
+    await page.waitForLoadState("networkidle");
     const wrap = page
       .locator("[data-component='timeline'][data-position='left']")
       .first();
     const items = wrap.locator("[data-component='timeline-item']");
+    await expect(items.first()).toBeAttached();
+    await expect.poll(() => items.count()).toBeGreaterThanOrEqual(2);
     const layouts = await items.evaluateAll((nodes) =>
       nodes.map((n) => n.getAttribute("data-layout")),
     );

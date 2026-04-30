@@ -54,8 +54,13 @@ export const anatomy = {
   itemLeft: ["flex-row"].join(" "),
   /** Right layout: content | separator | opposite. */
   itemRight: ["flex-row-reverse"].join(" "),
-  /** Disabled wash for a single row. */
-  itemDisabled: "opacity-[0.38] cursor-not-allowed",
+  /**
+   * Disabled wash for a single row. The opacity portion is routed
+   * through motion's `animate` prop because motion/react writes an
+   * inline `opacity` style that beats Tailwind's `opacity-[0.38]`
+   * class. This class only carries the cursor + pointer-events bits.
+   */
+  itemDisabledCursor: "cursor-not-allowed",
   /** Opposite content slot (timestamp / metadata). */
   oppositeContent: [
     "relative z-[1] flex-1 min-w-0",

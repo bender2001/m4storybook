@@ -393,6 +393,11 @@ function TimelineRow({
     transform: "translate(-50%, -50%)",
   };
 
+  // Disabled wash routes through `animate` because motion/react writes
+  // inline `opacity` that beats Tailwind's `opacity-[0.38]` class. The
+  // wrapper-level `disabled` swap rides the same path.
+  const targetOpacity = isDisabled ? 0.38 : 1;
+
   return (
     <motion.li
       data-component="timeline-item"
@@ -408,14 +413,14 @@ function TimelineRow({
         anatomy.item,
         layoutMode === "left" ? anatomy.itemLeft : anatomy.itemRight,
         sizes.contentGap,
-        isDisabled && anatomy.itemDisabled,
+        isDisabled && anatomy.itemDisabledCursor,
       )}
       initial={
         reduced
-          ? { opacity: 1, y: 0 }
+          ? { opacity: targetOpacity, y: 0 }
           : { opacity: 0, y: 12 }
       }
-      animate={{ opacity: 1, y: 0 }}
+      animate={{ opacity: targetOpacity, y: 0 }}
       transition={
         reduced
           ? { duration: 0 }
