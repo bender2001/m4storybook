@@ -5005,3 +5005,75 @@ Quality gates: pnpm typecheck (green), pnpm lint (green), pnpm test --run (11/11
 Feature counter: 872 -> 873 / 882 passing.
 
 Next: lowest-id false-feature after this commit (check feature_list.json for `passes:false`).
+
+[2026-04-30T12:33:10Z] Iteration 15: implemented expressive-002-shape-morph (M3 Expressive shape morphing on press) — feature flipped to passes:true. Total: 874/882 passing.
+
+Wired motion/react-driven corner-radius animation on every interactive
+container the spec calls out (Button, IconButton, FAB, Chip,
+ToggleButton, Card; Switch handle was already morph-driven). The corner
+now rides the M3 motion tokens (medium2 / 300ms emphasized cubic-bezier)
+through motion/react `animate={{ borderRadius: <px> }}` rather than a
+Tailwind class swap, so the morph is observable via `getComputedStyle`
+and respects `useReducedMotion()` (transition collapses to duration 0).
+
+Per-component morph map:
+- Button — rest = shape-full pill (9999px → clamps to half-height),
+  pressed = shape-lg (16px). Squarer on press for tactile feedback.
+- FAB — rest = size's resting shape (sm shape-md / md shape-lg / lg
+  shape-xl), pressed = one notch squarer via `shapePressedStep`.
+- IconButton — rest = circle (shape-full), selected = per-size squircle
+  (sm-shape-sm / md-shape-md / lg-shape-lg), pressed = one notch
+  squarer in either state. The per-state radius value drives motion's
+  animate prop instead of swapping the rounded-shape-* class.
+- Chip — rest = shape-sm (8px), selected = pill (9999px). Pressed
+  nudges one step squarer in either state.
+- ToggleButton — rest = pill, selected = shape-md (12px). Pressed
+  nudges one step squarer.
+- Card — rest = `shape` prop, hover/focus/pressed = morphTarget
+  (one notch up). Now driven through motion/react animate so the
+  hover lift and radius pulse share the same spring timing.
+- Switch handle — already animated 16dp → 24dp → 28dp via motion;
+  no change.
+
+Core helpers added in src/motion/presets.ts:
+- `shapePx: Record<ShapeRole, number>` mirrors the Tailwind shape
+  scale (none 0 / xs 4 / sm 8 / md 12 / lg 16 / xl 28 / full 9999) as
+  numeric pixels for motion to interpolate.
+- `shapePressedStep: Record<ShapeRole, ShapeRole>` is the one-step-down
+  lookup the press feedback uses (full → lg, lg → md, md → sm, …,
+  none/xs floor at xs/none).
+- `shapeMorphTransition` is a 300ms emphasized cubic-bezier tween
+  used specifically for the borderRadius animation. (A spring like
+  the spatial preset over a 9987px rest-pill delta produces a
+  multi-second tail — not what M3 Expressive shape morph asks for. The
+  scale / y / shadow channels still ride the spatial spring; only
+  borderRadius is tweened.) Per-component the transition is composed:
+  `transition={ default: springs.springy, borderRadius: shapeMorphTransition }`.
+
+Why: tweens.emphasized lives at medium4 (400ms); the M3 shape-morph
+tokens ride medium2. shapeMorphTransition is a dedicated preset rather
+than a re-use of an existing tween so future tuning (e.g. swapping in
+medium3 for a particular surface) stays scoped.
+
+Reduced-motion guard: every `transition=` ternary collapses to
+`{ duration: 0 }` when `useReducedMotion()` returns true, matching the
+existing pattern across the project.
+
+Test updates:
+- tests/visual/icon-button.spec.ts: replaced the fixed `waitForTimeout(360)`
+  with `expect.poll(...).toBe(12)` so the assertion settles on the
+  motion-driven target rather than reading a mid-transition value.
+- tests/visual/toggle-button.spec.ts: same replacement for the
+  shape-md morph assertion after toggle.
+- src/motion/presets.test.ts: added 2 vitest assertions covering
+  `shapePx` (mirrors `shapeScale`) and `shapePressedStep` (one-notch
+  step-down with xs/none floor).
+
+Quality gates: pnpm typecheck (green), pnpm lint (green), pnpm test
+--run (13/13 — 4 token + 9 motion preset), pnpm build-storybook
+(10.09s, clean), pnpm test:e2e (2054/2054 passing in 5.5m).
+
+Feature counter: 873 -> 874 / 882 passing.
+
+Next: lowest-id false-feature after this commit (check feature_list.json
+for `passes:false` — expressive-003-bouncy-press is next in the queue).
