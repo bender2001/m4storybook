@@ -4929,3 +4929,6 @@ Feature counter: 779 -> 792 / 872 passing.
 
 Next: lowest-id false-feature after this commit (check feature_list.json
 for `passes:false`).
+
+[2026-04-30T09:03:22Z] Iteration 9: implemented textarea-autosize (Textarea Autosize) slice — 13 features flipped (atom-anatomy, atom-base, atom-variants, atom-sizes, atom-states, molecule-slots, molecule-motion, molecule-a11y, story-default, story-variants, story-interaction, playwright-visual, playwright-spec). All 20 design-parity Playwright tests + 10 light/dark visual baselines pass. Slice picks up the MUI TextareaAutosize API (minRows/maxRows clamps via scrollHeight + lineHeight measurement) and re-skins it onto M3 text-field tokens (5 variants × 3 sizes × 7 shapes, label/helper/leading/trailing slots, M3 emphasized 300ms motion, focus-morphs-to-primary border, error-container + secondary-container fills, aria-multiline + aria-describedby wiring). Total: 805/872 passing.
+Next: transitions--atom-anatomy.

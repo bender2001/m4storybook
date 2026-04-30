@@ -389,11 +389,9 @@ test.describe("TextareaAutosize - M3 design parity", () => {
     await textarea.focus();
     await expect(host).toHaveAttribute("data-focused", "true");
     const tray = host.locator("[data-slot='tray']").first();
-    const borderColor = await tray.evaluate(
-      (el) => window.getComputedStyle(el).borderTopColor,
-    );
-    // Primary border in light theme.
-    expect(borderColor).toBe("rgb(103, 80, 164)");
+    // border-top-color rides the medium2 (300ms) emphasized transition;
+    // poll via toHaveCSS so the assertion outlasts the morph.
+    await expect(tray).toHaveCSS("border-top-color", "rgb(103, 80, 164)");
   });
 
   test("ARIA wiring: aria-multiline + role=textbox via native textarea", async ({
