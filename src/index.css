@@ -162,3 +162,25 @@ body {
   width: 100%;
   object-fit: contain;
 }
+
+/*
+ * Masonry tile flow rules. Mirrors ImageList's masonry arrangement:
+ * each tile becomes a `break-inside: avoid` block inside the host's
+ * CSS multi-columns and gets a `margin-bottom` keyed off the host's
+ * column gap so vertical rhythm matches the configured spacing.
+ */
+[data-component="masonry"]
+  > [data-slot="layout"]
+  > [data-component="masonry-item"] {
+  display: block;
+  break-inside: avoid;
+  margin-bottom: var(--masonry-row-gap, 8px);
+}
+[data-component="masonry"]
+  > [data-slot="layout"]
+  > [data-component="masonry-item"]
+  > img {
+  height: auto;
+  width: 100%;
+  object-fit: contain;
+}

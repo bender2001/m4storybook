@@ -4668,3 +4668,63 @@ Modal — passes on retry).
 Feature counter: 714 -> 727 / 872 passing.
 
 Next: lowest-id false-feature is no-ssr--atom-anatomy (No SSR slice).
+
+[2026-04-30T07:38Z] Iteration 3: Masonry slice complete.
+
+Implemented all 13 Masonry features (atom-anatomy → atom-base →
+atom-variants → atom-sizes → atom-states → molecule-slots →
+molecule-motion → molecule-a11y → story-default → story-variants →
+story-interaction → playwright-visual → playwright-spec) in a single
+session.
+
+What shipped:
+  - src/components/Masonry/types.ts: MasonryProps + MasonryItemProps
+    + variant/size/shape/elevation/spacing/packing token unions.
+  - src/components/Masonry/anatomy.ts: anatomy class strings, variant
+    matrix (text/filled/tonal/outlined/elevated), size matrix
+    (sm/md/lg → 8/16/24dp pad + xs/sm/md gap default), shape token
+    map + Expressive morph map (md→lg, lg→xl, …), elevation 0..5.
+  - src/components/Masonry/Masonry.tsx: Pinterest-style multi-column
+    layout (CSS columns) re-skinned with M3 tokens. Polymorphic via
+    `as`, optional header (label + leading/trailing icon slots),
+    balanced + sequential packing (column-fill: balance|auto). Tile
+    component paints state-layer at 0.08/0.10/0.10 opacities, morphs
+    corner one shape step on hover/focus/pressed, springs.springy
+    transition, motion/react `whileHover` and `whileTap` for
+    Y-translate + scale-press feedback. Reduced-motion drops all
+    transitions to {duration: 0} via useReducedMotion.
+  - src/index.css: scoped masonry tile rules — break-inside: avoid,
+    margin-bottom: var(--masonry-row-gap), img height: auto.
+  - src/components/Masonry/Masonry.stories.tsx: Default + Variants
+    + Packing + Sizes + Shapes + States + Slots + Motion +
+    Accessibility + Playground + InteractionSpec (mouse + Enter +
+    Space activation, role/data wiring assertions).
+  - tests/visual/masonry.spec.ts (23 design-parity tests covering
+    variants, sizes, shapes, packing, multi-column layout, tile
+    state-layer + shape morph, focus ring, leading/trailing icons,
+    polymorphic `as`, dark-theme parity, M3 emphasized motion,
+    aria-roledescription, role=listitem on plain tiles).
+  - tests/visual/masonry.visual.spec.ts (10 baselines, light + dark
+    per story).
+
+Notes:
+  - Masonry has no native M3 spec; the slice re-skins MUI's Masonry
+    primitive with M3 tokens (the same approach as the ImageList
+    masonry arrangement).
+  - Layout uses native CSS multi-columns rather than JS measurement.
+    Balanced (default) maps to column-fill: balance and sequential
+    maps to column-fill: auto, mirroring MUI's `defaultPacking`.
+  - Tile vertical rhythm comes from a scoped CSS rule keyed off the
+    host's `--masonry-row-gap` custom property so spacing token
+    changes flow into both column-gap (CSS) and tile margin-bottom.
+
+Quality gates: pnpm typecheck (green), pnpm lint (green), pnpm test
+(4 token tests pass), pnpm build-storybook (built in 9s), pnpm
+test:e2e tests/visual/masonry.spec.ts (23/23 pass), pnpm test:e2e
+tests/visual/masonry.visual.spec.ts (10/10 baselines stable), full
+pnpm test:e2e (1710/1711, the single failure is a pre-existing
+data-grid flake — passes on isolated retry without code changes).
+
+Feature counter: 727 -> 740 / 872 passing.
+
+Next: lowest-id false-feature is no-ssr--atom-anatomy (No SSR slice).
