@@ -4728,3 +4728,36 @@ data-grid flake — passes on isolated retry without code changes).
 Feature counter: 727 -> 740 / 872 passing.
 
 Next: lowest-id false-feature is no-ssr--atom-anatomy (No SSR slice).
+
+[2026-04-30T07:57Z] Iteration 4: implemented no-ssr--atom-anatomy through
+no-ssr--playwright-spec (No SSR slice) — playwright spec passing.
+
+Slice contents:
+- src/components/NoSsr/{anatomy.ts, types.ts, NoSsr.tsx, NoSsr.stories.tsx, index.ts}
+- tests/visual/no-ssr.spec.ts (21 design-parity tests)
+- tests/visual/no-ssr.visual.spec.ts (10 light/dark visual baselines committed)
+
+Re-skin source: MUI <NoSsr /> (https://mui.com/material-ui/react-no-ssr/) —
+deferred client-only render utility. M3 has no equivalent component, so
+the slice maps the deferred-render lifecycle onto an M3 surface-aware
+slot: 5 surface variants (text/filled/tonal/outlined/elevated), 3 density
+sizes (sm/md/lg) driving padding + gap + min-height + body-type role,
+full M3 7-token shape scale (none/xs/sm/md/lg/xl/full), states
+(selected/disabled/error), leading + trailing icon + label slots, and a
+tri-state strategy (mount / defer / idle) that selects when the deferred
+children commit (first useEffect tick, next animation frame, or
+requestIdleCallback). Pending fallback fades out and deferred children
+fade in on the M3 medium2 (300ms) duration with the emphasized easing;
+container transitions ride the same envelope so theme changes animate
+fluidly. data-mounted + aria-busy reflect the deferred-render lifecycle
+so consumers (and Playwright) can observe the commit deterministically.
+
+Quality gates: pnpm typecheck (green), pnpm lint (green), pnpm test
+(4 token tests pass), pnpm build-storybook (built in 9s), pnpm
+test:e2e tests/visual/no-ssr.spec.ts (21/21 pass), pnpm test:e2e
+tests/visual/no-ssr.visual.spec.ts (10/10 baselines stable).
+
+Feature counter: 740 -> 753 / 872 passing.
+
+Next: lowest-id false-feature is the next ungated component slice
+(check feature_list.json for `passes:false` after this commit).
