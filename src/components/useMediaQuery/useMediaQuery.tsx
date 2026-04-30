@@ -10,7 +10,7 @@ import {
   type Transition,
 } from "motion/react";
 import { cn } from "@/lib/cn";
-import { springs } from "@/motion/presets";
+import { expressiveSprings, springs } from "@/motion/presets";
 import {
   anatomy,
   shapeClasses,
@@ -149,7 +149,7 @@ function MediaQueryInner(
       tabIndex={disabled ? -1 : 0}
       initial={false}
       animate={{ opacity: disabled ? 0.38 : 1 }}
-      transition={reduced ? { duration: 0 } : { duration: 0.2 }}
+      transition={reduced ? { duration: 0 } : expressiveSprings.effects}
       className={cn(
         anatomy.root,
         sizes.pad,

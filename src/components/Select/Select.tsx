@@ -10,7 +10,7 @@ import {
 import type { KeyboardEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { tweens } from "@/motion/presets";
+import { expressiveSprings, tweens } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
 import {
   anatomy,
@@ -27,18 +27,21 @@ export type {
   SelectVariant,
 } from "./types";
 
-const ChevronIcon = ({ open }: { open: boolean }) => (
-  <motion.svg
-    aria-hidden
-    viewBox="0 0 20 20"
-    className="h-full w-full"
-    animate={{ rotate: open ? 180 : 0 }}
-    transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
-    fill="currentColor"
-  >
-    <path d="M5.5 7.5L10 12l4.5-4.5H5.5z" />
-  </motion.svg>
-);
+const ChevronIcon = ({ open }: { open: boolean }) => {
+  const reduced = useReducedMotion();
+  return (
+    <motion.svg
+      aria-hidden
+      viewBox="0 0 20 20"
+      className="h-full w-full"
+      animate={{ rotate: open ? 180 : 0 }}
+      transition={reduced ? { duration: 0 } : expressiveSprings.spatial}
+      fill="currentColor"
+    >
+      <path d="M5.5 7.5L10 12l4.5-4.5H5.5z" />
+    </motion.svg>
+  );
+};
 
 /**
  * Select component — M3 fallback (no dedicated Expressive spec).

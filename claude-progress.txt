@@ -4980,3 +4980,28 @@ Cross-checked the slug→docs mapping by parsing storybook-static/index.json aft
 Feature counter: 870 -> 872 / 872 passing.
 
 Project complete: every feature in feature_list.json now passes.
+
+[2026-04-30T11:55:59Z] Iteration 14: implemented expressive-001-springs (M3 Expressive spring-based motion audit) — feature flipped to passes:true. Total: 873/882 passing.
+
+Added three named M3 Expressive spring presets to src/motion/presets.ts derived from the M3 motion-token spec (https://m3.material.io/styles/motion/easing-and-duration/tokens-specs):
+- `expressiveSprings.spatial` (stiffness 380, damping 24, mass 1 — damping ratio ~0.62) for entrance/exit, size, and position morphs that benefit from a controlled overshoot — the M3 Expressive default.
+- `expressiveSprings.effects` (1600 / 80 / 1 — ratio ~1.0) for color/opacity transitions that must NOT overshoot (color flicker is a regression in M3 Expressive guidance).
+- `expressiveSprings.default` (500 / 30 / 1 — ratio ~0.67) for everyday state changes (slight bounce, faster settle than spatial).
+
+Also exported the three presets as named singletons (`expressiveSpatial`, `expressiveEffects`, `expressiveDefault`) and aliased the legacy `springs.springy` / `springs.gentle` shorthands to the new spatial / default presets so the 56 existing call-sites remain a single import-line away.
+
+Refactored four components that still carried inline `{ duration: 0.2 }` / `{ duration: 0.3 }` magic-number tweens, replacing them with preset imports + reduced-motion guards:
+- src/components/Autocomplete/Autocomplete.tsx — chevron rotation now rides `expressiveSprings.spatial` and honors `useReducedMotion()` (previously a hard-coded 200ms tween that ignored prefers-reduced-motion).
+- src/components/Select/Select.tsx — same chevron refactor.
+- src/components/Pagination/Pagination.tsx — disabled-opacity transition uses `expressiveSprings.effects` (color/opacity → critically damped).
+- src/components/useMediaQuery/useMediaQuery.tsx — disabled-opacity transition uses `expressiveSprings.effects`.
+
+The chevron refactor closes a real reduced-motion bug: the inline tween rotated 200ms regardless of OS preference; the Playwright reduced-motion verification gate (expressive-010) would have caught this.
+
+Added src/motion/presets.test.ts with 7 vitest assertions: exports cover the three M3 Expressive roles, each preset is a motion/react spring transition with numeric stiffness/damping/mass, spatial damping ratio < 1 (overshoot), effects damping ratio >= 1 (critically damped), named singletons reference the same objects as the map keys, legacy `springy` / `gentle` aliases inherit from the expressive presets, and the tween fallbacks still map onto the M3 motion duration tokens.
+
+Quality gates: pnpm typecheck (green), pnpm lint (green), pnpm test --run (11/11 pass — 4 token + 7 motion preset), pnpm build-storybook (10.16s), pnpm test:e2e tests/visual/{autocomplete,select,pagination,use-media-query}.spec.ts (72/72 design-parity tests pass), pnpm test:e2e tests/visual/{autocomplete,select,pagination,use-media-query}.visual.spec.ts (36/36 light/dark visual baselines stable — no re-baseline).
+
+Feature counter: 872 -> 873 / 882 passing.
+
+Next: lowest-id false-feature after this commit (check feature_list.json for `passes:false`).

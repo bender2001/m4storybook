@@ -14,14 +14,37 @@ const cubic = (e: string): [number, number, number, number] => {
 };
 
 /**
- * M3 Expressive springs. Tuned to feel like the M3 docs:
- * `springy` is the default for shape-morph + bouncy press,
- * `gentle` for low-emphasis state changes, and `snappy` for
- * highly responsive UI surfaces (FAB, switches, sliders).
+ * M3 Expressive spring physics, derived from the official M3 motion
+ * spring tokens (https://m3.material.io/styles/motion/easing-and-duration/tokens-specs).
+ *
+ * - `spatial` is for entrance / exit / size / position changes; the
+ *   damping ratio (~0.62) gives the controlled overshoot that
+ *   distinguishes M3 Expressive from baseline M3.
+ * - `effects` is for color / opacity / non-spatial state changes;
+ *   it is critically damped (ratio ~1.0) to avoid color flicker.
+ * - `default` is the everyday spring for most state transitions
+ *   (slight overshoot, faster settle than spatial).
+ */
+export const expressiveSprings = {
+  spatial: { type: "spring", stiffness: 380, damping: 24, mass: 1 },
+  effects: { type: "spring", stiffness: 1600, damping: 80, mass: 1 },
+  default: { type: "spring", stiffness: 500, damping: 30, mass: 1 },
+} as const satisfies Record<string, Transition>;
+
+export const expressiveSpatial: Transition = expressiveSprings.spatial;
+export const expressiveEffects: Transition = expressiveSprings.effects;
+export const expressiveDefault: Transition = expressiveSprings.default;
+
+/**
+ * Shorthand aliases used across components. `springy` maps to the
+ * spatial preset (the M3 Expressive default for shape morph + bouncy
+ * press), `gentle` maps to the everyday `default` spring, and
+ * `snappy` is a high-stiffness variant for highly responsive
+ * surfaces (FAB, switches, sliders).
  */
 export const springs = {
-  springy: { type: "spring", stiffness: 380, damping: 24, mass: 1 },
-  gentle: { type: "spring", stiffness: 200, damping: 26, mass: 1 },
+  springy: expressiveSprings.spatial,
+  gentle: expressiveSprings.default,
   snappy: { type: "spring", stiffness: 500, damping: 30, mass: 1 },
 } as const satisfies Record<string, Transition>;
 

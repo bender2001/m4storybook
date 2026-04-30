@@ -11,7 +11,7 @@ import {
 } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { springs } from "@/motion/presets";
+import { expressiveSprings, springs } from "@/motion/presets";
 import { stateLayerOpacity } from "@/tokens/motion";
 import {
   anatomy,
@@ -440,7 +440,7 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(
         )}
         initial={false}
         animate={{ opacity: disabled ? 0.38 : 1 }}
-        transition={reduced ? { duration: 0 } : { duration: 0.3 }}
+        transition={reduced ? { duration: 0 } : expressiveSprings.effects}
         {...rest}
       >
         <ul

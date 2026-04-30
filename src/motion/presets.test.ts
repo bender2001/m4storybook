@@ -1,0 +1,57 @@
+import { describe, expect, it } from "vitest";
+import {
+  expressiveDefault,
+  expressiveEffects,
+  expressiveSpatial,
+  expressiveSprings,
+  springs,
+  tweens,
+} from "./presets";
+
+describe("M3 Expressive motion presets", () => {
+  it("expressiveSprings exposes the three M3 Expressive roles", () => {
+    expect(Object.keys(expressiveSprings).sort()).toEqual([
+      "default",
+      "effects",
+      "spatial",
+    ]);
+  });
+
+  it("each expressive spring is a motion/react spring transition", () => {
+    for (const key of ["spatial", "effects", "default"] as const) {
+      const preset = expressiveSprings[key];
+      expect(preset.type).toBe("spring");
+      expect(typeof preset.stiffness).toBe("number");
+      expect(typeof preset.damping).toBe("number");
+      expect(typeof preset.mass).toBe("number");
+    }
+  });
+
+  it("spatial spring is bouncy (damping ratio < 1) — matches M3 Expressive overshoot", () => {
+    const { stiffness, damping, mass } = expressiveSprings.spatial;
+    const ratio = damping / (2 * Math.sqrt(stiffness * mass));
+    expect(ratio).toBeLessThan(1);
+  });
+
+  it("effects spring is critically damped (no overshoot) — matches M3 Expressive color/opacity guidance", () => {
+    const { stiffness, damping, mass } = expressiveSprings.effects;
+    const ratio = damping / (2 * Math.sqrt(stiffness * mass));
+    expect(ratio).toBeGreaterThanOrEqual(1);
+  });
+
+  it("named exports point at the same objects as the map keys", () => {
+    expect(expressiveSpatial).toBe(expressiveSprings.spatial);
+    expect(expressiveEffects).toBe(expressiveSprings.effects);
+    expect(expressiveDefault).toBe(expressiveSprings.default);
+  });
+
+  it("legacy springy/gentle aliases inherit from the expressive presets", () => {
+    expect(springs.springy).toBe(expressiveSprings.spatial);
+    expect(springs.gentle).toBe(expressiveSprings.default);
+  });
+
+  it("tweens map onto M3 motion duration tokens (numeric seconds)", () => {
+    expect(tweens.emphasized.duration).toBeGreaterThan(0);
+    expect(Array.isArray(tweens.emphasized.ease)).toBe(true);
+  });
+});
