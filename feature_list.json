@@ -46907,5 +46907,2503 @@
       "If any component fails this check, fix it (collapse the motion/react `transition` to `{ duration: 0 }` when `useReducedMotion()` returns true)."
     ],
     "ui_states": []
+  },
+  {
+    "id": "m3-audit-badges",
+    "component": "M3 Audit",
+    "title": "Badges: align with https://m3.material.io/components/badges/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/badges/overview, https://m3.material.io/components/badges/specs, https://m3.material.io/components/badges/guidelines, https://m3.material.io/components/badges/accessibility before editing.",
+      "Badges: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Badges: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Badges: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Badges: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Badges: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Badges: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-common-buttons",
+    "component": "M3 Audit",
+    "title": "Common buttons: align with https://m3.material.io/components/common-buttons/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/common-buttons/overview, https://m3.material.io/components/common-buttons/specs, https://m3.material.io/components/common-buttons/guidelines, https://m3.material.io/components/common-buttons/accessibility before editing.",
+      "Common buttons: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Common buttons: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Common buttons: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Common buttons: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Common buttons: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Common buttons: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-button-groups",
+    "component": "M3 Audit",
+    "title": "Button groups: align with https://m3.material.io/components/button-groups/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/button-groups/overview, https://m3.material.io/components/button-groups/specs, https://m3.material.io/components/button-groups/guidelines, https://m3.material.io/components/button-groups/accessibility before editing.",
+      "Button groups: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Button groups: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Button groups: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Button groups: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Button groups: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Button groups: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-cards",
+    "component": "M3 Audit",
+    "title": "Cards: align with https://m3.material.io/components/cards/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/cards/overview, https://m3.material.io/components/cards/specs, https://m3.material.io/components/cards/guidelines, https://m3.material.io/components/cards/accessibility before editing.",
+      "Cards: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Cards: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Cards: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Cards: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Cards: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Cards: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-checkbox",
+    "component": "M3 Audit",
+    "title": "Checkbox: align with https://m3.material.io/components/checkbox/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/checkbox/overview, https://m3.material.io/components/checkbox/specs, https://m3.material.io/components/checkbox/guidelines, https://m3.material.io/components/checkbox/accessibility before editing.",
+      "Checkbox: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Checkbox: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Checkbox: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Checkbox: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Checkbox: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Checkbox: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-chips",
+    "component": "M3 Audit",
+    "title": "Chips: align with https://m3.material.io/components/chips/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/chips/overview, https://m3.material.io/components/chips/specs, https://m3.material.io/components/chips/guidelines, https://m3.material.io/components/chips/accessibility before editing.",
+      "Chips: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Chips: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Chips: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Chips: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Chips: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Chips: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-date-pickers",
+    "component": "M3 Audit",
+    "title": "Date pickers: align with https://m3.material.io/components/date-pickers/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/date-pickers/overview, https://m3.material.io/components/date-pickers/specs, https://m3.material.io/components/date-pickers/guidelines, https://m3.material.io/components/date-pickers/accessibility before editing.",
+      "Date pickers: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Date pickers: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Date pickers: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Date pickers: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Date pickers: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Date pickers: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-dialogs",
+    "component": "M3 Audit",
+    "title": "Dialogs: align with https://m3.material.io/components/dialogs/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/dialogs/overview, https://m3.material.io/components/dialogs/specs, https://m3.material.io/components/dialogs/guidelines, https://m3.material.io/components/dialogs/accessibility before editing.",
+      "Dialogs: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Dialogs: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Dialogs: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Dialogs: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Dialogs: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Dialogs: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-divider",
+    "component": "M3 Audit",
+    "title": "Divider: align with https://m3.material.io/components/divider/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/divider/overview, https://m3.material.io/components/divider/specs, https://m3.material.io/components/divider/guidelines, https://m3.material.io/components/divider/accessibility before editing.",
+      "Divider: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Divider: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Divider: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Divider: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Divider: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Divider: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-extended-fab",
+    "component": "M3 Audit",
+    "title": "Extended FAB: align with https://m3.material.io/components/extended-fab/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/extended-fab/overview, https://m3.material.io/components/extended-fab/specs, https://m3.material.io/components/extended-fab/guidelines, https://m3.material.io/components/extended-fab/accessibility before editing.",
+      "Extended FAB: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Extended FAB: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Extended FAB: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Extended FAB: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Extended FAB: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Extended FAB: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-fab",
+    "component": "M3 Audit",
+    "title": "FAB: align with https://m3.material.io/components/fab/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/fab/overview, https://m3.material.io/components/fab/specs, https://m3.material.io/components/fab/guidelines, https://m3.material.io/components/fab/accessibility before editing.",
+      "FAB: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "FAB: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "FAB: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "FAB: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "FAB: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "FAB: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-icon-buttons",
+    "component": "M3 Audit",
+    "title": "Icon buttons: align with https://m3.material.io/components/icon-buttons/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/icon-buttons/overview, https://m3.material.io/components/icon-buttons/specs, https://m3.material.io/components/icon-buttons/guidelines, https://m3.material.io/components/icon-buttons/accessibility before editing.",
+      "Icon buttons: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Icon buttons: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Icon buttons: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Icon buttons: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Icon buttons: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Icon buttons: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-lists",
+    "component": "M3 Audit",
+    "title": "Lists: align with https://m3.material.io/components/lists/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/lists/overview, https://m3.material.io/components/lists/specs, https://m3.material.io/components/lists/guidelines, https://m3.material.io/components/lists/accessibility before editing.",
+      "Lists: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Lists: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Lists: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Lists: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Lists: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Lists: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-menus",
+    "component": "M3 Audit",
+    "title": "Menus: align with https://m3.material.io/components/menus/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/menus/overview, https://m3.material.io/components/menus/specs, https://m3.material.io/components/menus/guidelines, https://m3.material.io/components/menus/accessibility before editing.",
+      "Menus: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Menus: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Menus: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Menus: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Menus: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Menus: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-navigation-bar",
+    "component": "M3 Audit",
+    "title": "Navigation bar (Bottom Navigation): align with https://m3.material.io/components/navigation-bar/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/navigation-bar/overview, https://m3.material.io/components/navigation-bar/specs, https://m3.material.io/components/navigation-bar/guidelines, https://m3.material.io/components/navigation-bar/accessibility before editing.",
+      "Navigation bar (Bottom Navigation): audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Navigation bar (Bottom Navigation): align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Navigation bar (Bottom Navigation): implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Navigation bar (Bottom Navigation): implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Navigation bar (Bottom Navigation): extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Navigation bar (Bottom Navigation): update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-navigation-drawer",
+    "component": "M3 Audit",
+    "title": "Navigation drawer: align with https://m3.material.io/components/navigation-drawer/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/navigation-drawer/overview, https://m3.material.io/components/navigation-drawer/specs, https://m3.material.io/components/navigation-drawer/guidelines, https://m3.material.io/components/navigation-drawer/accessibility before editing.",
+      "Navigation drawer: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Navigation drawer: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Navigation drawer: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Navigation drawer: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Navigation drawer: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Navigation drawer: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-progress-indicators",
+    "component": "M3 Audit",
+    "title": "Progress indicators: align with https://m3.material.io/components/progress-indicators/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/progress-indicators/overview, https://m3.material.io/components/progress-indicators/specs, https://m3.material.io/components/progress-indicators/guidelines, https://m3.material.io/components/progress-indicators/accessibility before editing.",
+      "Progress indicators: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Progress indicators: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Progress indicators: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Progress indicators: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Progress indicators: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Progress indicators: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-radio-button",
+    "component": "M3 Audit",
+    "title": "Radio button: align with https://m3.material.io/components/radio-button/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/radio-button/overview, https://m3.material.io/components/radio-button/specs, https://m3.material.io/components/radio-button/guidelines, https://m3.material.io/components/radio-button/accessibility before editing.",
+      "Radio button: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Radio button: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Radio button: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Radio button: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Radio button: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Radio button: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-sliders",
+    "component": "M3 Audit",
+    "title": "Sliders: align with https://m3.material.io/components/sliders/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/sliders/overview, https://m3.material.io/components/sliders/specs, https://m3.material.io/components/sliders/guidelines, https://m3.material.io/components/sliders/accessibility before editing.",
+      "Sliders: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Sliders: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Sliders: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Sliders: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Sliders: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Sliders: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-snackbar",
+    "component": "M3 Audit",
+    "title": "Snackbar: align with https://m3.material.io/components/snackbar/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/snackbar/overview, https://m3.material.io/components/snackbar/specs, https://m3.material.io/components/snackbar/guidelines, https://m3.material.io/components/snackbar/accessibility before editing.",
+      "Snackbar: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Snackbar: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Snackbar: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Snackbar: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Snackbar: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Snackbar: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-switch",
+    "component": "M3 Audit",
+    "title": "Switch: align with https://m3.material.io/components/switch/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/switch/overview, https://m3.material.io/components/switch/specs, https://m3.material.io/components/switch/guidelines, https://m3.material.io/components/switch/accessibility before editing.",
+      "Switch: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Switch: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Switch: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Switch: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Switch: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Switch: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-tabs",
+    "component": "M3 Audit",
+    "title": "Tabs: align with https://m3.material.io/components/tabs/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/tabs/overview, https://m3.material.io/components/tabs/specs, https://m3.material.io/components/tabs/guidelines, https://m3.material.io/components/tabs/accessibility before editing.",
+      "Tabs: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Tabs: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Tabs: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Tabs: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Tabs: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Tabs: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-text-fields",
+    "component": "M3 Audit",
+    "title": "Text fields: align with https://m3.material.io/components/text-fields/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/text-fields/overview, https://m3.material.io/components/text-fields/specs, https://m3.material.io/components/text-fields/guidelines, https://m3.material.io/components/text-fields/accessibility before editing.",
+      "Text fields: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Text fields: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Text fields: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Text fields: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Text fields: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Text fields: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-time-pickers",
+    "component": "M3 Audit",
+    "title": "Time pickers: align with https://m3.material.io/components/time-pickers/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/time-pickers/overview, https://m3.material.io/components/time-pickers/specs, https://m3.material.io/components/time-pickers/guidelines, https://m3.material.io/components/time-pickers/accessibility before editing.",
+      "Time pickers: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Time pickers: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Time pickers: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Time pickers: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Time pickers: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Time pickers: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-toggle-button",
+    "component": "M3 Audit",
+    "title": "Toggle button: align with https://m3.material.io/components/toggle-button/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/toggle-button/overview, https://m3.material.io/components/toggle-button/specs, https://m3.material.io/components/toggle-button/guidelines, https://m3.material.io/components/toggle-button/accessibility before editing.",
+      "Toggle button: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Toggle button: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Toggle button: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Toggle button: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Toggle button: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Toggle button: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-tooltips",
+    "component": "M3 Audit",
+    "title": "Tooltips: align with https://m3.material.io/components/tooltips/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/tooltips/overview, https://m3.material.io/components/tooltips/specs, https://m3.material.io/components/tooltips/guidelines, https://m3.material.io/components/tooltips/accessibility before editing.",
+      "Tooltips: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Tooltips: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Tooltips: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Tooltips: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Tooltips: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Tooltips: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-top-app-bar",
+    "component": "M3 Audit",
+    "title": "Top app bar: align with https://m3.material.io/components/top-app-bar/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/top-app-bar/overview, https://m3.material.io/components/top-app-bar/specs, https://m3.material.io/components/top-app-bar/guidelines, https://m3.material.io/components/top-app-bar/accessibility before editing.",
+      "Top app bar: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Top app bar: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Top app bar: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Top app bar: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Top app bar: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Top app bar: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-icons",
+    "component": "M3 Audit",
+    "title": "Icons (Material Symbols variable axes): align with https://m3.material.io/components/icons/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/icons/overview, https://m3.material.io/components/icons/specs, https://m3.material.io/components/icons/guidelines, https://m3.material.io/components/icons/accessibility before editing.",
+      "Icons (Material Symbols variable axes): audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Icons (Material Symbols variable axes): align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Icons (Material Symbols variable axes): implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Icons (Material Symbols variable axes): implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Icons (Material Symbols variable axes): extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Icons (Material Symbols variable axes): update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-color-system-overview",
+    "component": "M3 Audit",
+    "title": "Color system: align with https://m3.material.io/components/color/system/overview/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/color/system/overview/overview, https://m3.material.io/components/color/system/overview/specs, https://m3.material.io/components/color/system/overview/guidelines, https://m3.material.io/components/color/system/overview/accessibility before editing.",
+      "Color system: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Color system: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Color system: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Color system: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Color system: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Color system: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-audit-styles-motion-easing-and-duration-tokens-specs",
+    "component": "M3 Audit",
+    "title": "Motion easing & duration: align with https://m3.material.io/components/styles/motion/easing-and-duration/tokens-specs/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/styles/motion/easing-and-duration/tokens-specs/overview, https://m3.material.io/components/styles/motion/easing-and-duration/tokens-specs/specs, https://m3.material.io/components/styles/motion/easing-and-duration/tokens-specs/guidelines, https://m3.material.io/components/styles/motion/easing-and-duration/tokens-specs/accessibility before editing.",
+      "Motion easing & duration: audit the existing src/components/<X>/ implementation against /specs — verify container height/width per density, corner radius (M3 shape token), label type role, leading/trailing slot dimensions, state-layer opacities (hover 0.08 / focus 0.10 / pressed 0.10 / dragged 0.16), and elevation level. Fix any deviation.",
+      "Motion easing & duration: align color roles per /specs and /guidelines — e.g. primary vs primary-container, on-primary vs on-primary-container, the recommended container for each variant. Update src/components/<X>/anatomy.ts to use the spec roles.",
+      "Motion easing & duration: implement the motion spec from /overview — entrance/exit duration and easing tokens, state-change springs. Reuse src/motion/presets.ts; add presets if a spec curve is missing.",
+      "Motion easing & duration: implement /accessibility — minimum target size (M3 says 48dp for interactive), keyboard model per the WAI-ARIA APG pattern the page links to, screen-reader name/role/state, focus ring visible.",
+      "Motion easing & duration: extend the Playwright spec to assert the M3 values via toHaveCSS (border-radius, height, padding, background-color resolved from the token, transition-duration). Re-baseline screenshots only if the spec change is intentional.",
+      "Motion easing & duration: update the MDX docs page (src/components/<X>/<X>.mdx — create if missing) with sections that mirror the M3 doc structure: 'Overview', 'Anatomy' (numbered diagram), 'Specs' (table from /specs), 'Guidelines' (do/don't from /guidelines), 'Accessibility' (checklist from /accessibility), 'M3 docs' (links to all four pages)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-new-bottom-app-bar",
+    "component": "M3 New Component",
+    "title": "Create Bottom app bar per https://m3.material.io/components/bottom-app-bar/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "organism",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true.",
+      "This component does not exist yet — create it from scratch per the M3 spec. Place under src/components/<PascalCaseName>/."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/bottom-app-bar/overview, https://m3.material.io/components/bottom-app-bar/specs, https://m3.material.io/components/bottom-app-bar/guidelines, https://m3.material.io/components/bottom-app-bar/accessibility before writing the component.",
+      "Create src/components/<X>/ with types.ts, anatomy.ts, <X>.tsx, <X>.stories.tsx, index.ts following the existing atomic-design layout.",
+      "Implement every variant called out in /specs (sizes, density, modes). Tokens drive everything — no hex literals, no raw px.",
+      "Honor /accessibility: 48dp targets, WAI-ARIA APG keyboard pattern, focus management, screen-reader semantics.",
+      "Storybook stories: Default + Variants + Sizes + States + WithIcons (where applicable) + Playground. Story title placed in the correct sidebar bucket.",
+      "Playwright visual spec under tests/visual/<x>.visual.spec.ts with light + dark baselines AND tests/visual/<x>.spec.ts asserting the M3 values via toHaveCSS.",
+      "MDX docs page mirroring the M3 doc structure: Overview / Anatomy / Specs / Guidelines / Accessibility / M3 docs links."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-new-bottom-sheets",
+    "component": "M3 New Component",
+    "title": "Create Bottom sheets per https://m3.material.io/components/bottom-sheets/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "organism",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true.",
+      "This component does not exist yet — create it from scratch per the M3 spec. Place under src/components/<PascalCaseName>/."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/bottom-sheets/overview, https://m3.material.io/components/bottom-sheets/specs, https://m3.material.io/components/bottom-sheets/guidelines, https://m3.material.io/components/bottom-sheets/accessibility before writing the component.",
+      "Create src/components/<X>/ with types.ts, anatomy.ts, <X>.tsx, <X>.stories.tsx, index.ts following the existing atomic-design layout.",
+      "Implement every variant called out in /specs (sizes, density, modes). Tokens drive everything — no hex literals, no raw px.",
+      "Honor /accessibility: 48dp targets, WAI-ARIA APG keyboard pattern, focus management, screen-reader semantics.",
+      "Storybook stories: Default + Variants + Sizes + States + WithIcons (where applicable) + Playground. Story title placed in the correct sidebar bucket.",
+      "Playwright visual spec under tests/visual/<x>.visual.spec.ts with light + dark baselines AND tests/visual/<x>.spec.ts asserting the M3 values via toHaveCSS.",
+      "MDX docs page mirroring the M3 doc structure: Overview / Anatomy / Specs / Guidelines / Accessibility / M3 docs links."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-new-carousel",
+    "component": "M3 New Component",
+    "title": "Create Carousel per https://m3.material.io/components/carousel/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "organism",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true.",
+      "This component does not exist yet — create it from scratch per the M3 spec. Place under src/components/<PascalCaseName>/."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/carousel/overview, https://m3.material.io/components/carousel/specs, https://m3.material.io/components/carousel/guidelines, https://m3.material.io/components/carousel/accessibility before writing the component.",
+      "Create src/components/<X>/ with types.ts, anatomy.ts, <X>.tsx, <X>.stories.tsx, index.ts following the existing atomic-design layout.",
+      "Implement every variant called out in /specs (sizes, density, modes). Tokens drive everything — no hex literals, no raw px.",
+      "Honor /accessibility: 48dp targets, WAI-ARIA APG keyboard pattern, focus management, screen-reader semantics.",
+      "Storybook stories: Default + Variants + Sizes + States + WithIcons (where applicable) + Playground. Story title placed in the correct sidebar bucket.",
+      "Playwright visual spec under tests/visual/<x>.visual.spec.ts with light + dark baselines AND tests/visual/<x>.spec.ts asserting the M3 values via toHaveCSS.",
+      "MDX docs page mirroring the M3 doc structure: Overview / Anatomy / Specs / Guidelines / Accessibility / M3 docs links."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-new-fab-menu",
+    "component": "M3 New Component",
+    "title": "Create FAB menu (M3 Expressive — distinct from Speed Dial) per https://m3.material.io/components/fab-menu/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "organism",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true.",
+      "This component does not exist yet — create it from scratch per the M3 spec. Place under src/components/<PascalCaseName>/."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/fab-menu/overview, https://m3.material.io/components/fab-menu/specs, https://m3.material.io/components/fab-menu/guidelines, https://m3.material.io/components/fab-menu/accessibility before writing the component.",
+      "Create src/components/<X>/ with types.ts, anatomy.ts, <X>.tsx, <X>.stories.tsx, index.ts following the existing atomic-design layout.",
+      "Implement every variant called out in /specs (sizes, density, modes). Tokens drive everything — no hex literals, no raw px.",
+      "Honor /accessibility: 48dp targets, WAI-ARIA APG keyboard pattern, focus management, screen-reader semantics.",
+      "Storybook stories: Default + Variants + Sizes + States + WithIcons (where applicable) + Playground. Story title placed in the correct sidebar bucket.",
+      "Playwright visual spec under tests/visual/<x>.visual.spec.ts with light + dark baselines AND tests/visual/<x>.spec.ts asserting the M3 values via toHaveCSS.",
+      "MDX docs page mirroring the M3 doc structure: Overview / Anatomy / Specs / Guidelines / Accessibility / M3 docs links."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-new-floating-toolbar",
+    "component": "M3 New Component",
+    "title": "Create Floating toolbar (M3 Expressive) per https://m3.material.io/components/floating-toolbar/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "organism",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true.",
+      "This component does not exist yet — create it from scratch per the M3 spec. Place under src/components/<PascalCaseName>/."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/floating-toolbar/overview, https://m3.material.io/components/floating-toolbar/specs, https://m3.material.io/components/floating-toolbar/guidelines, https://m3.material.io/components/floating-toolbar/accessibility before writing the component.",
+      "Create src/components/<X>/ with types.ts, anatomy.ts, <X>.tsx, <X>.stories.tsx, index.ts following the existing atomic-design layout.",
+      "Implement every variant called out in /specs (sizes, density, modes). Tokens drive everything — no hex literals, no raw px.",
+      "Honor /accessibility: 48dp targets, WAI-ARIA APG keyboard pattern, focus management, screen-reader semantics.",
+      "Storybook stories: Default + Variants + Sizes + States + WithIcons (where applicable) + Playground. Story title placed in the correct sidebar bucket.",
+      "Playwright visual spec under tests/visual/<x>.visual.spec.ts with light + dark baselines AND tests/visual/<x>.spec.ts asserting the M3 values via toHaveCSS.",
+      "MDX docs page mirroring the M3 doc structure: Overview / Anatomy / Specs / Guidelines / Accessibility / M3 docs links."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-new-loading-indicator",
+    "component": "M3 New Component",
+    "title": "Create Loading indicator (M3 Expressive — distinct from Progress) per https://m3.material.io/components/loading-indicator/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "organism",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true.",
+      "This component does not exist yet — create it from scratch per the M3 spec. Place under src/components/<PascalCaseName>/."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/loading-indicator/overview, https://m3.material.io/components/loading-indicator/specs, https://m3.material.io/components/loading-indicator/guidelines, https://m3.material.io/components/loading-indicator/accessibility before writing the component.",
+      "Create src/components/<X>/ with types.ts, anatomy.ts, <X>.tsx, <X>.stories.tsx, index.ts following the existing atomic-design layout.",
+      "Implement every variant called out in /specs (sizes, density, modes). Tokens drive everything — no hex literals, no raw px.",
+      "Honor /accessibility: 48dp targets, WAI-ARIA APG keyboard pattern, focus management, screen-reader semantics.",
+      "Storybook stories: Default + Variants + Sizes + States + WithIcons (where applicable) + Playground. Story title placed in the correct sidebar bucket.",
+      "Playwright visual spec under tests/visual/<x>.visual.spec.ts with light + dark baselines AND tests/visual/<x>.spec.ts asserting the M3 values via toHaveCSS.",
+      "MDX docs page mirroring the M3 doc structure: Overview / Anatomy / Specs / Guidelines / Accessibility / M3 docs links."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-new-navigation-rail",
+    "component": "M3 New Component",
+    "title": "Create Navigation rail (distinct from Navigation drawer) per https://m3.material.io/components/navigation-rail/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "organism",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true.",
+      "This component does not exist yet — create it from scratch per the M3 spec. Place under src/components/<PascalCaseName>/."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/navigation-rail/overview, https://m3.material.io/components/navigation-rail/specs, https://m3.material.io/components/navigation-rail/guidelines, https://m3.material.io/components/navigation-rail/accessibility before writing the component.",
+      "Create src/components/<X>/ with types.ts, anatomy.ts, <X>.tsx, <X>.stories.tsx, index.ts following the existing atomic-design layout.",
+      "Implement every variant called out in /specs (sizes, density, modes). Tokens drive everything — no hex literals, no raw px.",
+      "Honor /accessibility: 48dp targets, WAI-ARIA APG keyboard pattern, focus management, screen-reader semantics.",
+      "Storybook stories: Default + Variants + Sizes + States + WithIcons (where applicable) + Playground. Story title placed in the correct sidebar bucket.",
+      "Playwright visual spec under tests/visual/<x>.visual.spec.ts with light + dark baselines AND tests/visual/<x>.spec.ts asserting the M3 values via toHaveCSS.",
+      "MDX docs page mirroring the M3 doc structure: Overview / Anatomy / Specs / Guidelines / Accessibility / M3 docs links."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-new-search",
+    "component": "M3 New Component",
+    "title": "Create Search (search bar + search view per M3 spec) per https://m3.material.io/components/search/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "organism",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true.",
+      "This component does not exist yet — create it from scratch per the M3 spec. Place under src/components/<PascalCaseName>/."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/search/overview, https://m3.material.io/components/search/specs, https://m3.material.io/components/search/guidelines, https://m3.material.io/components/search/accessibility before writing the component.",
+      "Create src/components/<X>/ with types.ts, anatomy.ts, <X>.tsx, <X>.stories.tsx, index.ts following the existing atomic-design layout.",
+      "Implement every variant called out in /specs (sizes, density, modes). Tokens drive everything — no hex literals, no raw px.",
+      "Honor /accessibility: 48dp targets, WAI-ARIA APG keyboard pattern, focus management, screen-reader semantics.",
+      "Storybook stories: Default + Variants + Sizes + States + WithIcons (where applicable) + Playground. Story title placed in the correct sidebar bucket.",
+      "Playwright visual spec under tests/visual/<x>.visual.spec.ts with light + dark baselines AND tests/visual/<x>.spec.ts asserting the M3 values via toHaveCSS.",
+      "MDX docs page mirroring the M3 doc structure: Overview / Anatomy / Specs / Guidelines / Accessibility / M3 docs links."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-new-side-sheets",
+    "component": "M3 New Component",
+    "title": "Create Side sheets (modal + standard) per https://m3.material.io/components/side-sheets/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "organism",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true.",
+      "This component does not exist yet — create it from scratch per the M3 spec. Place under src/components/<PascalCaseName>/."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/side-sheets/overview, https://m3.material.io/components/side-sheets/specs, https://m3.material.io/components/side-sheets/guidelines, https://m3.material.io/components/side-sheets/accessibility before writing the component.",
+      "Create src/components/<X>/ with types.ts, anatomy.ts, <X>.tsx, <X>.stories.tsx, index.ts following the existing atomic-design layout.",
+      "Implement every variant called out in /specs (sizes, density, modes). Tokens drive everything — no hex literals, no raw px.",
+      "Honor /accessibility: 48dp targets, WAI-ARIA APG keyboard pattern, focus management, screen-reader semantics.",
+      "Storybook stories: Default + Variants + Sizes + States + WithIcons (where applicable) + Playground. Story title placed in the correct sidebar bucket.",
+      "Playwright visual spec under tests/visual/<x>.visual.spec.ts with light + dark baselines AND tests/visual/<x>.spec.ts asserting the M3 values via toHaveCSS.",
+      "MDX docs page mirroring the M3 doc structure: Overview / Anatomy / Specs / Guidelines / Accessibility / M3 docs links."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-new-split-button",
+    "component": "M3 New Component",
+    "title": "Create Split button (M3 Expressive) per https://m3.material.io/components/split-button/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "organism",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true.",
+      "This component does not exist yet — create it from scratch per the M3 spec. Place under src/components/<PascalCaseName>/."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/split-button/overview, https://m3.material.io/components/split-button/specs, https://m3.material.io/components/split-button/guidelines, https://m3.material.io/components/split-button/accessibility before writing the component.",
+      "Create src/components/<X>/ with types.ts, anatomy.ts, <X>.tsx, <X>.stories.tsx, index.ts following the existing atomic-design layout.",
+      "Implement every variant called out in /specs (sizes, density, modes). Tokens drive everything — no hex literals, no raw px.",
+      "Honor /accessibility: 48dp targets, WAI-ARIA APG keyboard pattern, focus management, screen-reader semantics.",
+      "Storybook stories: Default + Variants + Sizes + States + WithIcons (where applicable) + Playground. Story title placed in the correct sidebar bucket.",
+      "Playwright visual spec under tests/visual/<x>.visual.spec.ts with light + dark baselines AND tests/visual/<x>.spec.ts asserting the M3 values via toHaveCSS.",
+      "MDX docs page mirroring the M3 doc structure: Overview / Anatomy / Specs / Guidelines / Accessibility / M3 docs links."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-new-segmented-buttons",
+    "component": "M3 New Component",
+    "title": "Create Segmented buttons (single + multi select per M3) per https://m3.material.io/components/segmented-buttons/",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "organism",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "Material Design 3",
+      "motion/react",
+      "Playwright",
+      "MDX"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true.",
+      "This component does not exist yet — create it from scratch per the M3 spec. Place under src/components/<PascalCaseName>/."
+    ],
+    "acceptance_criteria": [
+      "Read https://m3.material.io/components/segmented-buttons/overview, https://m3.material.io/components/segmented-buttons/specs, https://m3.material.io/components/segmented-buttons/guidelines, https://m3.material.io/components/segmented-buttons/accessibility before writing the component.",
+      "Create src/components/<X>/ with types.ts, anatomy.ts, <X>.tsx, <X>.stories.tsx, index.ts following the existing atomic-design layout.",
+      "Implement every variant called out in /specs (sizes, density, modes). Tokens drive everything — no hex literals, no raw px.",
+      "Honor /accessibility: 48dp targets, WAI-ARIA APG keyboard pattern, focus management, screen-reader semantics.",
+      "Storybook stories: Default + Variants + Sizes + States + WithIcons (where applicable) + Playground. Story title placed in the correct sidebar bucket.",
+      "Playwright visual spec under tests/visual/<x>.visual.spec.ts with light + dark baselines AND tests/visual/<x>.spec.ts asserting the M3 values via toHaveCSS.",
+      "MDX docs page mirroring the M3 doc structure: Overview / Anatomy / Specs / Guidelines / Accessibility / M3 docs links."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-docs-anatomy-diagrams",
+    "component": "M3 Docs / Tooling",
+    "title": "Anatomy diagrams: every component's MDX gets a numbered anatomy diagram",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "MDX",
+      "Storybook 8 addons",
+      "Material Design 3"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "For every component under src/components/**, add or extend the MDX docs page with an Anatomy section that includes a numbered SVG/JSX diagram (component skeleton with callout numbers) and a parts list keyed to the numbers — mirroring the M3 docs Anatomy format."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-docs-spec-tables",
+    "component": "M3 Docs / Tooling",
+    "title": "Spec tables: every component's MDX has the M3 specs table verbatim",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "MDX",
+      "Storybook 8 addons",
+      "Material Design 3"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "For each component, copy the M3 /specs table (container height, radius, type role, color role, state-layer opacity, elevation, motion duration & easing) into the MDX as a Markdown table. Cite the M3 page URL in a caption."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-docs-guidelines-cards",
+    "component": "M3 Docs / Tooling",
+    "title": "Guidelines: every component's MDX has do/don't cards from M3 /guidelines",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "MDX",
+      "Storybook 8 addons",
+      "Material Design 3"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Pull the do/don't list from M3 /guidelines into a `<DoDontGrid>` component (build it under src/foundations/) used by every component MDX page. Each card has an icon, a one-line guideline, and a green ✓ or red ✗ tag."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-docs-a11y-matrix",
+    "component": "M3 Docs / Tooling",
+    "title": "Accessibility checklist per component, mirroring M3 /accessibility",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "MDX",
+      "Storybook 8 addons",
+      "Material Design 3"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Add an Accessibility section to every component MDX with a checklist sourced from M3 /accessibility: target size, contrast, screen-reader name/role/state, keyboard map (WAI-ARIA APG pattern), reduced-motion, RTL support. Each item has a Storybook story or Playwright spec link as evidence."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-docs-composition-showcases",
+    "component": "M3 Docs / Tooling",
+    "title": "Storybook composition showcases: 5 real-world compositions of components",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "MDX",
+      "Storybook 8 addons",
+      "Material Design 3"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Add at least 5 composition stories under src/showcases/: 'Login form' (TextField + Button + Checkbox + Link), 'App shell' (TopAppBar + NavigationRail + Card grid + FAB), 'Settings page' (List + Switch + Slider + RadioGroup), 'Search results' (Search + List + Pagination + Chip filters), 'Empty state' (Card + Button + Typography). Each composition story has a Playwright visual baseline (light + dark)."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-tooling-addon-a11y",
+    "component": "M3 Docs / Tooling",
+    "title": "@storybook/addon-a11y wired with axe checks per story",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "MDX",
+      "Storybook 8 addons",
+      "Material Design 3"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Install @storybook/addon-a11y; register in .storybook/main.ts; add a default a11y parameter that runs axe on every story; fail CI on serious/critical violations."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-tooling-addon-viewport-themes",
+    "component": "M3 Docs / Tooling",
+    "title": "@storybook/addon-viewport + @storybook/addon-themes installed and wired",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "MDX",
+      "Storybook 8 addons",
+      "Material Design 3"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Install both addons. Wire viewport with M3-recommended breakpoints (compact / medium / expanded / large / extra-large). Wire addon-themes to drive the same theme + reduced-motion globals our existing decorator uses, so the toolbar UI is the standard one."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-tooling-token-playground",
+    "component": "M3 Docs / Tooling",
+    "title": "Live token playground page in Storybook (drag sliders, see component morph)",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "MDX",
+      "Storybook 8 addons",
+      "Material Design 3"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Add src/foundations/TokenPlayground.tsx + src/foundations/TokenPlayground.mdx — sliders for shape (corner radius), elevation, motion duration, motion stiffness/damping; renders Button + Card + Chip + Switch live as the user drags. Backed by CSS variable writes so the change propagates."
+    ],
+    "ui_states": []
+  },
+  {
+    "id": "m3-docs-mdx-template-shared",
+    "component": "M3 Docs / Tooling",
+    "title": "Shared MDX template + helper components for the M3 doc structure",
+    "service": "frontend",
+    "layer": "web",
+    "atomic_level": "cross-cutting",
+    "depends_on": [
+      "review-001"
+    ],
+    "passes": false,
+    "agent_profile": {
+      "id": "m3-spec-alignment-agent",
+      "agent": "M3 spec alignment agent",
+      "skill": "Material Design 3 (m3.material.io) component specs, motion/react, Playwright visual + computed-style assertions, MDX docs",
+      "system_prompt": "Audit components against the four M3 doc pages and align them exactly. Fix anatomy, dp specs, color roles, motion, and accessibility. Update docs to mirror the M3 page structure.",
+      "preferred_stack": [
+        "React 18",
+        "TypeScript strict",
+        "Tailwind CSS v3",
+        "Storybook 8",
+        "motion/react",
+        "Playwright",
+        "@storybook/addon-a11y"
+      ]
+    },
+    "recommended_skills": [
+      "MDX",
+      "Storybook 8 addons",
+      "Material Design 3"
+    ],
+    "system_prompt_additions": [
+      "Read app_spec.txt, feature_list.json, claude-progress.txt, CLAUDE.md and claude.md before editing.",
+      "This is an M3 spec-alignment task. The single source of truth is https://m3.material.io/components/<slug>/. Read all four sub-pages (overview, specs, guidelines, accessibility) before changing code.",
+      "Tokens drive everything. If a spec value is missing from src/tokens/* add it; never hardcode a color/radius/duration/dp value.",
+      "Use motion/react for animation. Honor prefers-reduced-motion via the existing decorator.",
+      "Every change ships with: (a) the component change, (b) the Playwright spec asserting the M3 spec value with toHaveCSS where applicable, (c) re-baselined snapshots for any visual change, (d) an updated MDX docs page with anatomy + spec table + do/don't + a11y checklist sourced from the four M3 doc pages.",
+      "Run pnpm typecheck, pnpm lint, pnpm test --run, and the affected pnpm test:e2e specs before flipping passes:true."
+    ],
+    "acceptance_criteria": [
+      "Add src/foundations/M3DocBlocks.tsx exporting <Anatomy/>, <SpecTable/>, <DoDontGrid/>, <A11yChecklist/>, <M3DocsLinks/> components used by every component MDX so the structure is consistent. Document the template in src/foundations/MdxTemplate.mdx so future components copy from it."
+    ],
+    "ui_states": []
   }
 ]
