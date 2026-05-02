@@ -1,9 +1,2 @@
 export { MediaQuery } from "./useMediaQuery";
-export { useMediaQuery } from "./hook";
-export type {
-  MediaQueryProps,
-  UseMediaQueryOptions,
-  UseMediaQueryShape,
-  UseMediaQuerySize,
-  UseMediaQueryVariant,
-} from "./types";
+export type { MediaQueryProps } from "./types";
