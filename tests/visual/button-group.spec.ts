@@ -11,9 +11,11 @@ const LIGHT_PRIMARY = "rgb(103, 80, 164)";
 const LIGHT_ON_PRIMARY = "rgb(255, 255, 255)";
 const LIGHT_SECONDARY = "rgb(98, 91, 113)";
 const LIGHT_ON_SECONDARY = "rgb(255, 255, 255)";
-const LIGHT_SECONDARY_CONTAINER = "rgb(232, 222, 248)";
-const LIGHT_ON_SECONDARY_CONTAINER = "rgb(29, 25, 43)";
-const LIGHT_OUTLINE = "rgb(121, 116, 126)";
+const LIGHT_OUTLINE_VARIANT = "rgb(202, 196, 208)";
+const LIGHT_SURFACE_CONTAINER = "rgb(243, 237, 247)";
+const LIGHT_ON_SURFACE_VARIANT = "rgb(73, 69, 79)";
+const LIGHT_INVERSE_SURFACE = "rgb(50, 47, 53)";
+const LIGHT_INVERSE_ON_SURFACE = "rgb(245, 239, 247)";
 const TRANSPARENT = "rgba(0, 0, 0, 0)";
 const EASE_EMPHASIZED = "cubic-bezier(0.2, 0, 0, 1)";
 
@@ -32,17 +34,17 @@ test.describe("Button Group - M3 Expressive parity", () => {
     page,
   }) => {
     await page.goto(storyUrl("inputs-button-group--default"));
-    const center = page.getByRole("button", { name: "Center" });
-    const left = page.getByRole("button", { name: "Left" });
-    await expect(center).toHaveAttribute("aria-pressed", "true");
-    await expect(left).toHaveAttribute("aria-pressed", "false");
+    const selected = page.getByRole("button", { name: "My files" });
+    const rest = page.getByRole("button", { name: "Shared" });
+    await expect(selected).toHaveAttribute("aria-pressed", "true");
+    await expect(rest).toHaveAttribute("aria-pressed", "false");
   });
 
   test("connected group spans its container and distributes buttons evenly", async ({
     page,
   }) => {
-    await page.goto(storyUrl("inputs-button-group--default"));
-    const group = page.getByRole("group");
+    await page.goto(storyUrl("inputs-button-group--variants"));
+    const group = page.locator("[data-button-group-root]").nth(1);
     const items = group.locator("[data-button-group-segment]");
     const [groupBox, firstBox, secondBox] = await Promise.all([
       group.boundingBox(),
@@ -102,7 +104,7 @@ test.describe("Button Group - M3 Expressive parity", () => {
     expect(hitTargets).toEqual(["48px", "48px"]);
   });
 
-  test("filled standard group paints primary at rest and secondary when selected", async ({
+  test("filled standard group uses M3 toggle color mappings", async ({
     page,
   }) => {
     await page.goto(storyUrl("inputs-button-group--variants"));
@@ -110,10 +112,10 @@ test.describe("Button Group - M3 Expressive parity", () => {
     const selected = group.locator("[data-selected] [data-button-group-button]");
     const rest = group.locator("[data-segment-index='1'] [data-button-group-button]");
 
-    await expect(rest).toHaveCSS("background-color", LIGHT_PRIMARY);
-    await expect(rest).toHaveCSS("color", LIGHT_ON_PRIMARY);
-    await expect(selected).toHaveCSS("background-color", LIGHT_SECONDARY);
-    await expect(selected).toHaveCSS("color", LIGHT_ON_SECONDARY);
+    await expect(rest).toHaveCSS("background-color", LIGHT_SURFACE_CONTAINER);
+    await expect(rest).toHaveCSS("color", LIGHT_ON_SURFACE_VARIANT);
+    await expect(selected).toHaveCSS("background-color", LIGHT_PRIMARY);
+    await expect(selected).toHaveCSS("color", LIGHT_ON_PRIMARY);
   });
 
   test("outlined connected group has transparent rest fill and selected tonal fill", async ({
@@ -125,12 +127,10 @@ test.describe("Button Group - M3 Expressive parity", () => {
     const selected = group.locator("[data-selected] [data-button-group-button]");
 
     await expect(rest).toHaveCSS("background-color", TRANSPARENT);
-    await expect(rest).toHaveCSS("border-top-color", LIGHT_OUTLINE);
-    await expect(selected).toHaveCSS(
-      "background-color",
-      LIGHT_SECONDARY_CONTAINER,
-    );
-    await expect(selected).toHaveCSS("color", LIGHT_ON_SECONDARY_CONTAINER);
+    await expect(rest).toHaveCSS("border-top-color", LIGHT_OUTLINE_VARIANT);
+    await expect(selected).toHaveCSS("background-color", LIGHT_INVERSE_SURFACE);
+    await expect(selected).toHaveCSS("color", LIGHT_INVERSE_ON_SURFACE);
+    await expect(selected).toHaveCSS("border-top-color", LIGHT_INVERSE_SURFACE);
   });
 
   test("standard selected button morphs shape and adjusts adjacent widths", async ({
@@ -192,24 +192,24 @@ test.describe("Button Group - M3 Expressive parity", () => {
     page,
   }) => {
     await page.goto(storyUrl("inputs-button-group--default"));
-    const center = page.getByRole("button", { name: "Center" });
-    await expect(center).toHaveAttribute("aria-pressed", "true");
-    await center.click();
-    await expect(center).toHaveAttribute("aria-pressed", "true");
+    const selected = page.getByRole("button", { name: "My files" });
+    await expect(selected).toHaveAttribute("aria-pressed", "true");
+    await selected.click();
+    await expect(selected).toHaveAttribute("aria-pressed", "true");
   });
 
   test("multi-select mode allows multiple aria-pressed buttons", async ({
     page,
   }) => {
     await page.goto(storyUrl("inputs-button-group--with-icons"));
-    const group = page.locator("[data-button-group-root]").first();
-    const mic = group.getByRole("button", { name: "Microphone" });
-    const camera = group.getByRole("button", { name: "Camera" });
+    const group = page.locator("[data-button-group-root]").nth(1);
+    const bold = group.getByRole("button", { name: "Bold" });
+    const italic = group.getByRole("button", { name: "Italic" });
 
-    await expect(mic).toHaveAttribute("aria-pressed", "true");
-    await camera.click();
-    await expect(mic).toHaveAttribute("aria-pressed", "true");
-    await expect(camera).toHaveAttribute("aria-pressed", "true");
+    await expect(bold).toHaveAttribute("aria-pressed", "true");
+    await italic.click();
+    await expect(bold).toHaveAttribute("aria-pressed", "true");
+    await expect(italic).toHaveAttribute("aria-pressed", "true");
   });
 
   test("disabled group suppresses state-layer and disables buttons", async ({
@@ -232,7 +232,7 @@ test.describe("Button Group - M3 Expressive parity", () => {
     await page.goto(
       storyUrl("inputs-button-group--default", "light", "no-preference"),
     );
-    const button = page.getByRole("button", { name: "Left" });
+    const button = page.getByRole("button", { name: "Shared" });
     await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
     await button.hover();
     await page.waitForTimeout(260);
@@ -246,7 +246,7 @@ test.describe("Button Group - M3 Expressive parity", () => {
     await page.goto(
       storyUrl("inputs-button-group--default", "light", "no-preference"),
     );
-    const button = page.getByRole("button", { name: "Left" });
+    const button = page.getByRole("button", { name: "Shared" });
     await button.evaluate((el: HTMLButtonElement) => el.focus());
     await page.waitForTimeout(260);
     const opacity = await button
@@ -255,25 +255,32 @@ test.describe("Button Group - M3 Expressive parity", () => {
     expect(opacity).toBeCloseTo(0.1, 2);
   });
 
-  test("pressed connected button uses pressed inner corner token", async ({
+  test("press previews selected connected shape and color", async ({
     page,
   }) => {
     await page.goto(
       storyUrl("inputs-button-group--default", "light", "no-preference"),
     );
-    const left = page.getByRole("button", { name: "Left" });
-    const box = await left.boundingBox();
+    const shared = page.getByRole("button", { name: "Shared" });
+    const box = await shared.boundingBox();
     if (!box) throw new Error("missing button bounds");
 
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await page.mouse.down();
     await page.waitForTimeout(360);
-    const radius = await left
+    const styles = await shared
       .locator("[data-button-group-button]")
-      .evaluate((el) =>
-        parseFloat(window.getComputedStyle(el).borderTopRightRadius),
-      );
-    expect(radius).toBe(4);
+      .evaluate((el) => {
+        const cs = window.getComputedStyle(el);
+        return {
+          bg: cs.backgroundColor,
+          color: cs.color,
+          radius: parseFloat(cs.borderTopLeftRadius),
+        };
+      });
+    expect(styles.bg).toBe(LIGHT_SECONDARY);
+    expect(styles.color).toBe(LIGHT_ON_SECONDARY);
+    expect(styles.radius).toBeGreaterThanOrEqual(20);
     await page.mouse.up();
   });
 
@@ -297,7 +304,7 @@ test.describe("Button Group - M3 Expressive parity", () => {
   }) => {
     await page.goto(storyUrl("inputs-button-group--default"));
     const button = page
-      .getByRole("button", { name: "Left" })
+      .getByRole("button", { name: "Shared" })
       .locator("[data-button-group-button]");
     const styles = await button.evaluate((el) => {
       const cs = window.getComputedStyle(el);
@@ -320,8 +327,6 @@ test.describe("Button Group - M3 Expressive parity", () => {
     const bg = await selected.evaluate(
       (el) => window.getComputedStyle(el).backgroundColor,
     );
-    expect(bg).not.toBe(LIGHT_SECONDARY);
-    expect(bg).not.toBe(LIGHT_SECONDARY_CONTAINER);
-    expect(bg).not.toBe(LIGHT_ON_SECONDARY_CONTAINER);
+    expect(bg).not.toBe(LIGHT_PRIMARY);
   });
 });

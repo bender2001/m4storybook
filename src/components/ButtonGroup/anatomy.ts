@@ -1,5 +1,5 @@
 import type {
-  ButtonGroupButtonVariant,
+  ButtonGroupButtonColor,
   ButtonGroupShape,
   ButtonGroupSize,
   ButtonGroupVariant,
@@ -32,9 +32,12 @@ export const rootVariantClasses: Record<ButtonGroupVariant, string> = {
   connected: "flex w-full",
 };
 
-export const buttonVariantClasses: Record<
-  ButtonGroupButtonVariant,
-  { rest: string; selected: string; stateLayer: string }
+export const buttonActionColorClasses: Record<
+  ButtonGroupButtonColor,
+  {
+    rest: string;
+    stateLayer: string;
+  }
 > = {
   filled: {
     rest: [
@@ -42,12 +45,56 @@ export const buttonVariantClasses: Record<
       "shadow-elevation-0 group-hover:shadow-elevation-1 group-active:shadow-elevation-0",
       "group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38] group-disabled:shadow-elevation-0",
     ].join(" "),
-    selected: [
-      "bg-secondary text-on-secondary",
+    stateLayer: "bg-on-primary",
+  },
+  tonal: {
+    rest: [
+      "bg-secondary-container text-on-secondary-container",
+      "shadow-elevation-0 group-hover:shadow-elevation-1 group-active:shadow-elevation-0",
+      "group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38]",
+    ].join(" "),
+    stateLayer: "bg-on-secondary-container",
+  },
+  outlined: {
+    rest: [
+      "border border-outline-variant bg-transparent text-on-surface-variant",
+      "group-hover:border-primary",
+      "group-disabled:border-on-surface/[0.12] group-disabled:text-on-surface/[0.38]",
+    ].join(" "),
+    stateLayer: "bg-on-surface-variant",
+  },
+  elevated: {
+    rest: [
+      "bg-surface-container-low text-primary shadow-elevation-1",
+      "group-hover:shadow-elevation-2 group-active:shadow-elevation-1",
+      "group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38] group-disabled:shadow-elevation-0",
+    ].join(" "),
+    stateLayer: "bg-primary",
+  },
+};
+
+export const buttonToggleColorClasses: Record<
+  ButtonGroupButtonColor,
+  {
+    rest: string;
+    selected: string;
+    restStateLayer: string;
+    selectedStateLayer: string;
+  }
+> = {
+  filled: {
+    rest: [
+      "bg-surface-container text-on-surface-variant",
       "shadow-elevation-0 group-hover:shadow-elevation-1 group-active:shadow-elevation-0",
       "group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38] group-disabled:shadow-elevation-0",
     ].join(" "),
-    stateLayer: "bg-on-primary",
+    selected: [
+      "bg-primary text-on-primary",
+      "shadow-elevation-0 group-hover:shadow-elevation-1 group-active:shadow-elevation-0",
+      "group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38] group-disabled:shadow-elevation-0",
+    ].join(" "),
+    restStateLayer: "bg-on-surface-variant",
+    selectedStateLayer: "bg-on-primary",
   },
   tonal: {
     rest: [
@@ -60,32 +107,35 @@ export const buttonVariantClasses: Record<
       "shadow-elevation-0 group-hover:shadow-elevation-1 group-active:shadow-elevation-0",
       "group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38]",
     ].join(" "),
-    stateLayer: "bg-on-secondary-container",
+    restStateLayer: "bg-on-secondary-container",
+    selectedStateLayer: "bg-on-secondary",
   },
   outlined: {
     rest: [
-      "border border-outline bg-transparent text-on-surface",
+      "border border-outline-variant bg-transparent text-on-surface-variant",
       "group-hover:border-primary",
       "group-disabled:border-on-surface/[0.12] group-disabled:text-on-surface/[0.38]",
     ].join(" "),
     selected: [
-      "border border-outline bg-secondary-container text-on-secondary-container",
-      "group-disabled:border-on-surface/[0.12] group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38]",
+      "border border-inverse-surface bg-inverse-surface text-inverse-on-surface",
+      "group-disabled:border-transparent group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38]",
     ].join(" "),
-    stateLayer: "bg-on-surface",
+    restStateLayer: "bg-on-surface-variant",
+    selectedStateLayer: "bg-inverse-on-surface",
   },
   elevated: {
     rest: [
-      "bg-surface-container-low text-on-surface shadow-elevation-1",
+      "bg-surface-container-low text-primary shadow-elevation-1",
       "group-hover:shadow-elevation-2 group-active:shadow-elevation-1",
       "group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38] group-disabled:shadow-elevation-0",
     ].join(" "),
     selected: [
-      "bg-secondary-container text-on-secondary-container shadow-elevation-1",
+      "bg-primary text-on-primary shadow-elevation-1",
       "group-hover:shadow-elevation-2 group-active:shadow-elevation-1",
       "group-disabled:bg-on-surface/[0.12] group-disabled:text-on-surface/[0.38] group-disabled:shadow-elevation-0",
     ].join(" "),
-    stateLayer: "bg-primary",
+    restStateLayer: "bg-primary",
+    selectedStateLayer: "bg-on-primary",
   },
 };
 

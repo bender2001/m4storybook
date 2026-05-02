@@ -10,7 +10,8 @@ import { cn } from "@/lib/cn";
 import { stateLayerOpacity } from "@/tokens/motion";
 import {
   anatomy,
-  buttonVariantClasses,
+  buttonActionColorClasses,
+  buttonToggleColorClasses,
   rootRadius,
   rootVariantClasses,
   sizeSpec,
@@ -26,6 +27,7 @@ import type {
 } from "./types";
 
 export type {
+  ButtonGroupButtonColor,
   ButtonGroupButtonVariant,
   ButtonGroupOption,
   ButtonGroupProps,
@@ -44,14 +46,15 @@ const expressiveSpring: Transition = {
 };
 
 const isMulti = (
-  mode: "single" | "multi",
+  mode: "none" | "single" | "multi",
   v: string | string[] | null | undefined,
 ): v is string[] => mode === "multi" && Array.isArray(v);
 
 const normalize = (
-  mode: "single" | "multi",
+  mode: "none" | "single" | "multi",
   v: string | string[] | null | undefined,
 ): string[] => {
+  if (mode === "none") return [];
   if (v == null) return [];
   if (mode === "multi") return Array.isArray(v) ? v : [v];
   return Array.isArray(v) ? v.slice(0, 1) : [v];
@@ -113,7 +116,8 @@ export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(
     {
       options,
       variant = "standard",
-      buttonVariant = "filled",
+      buttonColor,
+      buttonVariant,
       selectionMode = "single",
       selectionRequired = false,
       value,
@@ -129,6 +133,7 @@ export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(
     ref,
   ) {
     const reduced = useReducedMotion();
+    const defaultButtonColor = buttonColor ?? buttonVariant ?? "filled";
 
     const isControlled = value !== undefined;
     const [internalValue, setInternalValue] = useState<
@@ -157,6 +162,11 @@ export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(
 
     const handleSelect = (option: ButtonGroupOption) => {
       if (disabled || option.disabled) return;
+
+      if (selectionMode === "none") {
+        onChange?.(option.value);
+        return;
+      }
 
       if (selectionMode === "multi") {
         const current = isMulti(selectionMode, currentValue)
@@ -234,7 +244,8 @@ export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(
               pressed={isPressed}
               disabled={disabled || !!opt.disabled}
               groupVariant={variant}
-              defaultButtonVariant={buttonVariant}
+              selectable={selectionMode !== "none"}
+              defaultButtonColor={defaultButtonColor}
               size={size}
               shape={shape}
               widthScale={scale}
@@ -259,7 +270,8 @@ interface SegmentProps {
   pressed: boolean;
   disabled: boolean;
   groupVariant: ButtonGroupVariant;
-  defaultButtonVariant: NonNullable<ButtonGroupProps["buttonVariant"]>;
+  selectable: boolean;
+  defaultButtonColor: NonNullable<ButtonGroupProps["buttonColor"]>;
   size: ButtonGroupSize;
   shape: ButtonGroupShape;
   widthScale: number;
@@ -276,7 +288,8 @@ function Segment({
   pressed,
   disabled,
   groupVariant,
-  defaultButtonVariant,
+  selectable,
+  defaultButtonColor,
   size,
   shape,
   widthScale,
@@ -286,6 +299,7 @@ function Segment({
 }: SegmentProps) {
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
+  const visuallySelected = selectable && (selected || pressed);
 
   const stateLayer = disabled
     ? 0
@@ -295,7 +309,7 @@ function Segment({
         ? stateLayerOpacity.focus
         : hovered
           ? stateLayerOpacity.hover
-          : selected
+          : visuallySelected
             ? stateLayerOpacity.hover
             : 0;
 
@@ -308,19 +322,31 @@ function Segment({
     groupVariant === "connected"
       ? undefined
       : sz.widths[optionWidth(option)] * widthScale;
-  const variantStyles =
-    buttonVariantClasses[option.buttonVariant ?? defaultButtonVariant];
+  const optionColor =
+    option.buttonColor ?? option.buttonVariant ?? defaultButtonColor;
+  const actionColorStyles = buttonActionColorClasses[optionColor];
+  const toggleColorStyles = buttonToggleColorClasses[optionColor];
+  const colorClass = selectable
+    ? visuallySelected
+      ? toggleColorStyles.selected
+      : toggleColorStyles.rest
+    : actionColorStyles.rest;
+  const stateLayerClass = selectable
+    ? visuallySelected
+      ? toggleColorStyles.selectedStateLayer
+      : toggleColorStyles.restStateLayer
+    : actionColorStyles.stateLayer;
 
   const radius =
     groupVariant === "standard"
-      ? standardRadius(shape, size, selected || pressed)
+      ? standardRadius(shape, size, visuallySelected)
       : connectedRadius({
           index,
           total,
           shape,
           size,
-          selected,
-          pressed,
+          selected: visuallySelected,
+          pressed: false,
         });
 
   const accessibleName =
@@ -329,12 +355,12 @@ function Segment({
   return (
     <motion.button
       type="button"
-      aria-pressed={selected}
+      aria-pressed={selectable ? selected : undefined}
       aria-label={accessibleName}
       aria-disabled={disabled || undefined}
       disabled={disabled}
       data-button-group-segment
-      data-selected={selected || undefined}
+      data-selected={selectable && selected ? true : undefined}
       data-pressed={pressed || undefined}
       data-segment-index={index}
       animate={
@@ -349,14 +375,16 @@ function Segment({
         onPressChange(false);
       }}
       onPointerDown={() => onPressChange(true)}
-      onPointerUp={() => onPressChange(false)}
       onPointerCancel={() => onPressChange(false)}
       onFocus={() => setFocused(true)}
       onBlur={() => {
         setFocused(false);
         onPressChange(false);
       }}
-      onClick={() => onSelect(option)}
+      onClick={() => {
+        onSelect(option);
+        onPressChange(false);
+      }}
       className={cn(
         anatomy.item,
         groupVariant === "connected" && "min-w-0 flex-1 basis-0",
@@ -371,7 +399,7 @@ function Segment({
         className={cn(
           anatomy.button,
           sz.textClass,
-          selected ? variantStyles.selected : variantStyles.rest,
+          colorClass,
           option.label === undefined ? "gap-0 px-0" : "gap-2 px-4",
         )}
         style={{
@@ -384,7 +412,7 @@ function Segment({
         <span
           aria-hidden
           data-state-layer
-          className={cn(anatomy.stateLayer, variantStyles.stateLayer)}
+          className={cn(anatomy.stateLayer, stateLayerClass)}
           style={{ opacity: stateLayer }}
         />
         {option.icon ?? option.startIcon ? (

@@ -147,7 +147,7 @@ test.describe("Text Field - M3 design parity", () => {
     expect(opacity).toBeCloseTo(0.1, 2);
   });
 
-  test("disabled state suppresses interaction + dims the field", async ({
+  test("disabled state suppresses interaction without fading the whole field", async ({
     page,
   }) => {
     await page.goto(storyUrl("inputs-text-field--states"));
@@ -156,10 +156,14 @@ test.describe("Text Field - M3 design parity", () => {
       .locator("[data-textfield-root][data-disabled]")
       .first();
     const field = disabled.locator("[data-textfield-field]");
-    const opacity = await field.evaluate((el) =>
+    const fieldOpacity = await field.evaluate((el) =>
       parseFloat(window.getComputedStyle(el).opacity),
     );
-    expect(opacity).toBeCloseTo(0.38, 2);
+    expect(fieldOpacity).toBe(1);
+    const inputOpacity = await disabled
+      .locator("[data-textfield-input]")
+      .evaluate((el) => parseFloat(window.getComputedStyle(el).opacity));
+    expect(inputOpacity).toBeCloseTo(0.38, 2);
     await expect(disabled.locator("[data-textfield-input]")).toBeDisabled();
   });
 
@@ -201,6 +205,53 @@ test.describe("Text Field - M3 design parity", () => {
     await expect(label).toHaveAttribute("data-floating", "true");
   });
 
+  test("filled floating label stays inside the tray at body-s", async ({
+    page,
+  }) => {
+    await page.goto(storyUrl("inputs-text-field--states"));
+    const filledWithValue = page
+      .locator("[data-textfield-root]")
+      .filter({ hasText: "Filled with value" });
+    const label = filledWithValue.locator("[data-textfield-label]");
+    await expect(label).toHaveAttribute("data-floating", "true");
+    const styles = await label.evaluate((el) => {
+      const cs = window.getComputedStyle(el);
+      return {
+        top: parseFloat(cs.top),
+        fontSize: cs.fontSize,
+        lineHeight: cs.lineHeight,
+        background: cs.backgroundColor,
+      };
+    });
+    expect(styles.top).toBeGreaterThanOrEqual(0);
+    expect(styles.top).toBeLessThan(16);
+    expect(styles.fontSize).toBe("12px");
+    expect(styles.lineHeight).toBe("16px");
+    expect(styles.background).toBe("rgba(0, 0, 0, 0)");
+  });
+
+  test("outlined floating label cuts through the top edge", async ({
+    page,
+  }) => {
+    await page.goto(storyUrl("inputs-text-field--with-icons"));
+    const outlined = page
+      .locator("[data-textfield-root][data-variant='outlined']")
+      .filter({ hasText: "Dollar amount" });
+    const label = outlined.locator("[data-textfield-label]");
+    await expect(label).toHaveAttribute("data-floating", "true");
+    const styles = await label.evaluate((el) => {
+      const cs = window.getComputedStyle(el);
+      return {
+        top: parseFloat(cs.top),
+        fontSize: cs.fontSize,
+        background: cs.backgroundColor,
+      };
+    });
+    expect(styles.top).toBeLessThan(0);
+    expect(styles.fontSize).toBe("12px");
+    expect(styles.background).not.toBe("rgba(0, 0, 0, 0)");
+  });
+
   test("clicking the field tray focuses the input (M3 UX)", async ({ page }) => {
     await page.goto(storyUrl("inputs-text-field--default"));
     const field = page.locator("[data-textfield-field]").first();
@@ -235,7 +286,7 @@ test.describe("Text Field - M3 design parity", () => {
     expect(styles.ease).toContain(EASE_EMPHASIZED);
   });
 
-  test("helper text uses on-surface-variant, error helper uses error", async ({
+  test("supporting text uses on-surface-variant, error text uses error", async ({
     page,
   }) => {
     await page.goto(storyUrl("inputs-text-field--states"));
@@ -303,6 +354,18 @@ test.describe("Text Field - M3 design parity", () => {
     await expect(trailing).toBeVisible();
   });
 
+  test("prefix and suffix text render around the input value", async ({
+    page,
+  }) => {
+    await page.goto(storyUrl("inputs-text-field--with-icons"));
+    const amount = page
+      .locator("[data-textfield-root][data-variant='outlined']")
+      .filter({ hasText: "Dollar amount" });
+    await expect(amount.locator("[data-textfield-prefix]")).toHaveText("$");
+    await expect(amount.locator("[data-textfield-suffix]")).toHaveText(".00");
+    await expect(amount.locator("[data-textfield-input]")).toHaveValue("0");
+  });
+
   test("placeholder forces the label into floating position", async ({
     page,
   }) => {
@@ -311,6 +374,23 @@ test.describe("Text Field - M3 design parity", () => {
     const root = page.locator("[data-textfield-root]").first();
     const label = root.locator("[data-textfield-label]");
     await expect(label).toHaveAttribute("data-floating", "true");
+    const placeholderOpacity = await root
+      .locator("[data-textfield-input]")
+      .evaluate((el) =>
+        window.getComputedStyle(el, "::placeholder").opacity,
+      );
+    expect(placeholderOpacity).toBe("1");
+  });
+
+  test("maxlength displays the Material character counter", async ({
+    page,
+  }) => {
+    await page.goto(storyUrl("inputs-text-field--playground"));
+    const input = page.locator("[data-textfield-input]");
+    const counter = page.locator("[data-textfield-counter]");
+    await expect(counter).toHaveText("0 / 24");
+    await input.fill("Material");
+    await expect(counter).toHaveText("8 / 24");
   });
 
   test("dark theme swaps role colors on the filled tray", async ({ page }) => {

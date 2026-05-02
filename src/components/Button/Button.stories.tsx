@@ -1,7 +1,9 @@
+import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, fn, userEvent, within } from "@storybook/test";
 import { MaterialIcon } from "@/components/MaterialIcons";
 import { Button } from "./Button";
+import type { ButtonProps } from "./types";
 
 const meta: Meta<typeof Button> = {
   title: "Inputs/Button",
@@ -54,22 +56,33 @@ export const Default: Story = {
   },
 };
 
-export const Variants: Story = {
-  render: (args) => {
-    const toggleColor = args.color === "text" ? "filled" : args.color;
+function VariantButtons(args: ButtonProps) {
+  const [selected, setSelected] = useState(Boolean(args.selected));
+  const toggleColor = args.color === "text" ? "filled" : args.color;
 
-    return (
-      <div className="flex flex-wrap gap-3">
-        <Button {...args} variant="default">Default</Button>
-        <Button {...args} variant="toggle" color={toggleColor}>
-          Toggle unselected
-        </Button>
-        <Button {...args} variant="toggle" color={toggleColor} selected>
-          Toggle selected
-        </Button>
-      </div>
-    );
-  },
+  return (
+    <div className="flex flex-wrap gap-3">
+      <Button {...args} variant="default">
+        Default
+      </Button>
+      <Button
+        {...args}
+        variant="toggle"
+        color={toggleColor}
+        selected={selected}
+        onClick={(event) => {
+          args.onClick?.(event);
+          setSelected((current) => !current);
+        }}
+      >
+        Toggle
+      </Button>
+    </div>
+  );
+}
+
+export const Variants: Story = {
+  render: (args) => <VariantButtons {...args} />,
 };
 
 export const Colors: Story = {

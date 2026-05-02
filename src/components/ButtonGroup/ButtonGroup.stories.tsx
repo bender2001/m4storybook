@@ -46,7 +46,7 @@ const CALL_OPTIONS = [
     value: "end",
     icon: <Icon name="call" />,
     ariaLabel: "End call",
-    buttonVariant: "tonal" as const,
+    buttonColor: "tonal" as const,
   },
 ];
 
@@ -58,7 +58,7 @@ const meta: Meta<typeof ButtonGroup> = {
     docs: {
       description: {
         component:
-          "Material 3 Expressive button groups. Standard groups add width and shape interaction between adjacent buttons; connected groups replace segmented buttons and only morph the selected button.",
+          "Material 3 Expressive button groups. Two variants: standard and connected. Groups are invisible containers; the buttons inside use filled, tonal, outlined, or elevated color styles.",
       },
     },
   },
@@ -67,28 +67,35 @@ const meta: Meta<typeof ButtonGroup> = {
       control: "inline-radio",
       options: ["standard", "connected"],
     },
-    buttonVariant: {
+    buttonColor: {
       control: "inline-radio",
       options: ["filled", "tonal", "outlined", "elevated"],
     },
+    buttonVariant: {
+      control: false,
+      table: { disable: true },
+    },
     size: { control: "inline-radio", options: ["xs", "s", "m", "l", "xl"] },
     shape: { control: "inline-radio", options: ["round", "square"] },
-    selectionMode: { control: "inline-radio", options: ["single", "multi"] },
+    selectionMode: {
+      control: "inline-radio",
+      options: ["none", "single", "multi"],
+    },
     selectionRequired: { control: "boolean" },
     disabled: { control: "boolean" },
     onChange: { action: "changed" },
     options: { control: false },
   },
   args: {
-    options: ALIGN_OPTIONS,
+    options: FILE_OPTIONS,
     variant: "connected",
-    buttonVariant: "outlined",
+    buttonColor: "tonal",
     size: "m",
     shape: "round",
     selectionMode: "single",
     selectionRequired: true,
-    defaultValue: "center",
-    "aria-label": "Text alignment",
+    defaultValue: "mine",
+    "aria-label": "Folders",
   },
   decorators: [
     (Story) => (
@@ -112,15 +119,17 @@ export const Variants: Story = {
     <div className="flex flex-col items-start gap-6">
       <ButtonGroup
         {...args}
+        options={ALIGN_OPTIONS}
         variant="standard"
-        buttonVariant="filled"
+        buttonColor="filled"
         defaultValue="left"
       />
       <div className="w-full">
         <ButtonGroup
           {...args}
+          options={ALIGN_OPTIONS}
           variant="connected"
-          buttonVariant="outlined"
+          buttonColor="outlined"
           defaultValue="center"
         />
       </div>
@@ -128,7 +137,7 @@ export const Variants: Story = {
         <ButtonGroup
           {...args}
           variant="connected"
-          buttonVariant="tonal"
+          buttonColor="tonal"
           options={FILE_OPTIONS}
           defaultValue="shared"
           aria-label="Folders"
@@ -136,8 +145,9 @@ export const Variants: Story = {
       </div>
       <ButtonGroup
         {...args}
+        options={ALIGN_OPTIONS}
         variant="standard"
-        buttonVariant="elevated"
+        buttonColor="elevated"
         shape="square"
         defaultValue="right"
       />
@@ -149,11 +159,11 @@ export const Sizes: Story = {
   parameters: { controls: { disable: true }, actions: { disable: true } },
   render: (args) => (
     <div className="flex flex-col items-start gap-5">
-      <ButtonGroup {...args} variant="standard" size="xs" defaultValue="left" />
-      <ButtonGroup {...args} variant="standard" size="s" defaultValue="center" />
-      <ButtonGroup {...args} variant="standard" size="m" defaultValue="right" />
-      <ButtonGroup {...args} variant="standard" size="l" defaultValue="left" />
-      <ButtonGroup {...args} variant="standard" size="xl" defaultValue="center" />
+      <ButtonGroup {...args} options={ALIGN_OPTIONS} variant="standard" size="xs" defaultValue="left" />
+      <ButtonGroup {...args} options={ALIGN_OPTIONS} variant="standard" size="s" defaultValue="center" />
+      <ButtonGroup {...args} options={ALIGN_OPTIONS} variant="standard" size="m" defaultValue="right" />
+      <ButtonGroup {...args} options={ALIGN_OPTIONS} variant="standard" size="l" defaultValue="left" />
+      <ButtonGroup {...args} options={ALIGN_OPTIONS} variant="standard" size="xl" defaultValue="center" />
     </div>
   ),
 };
@@ -162,8 +172,8 @@ export const Shapes: Story = {
   parameters: { controls: { disable: true }, actions: { disable: true } },
   render: (args) => (
     <div className="flex flex-col gap-6">
-      <ButtonGroup {...args} shape="round" defaultValue="left" />
-      <ButtonGroup {...args} shape="square" defaultValue="center" />
+      <ButtonGroup {...args} options={ALIGN_OPTIONS} shape="round" defaultValue="left" />
+      <ButtonGroup {...args} options={ALIGN_OPTIONS} shape="square" defaultValue="center" />
     </div>
   ),
 };
@@ -172,9 +182,9 @@ export const States: Story = {
   parameters: { controls: { disable: true }, actions: { disable: true } },
   render: (args) => (
     <div className="flex flex-col gap-6">
-      <ButtonGroup {...args} defaultValue={null} selectionRequired={false} />
-      <ButtonGroup {...args} defaultValue="center" />
-      <ButtonGroup {...args} disabled defaultValue="right" />
+      <ButtonGroup {...args} options={ALIGN_OPTIONS} defaultValue={null} selectionRequired={false} />
+      <ButtonGroup {...args} options={ALIGN_OPTIONS} defaultValue="center" />
+      <ButtonGroup {...args} options={ALIGN_OPTIONS} disabled defaultValue="right" />
       <ButtonGroup
         {...args}
         options={[
@@ -194,16 +204,15 @@ export const WithIcons: Story = {
     <div className="flex flex-col gap-6">
       <ButtonGroup
         variant="standard"
-        buttonVariant="filled"
+        buttonColor="tonal"
         size="m"
-        selectionMode="multi"
-        defaultValue={["mic"]}
+        selectionMode="none"
         options={CALL_OPTIONS}
         aria-label="Call controls"
       />
       <ButtonGroup
         variant="connected"
-        buttonVariant="outlined"
+        buttonColor="outlined"
         size="s"
         selectionMode="multi"
         defaultValue={["bold"]}

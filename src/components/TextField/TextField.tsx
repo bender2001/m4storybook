@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import type { ChangeEvent } from "react";
+import type { CSSProperties, ChangeEvent } from "react";
 import { cn } from "@/lib/cn";
 import { stateLayerOpacity } from "@/tokens/motion";
 import { anatomy, sizeSpec, variantClasses } from "./anatomy";
@@ -20,10 +20,10 @@ export type {
 
 /**
  * M3 Text Field — `filled` (default) and `outlined` variants with a
- * floating label, leading/trailing icon slots, helper text, error
+ * floating label, leading/trailing icon slots, supporting text, error
  * state, and disabled state.
  *
- * Spec at https://m3.material.io/components/text-fields/specs.
+ * Spec at https://m3.material.io/components/text-fields/.
  *
  *  - Filled: 56dp tray (md), rounded-t-shape-xs, bg
  *    surface-container-highest, 1dp on-surface-variant indicator that
@@ -33,7 +33,7 @@ export type {
  *    floating label at the top edge.
  *  - State-layer (on-surface for filled, primary for outlined) paints
  *    at the M3 opacities (hover 0.08, focus 0.10, pressed 0.10).
- *  - Floating label: body-l resting → label-m floated. Float fires
+ *  - Floating label: body-l resting → body-s floated. Float fires
  *    when the input has focus, a value, or a placeholder.
  *
  * The native `<input>` owns the keyboard model + form submission.
@@ -54,9 +54,14 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       size = "md",
       disabled = false,
       error = false,
+      supportingText,
+      errorText,
       helperText,
+      prefixText,
+      suffixText,
       leadingIcon,
       trailingIcon,
+      maxLength,
       id,
       name,
       type = "text",
@@ -71,7 +76,14 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
   ) {
     const reactId = useId();
     const inputId = id ?? `textfield-${reactId}`;
-    const helperId = helperText ? `${inputId}-helper` : undefined;
+    const baseSupportingText = supportingText ?? helperText;
+    const visibleSupportingText =
+      error && errorText !== undefined && errorText !== ""
+        ? errorText
+        : baseSupportingText;
+    const supportingId = visibleSupportingText
+      ? `${inputId}-supporting`
+      : undefined;
     const innerRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(ref, () => innerRef.current as HTMLInputElement);
 
@@ -110,21 +122,58 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     const sz = sizeSpec[size];
     const variantStyles = variantClasses[variant];
 
-    const helperColor = error ? "text-error" : "text-on-surface-variant";
+    const counter =
+      typeof maxLength === "number" && maxLength >= 0
+        ? `${currentValue.length} / ${maxLength}`
+        : undefined;
+    const showAffixes = !label || isFloating;
 
-    // M3 floating label color: error wins over focused, focused wins
-    // over resting. Resting paints on-surface-variant; floating + focused
-    // paints primary; floating + filled (no focus) keeps on-surface-variant.
+    const supportingColor = disabled
+      ? "text-on-surface opacity-[0.38]"
+      : error
+        ? "text-error"
+        : "text-on-surface-variant";
     const labelColor = error
       ? "text-error"
       : focused
         ? "text-primary"
         : "text-on-surface-variant";
+    const disabledContentColor = "text-on-surface opacity-[0.38]";
+    const labelStateColor = disabled ? disabledContentColor : labelColor;
+    const affixColor = disabled
+      ? disabledContentColor
+      : "text-on-surface-variant";
+    const leadingIconColor = disabled
+      ? disabledContentColor
+      : "text-on-surface-variant";
+    const trailingIconColor = disabled
+      ? disabledContentColor
+      : error
+        ? "text-error"
+        : "text-on-surface-variant";
+    const labelPosition = isFloating
+      ? variant === "filled"
+        ? sz.labelFloatingFilled
+        : sz.labelFloatingOutlined
+      : sz.label;
+    const labelInset = leadingIcon ? sz.labelLeftWithIcon : sz.labelLeft;
+    const inputPadding = label ? sz.inputPaddingWithLabel : sz.inputPadding;
+    const disabledFieldStyle: CSSProperties | undefined = disabled
+      ? variant === "filled"
+        ? {
+            backgroundColor:
+              "color-mix(in srgb, var(--md-sys-color-on-surface) 4%, transparent)",
+            borderBottomColor:
+              "color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent)",
+          }
+        : {
+            borderColor:
+              "color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent)",
+          }
+      : undefined;
 
-    // Compose the aria-describedby value: any caller-supplied list +
-    // our own helper id when present.
     const describedBy =
-      [ariaDescribedBy, helperId].filter(Boolean).join(" ") || undefined;
+      [ariaDescribedBy, supportingId].filter(Boolean).join(" ") || undefined;
 
     return (
       <div
@@ -141,15 +190,17 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             sz.field,
             sz.paddingX,
             variantStyles.field,
-            disabled && "pointer-events-none opacity-[0.38]",
+            disabled && "pointer-events-none cursor-not-allowed",
             error && "border-error",
           )}
           data-textfield-field
           data-variant={variant}
+          data-disabled={disabled || undefined}
           data-focused={focused || undefined}
           data-hovered={hovered || undefined}
           data-pressed={pressed || undefined}
           data-error={error || undefined}
+          style={disabledFieldStyle}
           onPointerEnter={() => setHovered(true)}
           onPointerLeave={() => {
             setHovered(false);
@@ -181,6 +232,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
                 anatomy.leadingIcon,
                 sz.iconBox,
                 sz.leadingIconMargin,
+                leadingIconColor,
               )}
             >
               {leadingIcon}
@@ -194,17 +246,28 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
               data-floating={isFloating || undefined}
               className={cn(
                 anatomy.label,
-                isFloating ? sz.labelFloating : sz.label,
-                isFloating
-                  ? sz.labelLeftFloating
-                  : leadingIcon
-                    ? sz.labelLeftWithIcon
-                    : sz.labelLeft,
-                labelColor,
+                labelPosition,
+                labelInset,
+                labelStateColor,
               )}
             >
               {label}
             </label>
+          ) : null}
+
+          {prefixText && showAffixes ? (
+            <span
+              aria-hidden
+              data-textfield-prefix
+              className={cn(
+                anatomy.affixText,
+                sz.affixType,
+                inputPadding,
+                affixColor,
+              )}
+            >
+              {prefixText}
+            </span>
           ) : null}
 
           <input
@@ -218,11 +281,12 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             required={required}
             readOnly={readOnly}
             disabled={disabled}
+            maxLength={maxLength}
             aria-label={ariaLabel}
             aria-describedby={describedBy}
             aria-invalid={error || undefined}
             data-textfield-input
-            className={cn(anatomy.input, sz.inputPadding, sz.inputType)}
+            className={cn(anatomy.input, inputPadding, sz.inputType)}
             onChange={handleChange}
             onFocus={(e) => {
               setFocused(true);
@@ -236,6 +300,21 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             {...rest}
           />
 
+          {suffixText && showAffixes ? (
+            <span
+              aria-hidden
+              data-textfield-suffix
+              className={cn(
+                anatomy.affixText,
+                sz.affixType,
+                inputPadding,
+                affixColor,
+              )}
+            >
+              {suffixText}
+            </span>
+          ) : null}
+
           {trailingIcon ? (
             <span
               aria-hidden
@@ -244,6 +323,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
                 anatomy.trailingIcon,
                 sz.iconBox,
                 sz.trailingIconMargin,
+                trailingIconColor,
               )}
             >
               {trailingIcon}
@@ -251,14 +331,39 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           ) : null}
         </div>
 
-        {helperText ? (
-          <p
-            id={helperId}
-            data-textfield-helper
-            className={cn(anatomy.helperText, helperColor)}
+        {visibleSupportingText || counter ? (
+          <div
+            data-textfield-supporting-row
+            className={cn(
+              anatomy.supportingRow,
+              disabled && "text-on-surface opacity-[0.38]",
+            )}
           >
-            {helperText}
-          </p>
+            {visibleSupportingText ? (
+              <p
+                id={supportingId}
+                data-textfield-helper
+                data-textfield-supporting-text
+                className={cn(anatomy.supportingText, supportingColor)}
+              >
+                {visibleSupportingText}
+              </p>
+            ) : (
+              <span className="min-w-0 flex-1" />
+            )}
+            {counter ? (
+              <span
+                aria-hidden
+                data-textfield-counter
+                className={cn(
+                  anatomy.counter,
+                  disabled && "text-on-surface opacity-[0.38]",
+                )}
+              >
+                {counter}
+              </span>
+            ) : null}
+          </div>
         ) : null}
       </div>
     );

@@ -2,13 +2,14 @@ import type { HTMLAttributes, ReactNode } from "react";
 import type { ButtonColor } from "../Button/types";
 
 export type ButtonGroupVariant = "standard" | "connected";
-export type ButtonGroupButtonVariant = Extract<
+export type ButtonGroupButtonColor = Extract<
   ButtonColor,
   "filled" | "tonal" | "outlined" | "elevated"
 >;
+export type ButtonGroupButtonVariant = ButtonGroupButtonColor;
 export type ButtonGroupSize = "xs" | "s" | "m" | "l" | "xl";
 export type ButtonGroupShape = "round" | "square";
-export type ButtonGroupSelectionMode = "single" | "multi";
+export type ButtonGroupSelectionMode = "none" | "single" | "multi";
 export type ButtonGroupWidth = "narrow" | "default" | "wide";
 
 export interface ButtonGroupOption {
@@ -18,7 +19,10 @@ export interface ButtonGroupOption {
   startIcon?: ReactNode;
   endIcon?: ReactNode;
   disabled?: boolean;
-  buttonVariant?: ButtonGroupButtonVariant;
+  /** Button/toggle-button color style used by this option. */
+  buttonColor?: ButtonGroupButtonColor;
+  /** @deprecated Use `buttonColor`. */
+  buttonVariant?: ButtonGroupButtonColor;
   width?: ButtonGroupWidth;
   /** Required when an icon-only option has no visible label. */
   ariaLabel?: string;
@@ -30,9 +34,11 @@ export interface ButtonGroupProps
   options: ButtonGroupOption[];
   /** Material group variant. */
   variant?: ButtonGroupVariant;
-  /** Default button color treatment for options. */
-  buttonVariant?: ButtonGroupButtonVariant;
-  /** Single-select, multi-select, or selection-required behavior. */
+  /** Default button/toggle-button color style for options. */
+  buttonColor?: ButtonGroupButtonColor;
+  /** @deprecated Use `buttonColor`. */
+  buttonVariant?: ButtonGroupButtonColor;
+  /** Action-only, single-select, multi-select, or selection-required behavior. */
   selectionMode?: ButtonGroupSelectionMode;
   selectionRequired?: boolean;
   /** Controlled selected value(s). string for single, string[] for multi. */

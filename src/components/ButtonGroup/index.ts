@@ -1,5 +1,6 @@
 export { ButtonGroup } from "./ButtonGroup";
 export type {
+  ButtonGroupButtonColor,
   ButtonGroupButtonVariant,
   ButtonGroupOption,
   ButtonGroupProps,

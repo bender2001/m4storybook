@@ -37,8 +37,16 @@ export interface TextFieldProps
   disabled?: boolean;
   /** Error state. Swaps role colors to the error palette. */
   error?: boolean;
-  /** Helper text rendered beneath the field. */
+  /** Supporting text rendered beneath the field. */
+  supportingText?: ReactNode;
+  /** Error text that replaces supporting text when `error` is true. */
+  errorText?: ReactNode;
+  /** Backward-compatible alias for supporting text. */
   helperText?: ReactNode;
+  /** Prefix text rendered before the input value. */
+  prefixText?: ReactNode;
+  /** Suffix text rendered after the input value. */
+  suffixText?: ReactNode;
   /** Optional leading icon (24dp slot). */
   leadingIcon?: ReactNode;
   /** Optional trailing icon (24dp slot). */

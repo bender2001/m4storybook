@@ -154,18 +154,13 @@ test.describe("Button - M3 design parity", () => {
   test("spec variants are default and toggle", async ({ page }) => {
     await page.goto(storyUrl("inputs-button--variants"));
     const defaultButton = page.getByRole("button", { name: "Default" });
-    const unselectedToggle = page.getByRole("button", {
-      name: "Toggle unselected",
-    });
-    const selectedToggle = page.getByRole("button", {
-      name: "Toggle selected",
-    });
+    const toggle = page.getByRole("button", { name: "Toggle" });
 
     await expect(defaultButton).not.toHaveAttribute("aria-pressed");
-    await expect(unselectedToggle).toHaveAttribute("aria-pressed", "false");
-    await expect(selectedToggle).toHaveAttribute("aria-pressed", "true");
+    await expect(toggle).toHaveAttribute("aria-pressed", "false");
+    await expect(page.getByRole("button")).toHaveCount(2);
 
-    const unselected = await unselectedToggle.evaluate((el) => {
+    const unselected = await toggle.evaluate((el) => {
       const cs = window.getComputedStyle(el);
       return {
         bg: cs.backgroundColor,
@@ -174,6 +169,31 @@ test.describe("Button - M3 design parity", () => {
     });
     expect(unselected.bg).toBe(LIGHT_SURFACE_CONTAINER);
     expect(unselected.color).toBe(LIGHT_ON_SURFACE_VARIANT);
+
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-pressed", "true");
+    await page.waitForTimeout(350);
+
+    const selected = await toggle.evaluate((el) => {
+      const cs = window.getComputedStyle(el);
+      return {
+        bg: cs.backgroundColor,
+        color: cs.color,
+        radius: cs.borderTopLeftRadius,
+      };
+    });
+    expect(selected.bg).toBe(LIGHT_PRIMARY);
+    expect(selected.color).toBe(LIGHT_ON_PRIMARY);
+    expect(selected.radius).toBe("16px");
+  });
+
+  test("selected toggle is a state, not a separate variant", async ({ page }) => {
+    await page.goto(storyUrl("inputs-button--states"));
+    const selectedToggle = page.getByRole("button", {
+      name: "Toggle selected",
+    });
+
+    await expect(selectedToggle).toHaveAttribute("aria-pressed", "true");
 
     const selected = await selectedToggle.evaluate((el) => {
       const cs = window.getComputedStyle(el);
@@ -293,6 +313,15 @@ test.describe("Button - M3 design parity", () => {
         return { width: cs.width, height: cs.height };
       });
     expect(iconSize).toEqual({ width: "18px", height: "18px" });
+
+    const leadingIconColor = await leadingButton
+      .locator("[data-slot='leading-icon'] [data-component='material-icon']")
+      .evaluate((el) => window.getComputedStyle(el).color);
+    const trailingGlyphColor = await trailingButton
+      .locator("[data-slot='trailing-icon'] [data-slot='glyph']")
+      .evaluate((el) => window.getComputedStyle(el).color);
+    expect(leadingIconColor).toBe(LIGHT_ON_PRIMARY);
+    expect(trailingGlyphColor).toBe(LIGHT_ON_PRIMARY);
   });
 
   // Use Colors story for interaction tests: it has no play() function,

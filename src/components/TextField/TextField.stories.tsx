@@ -28,7 +28,7 @@ const meta: Meta<typeof TextField> = {
     docs: {
       description: {
         component:
-          "M3 Text Field — a 56dp tray with a floating label, leading/trailing icon slots, helper text, and an animated focus indicator. Filled paints surface-container-highest with a 1dp on-surface-variant indicator that morphs to 2dp primary on focus; outlined paints transparent with a 1dp outline that grows to 2dp primary and lets the floating label cut through the top edge. State-layer respects the M3 opacities (hover 0.08, focus 0.10, pressed 0.10). See https://m3.material.io/components/text-fields/specs.",
+          "M3 Text Field — a 56dp tray with a floating label, leading/trailing icon slots, supporting/error text, prefix/suffix text, character counting, and an animated focus indicator. Filled paints surface-container-highest with a 1dp on-surface-variant indicator that morphs to 2dp primary on focus; outlined paints transparent with a 1dp outline that grows to 2dp primary and lets the floating label cut through the top edge. State-layer respects the M3 opacities (hover 0.08, focus 0.10, pressed 0.10). See https://m3.material.io/components/text-fields/.",
       },
     },
   },
@@ -39,7 +39,11 @@ const meta: Meta<typeof TextField> = {
     error: { control: "boolean" },
     label: { control: "text" },
     placeholder: { control: "text" },
+    supportingText: { control: "text" },
+    errorText: { control: "text" },
     helperText: { control: "text" },
+    prefixText: { control: "text" },
+    suffixText: { control: "text" },
     onChange: { action: "changed" },
   },
   args: {
@@ -102,7 +106,8 @@ export const States: Story = {
         label="Error"
         error
         defaultValue="not-an-email"
-        helperText="Please enter a valid email"
+        supportingText="Email used for account access"
+        errorText="Please enter a valid email"
       />
       <TextField
         {...args}
@@ -137,6 +142,15 @@ export const WithIcons: Story = {
         leadingIcon={<SearchIcon />}
         trailingIcon={<ClearIcon />}
       />
+      <TextField
+        {...args}
+        variant="outlined"
+        label="Dollar amount"
+        type="number"
+        defaultValue="0"
+        prefixText="$"
+        suffixText=".00"
+      />
     </div>
   ),
 };
@@ -144,7 +158,8 @@ export const WithIcons: Story = {
 export const Playground: Story = {
   args: {
     onChange: fn(),
-    helperText: "Use the controls panel to drive variant + size",
+    supportingText: "Use the controls panel to drive variant + size",
+    maxLength: 24,
   },
 };
 

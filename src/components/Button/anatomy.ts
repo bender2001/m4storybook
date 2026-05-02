@@ -22,12 +22,14 @@ export const anatomy = {
   label: "relative z-[1] inline-flex items-center whitespace-nowrap",
   icon: [
     "relative z-[1] inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center",
-    "[&>svg]:h-[18px] [&>svg]:w-[18px]",
+    "[&>svg]:h-[18px] [&>svg]:w-[18px] [&>svg]:text-inherit",
     "[&_[data-component=material-icon]]:h-[18px]",
     "[&_[data-component=material-icon]]:w-[18px]",
+    "[&_[data-component=material-icon]]:text-inherit",
     "[&_[data-slot=glyph]]:h-[18px]",
     "[&_[data-slot=glyph]]:w-[18px]",
     "[&_[data-slot=glyph]]:text-[18px]",
+    "[&_[data-slot=glyph]]:text-inherit",
   ].join(" "),
 } as const;
 
