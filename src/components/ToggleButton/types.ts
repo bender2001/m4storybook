@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { HTMLMotionProps } from "motion/react";
-import type { ButtonSize, ButtonVariant } from "../Button/types";
+import type { ButtonColor, ButtonSize } from "../Button/types";
 
 /**
  * Toggle Button variants follow the standard M3 Button surface roles.
@@ -9,7 +9,7 @@ import type { ButtonSize, ButtonVariant } from "../Button/types";
  * secondary-container role for tonal emphasis.
  */
 export type ToggleButtonVariant = Extract<
-  ButtonVariant,
+  ButtonColor,
   "filled" | "tonal" | "outlined" | "text" | "elevated"
 >;
 

@@ -136,7 +136,7 @@ export const Slots: Story = {
       <Alert
         severity="warning"
         title="Heads up"
-        action={<Button variant="text">Review</Button>}
+        action={<Button color="text">Review</Button>}
       >
         We noticed an unusual sign-in.
       </Alert>
@@ -158,7 +158,7 @@ export const Motion: Story = {
       return (
         <div className="flex flex-col gap-3">
           <div>
-            <Button onClick={() => setOpen((o) => !o)} variant="tonal">
+            <Button onClick={() => setOpen((o) => !o)} color="tonal">
               {open ? "Dismiss" : "Re-open"}
             </Button>
           </div>

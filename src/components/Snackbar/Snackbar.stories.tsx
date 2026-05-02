@@ -118,7 +118,7 @@ export const States: Story = {
       <Snackbar
         message="With action"
         action={
-          <Button variant="text" className="text-inverse-primary">
+          <Button color="text" className="text-inverse-primary">
             Undo
           </Button>
         }
@@ -150,7 +150,7 @@ export const Slots: Story = {
         message="With leading icon + action"
         icon={<InfoGlyph />}
         action={
-          <Button variant="text" className="text-inverse-primary">
+          <Button color="text" className="text-inverse-primary">
             View
           </Button>
         }
@@ -165,7 +165,7 @@ export const Slots: Story = {
         message="Icon + action + close"
         showClose
         action={
-          <Button variant="text" className="text-inverse-primary">
+          <Button color="text" className="text-inverse-primary">
             Retry
           </Button>
         }
@@ -182,7 +182,7 @@ export const Motion: Story = {
       const [open, setOpen] = useState(true);
       return (
         <div className="flex flex-col items-start gap-3">
-          <Button variant="tonal" onClick={() => setOpen((o) => !o)}>
+          <Button color="tonal" onClick={() => setOpen((o) => !o)}>
             {open ? "Dismiss" : "Re-open"}
           </Button>
           <Snackbar

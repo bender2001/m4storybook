@@ -1,9 +1,9 @@
 import type { HTMLAttributes, ReactNode } from "react";
-import type { ButtonVariant } from "../Button/types";
+import type { ButtonColor } from "../Button/types";
 
 export type ButtonGroupVariant = "standard" | "connected";
 export type ButtonGroupButtonVariant = Extract<
-  ButtonVariant,
+  ButtonColor,
   "filled" | "tonal" | "outlined" | "elevated"
 >;
 export type ButtonGroupSize = "xs" | "s" | "m" | "l" | "xl";

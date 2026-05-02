@@ -283,8 +283,8 @@ export const Slots: Story = {
           trailingIcon={<CloseGlyph />}
           actions={
             <>
-              <Button variant="text">Cancel</Button>
-              <Button variant="filled">Save</Button>
+              <Button color="text">Cancel</Button>
+              <Button color="filled">Save</Button>
             </>
           }
         >
@@ -310,7 +310,7 @@ export const Motion: Story = {
       return (
         <div className="flex flex-col gap-3">
           <div>
-            <Button onClick={() => setOpen((o) => !o)} variant="tonal">
+            <Button onClick={() => setOpen((o) => !o)} color="tonal">
               {open ? "Dismiss" : "Re-open"}
             </Button>
           </div>
@@ -322,7 +322,7 @@ export const Motion: Story = {
               title="Motion preview"
               trailingIcon={<CloseGlyph />}
               actions={
-                <Button variant="text" onClick={() => setOpen(false)}>
+                <Button color="text" onClick={() => setOpen(false)}>
                   Dismiss
                 </Button>
               }
@@ -351,8 +351,8 @@ export const Accessibility: Story = {
           onClose={() => undefined}
           actions={
             <>
-              <Button variant="text">Cancel</Button>
-              <Button variant="filled">OK</Button>
+              <Button color="text">Cancel</Button>
+              <Button color="filled">OK</Button>
             </>
           }
         >
@@ -413,7 +413,7 @@ export const InteractionSpec: Story = {
             actions={
               <Button
                 data-testid="popover-ok"
-                variant="filled"
+                color="filled"
                 onClick={() => {
                   setOpen(false);
                   args.onClose?.();

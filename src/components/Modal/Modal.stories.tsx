@@ -125,7 +125,7 @@ export const Variants: Story = {
           variant="standard"
           contained
           title="Standard"
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         >
           surface-container-high + elevation 3 + xl shape
         </Modal>
@@ -135,7 +135,7 @@ export const Variants: Story = {
           variant="tonal"
           contained
           title="Tonal"
-          actions={<Button variant="tonal">OK</Button>}
+          actions={<Button color="tonal">OK</Button>}
         >
           primary-container surface, elevation 1
         </Modal>
@@ -145,7 +145,7 @@ export const Variants: Story = {
           variant="outlined"
           contained
           title="Outlined"
-          actions={<Button variant="outlined">OK</Button>}
+          actions={<Button color="outlined">OK</Button>}
         >
           Surface fill with a 1dp outline, no elevation
         </Modal>
@@ -155,7 +155,7 @@ export const Variants: Story = {
           variant="text"
           contained
           title="Text"
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         >
           Transparent surface, no border, no elevation
         </Modal>
@@ -165,7 +165,7 @@ export const Variants: Story = {
           variant="elevated"
           contained
           title="Elevated"
-          actions={<Button variant="filled">OK</Button>}
+          actions={<Button color="filled">OK</Button>}
         >
           surface-container-low + elevation 4
         </Modal>
@@ -183,7 +183,7 @@ export const Sizes: Story = {
           size="sm"
           contained
           title="Small"
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         >
           280..400px modal width band
         </Modal>
@@ -193,7 +193,7 @@ export const Sizes: Story = {
           size="md"
           contained
           title="Medium"
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         >
           M3 default 320..560px modal
         </Modal>
@@ -203,7 +203,7 @@ export const Sizes: Story = {
           size="lg"
           contained
           title="Large"
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         >
           400..720px form / list modal
         </Modal>
@@ -220,7 +220,7 @@ export const States: Story = {
         <Modal
           contained
           title="Resting"
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         >
           Default modal state.
         </Modal>
@@ -230,7 +230,7 @@ export const States: Story = {
           contained
           disabled
           title="Disabled"
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         >
           Disabled modal — dimmed to 0.38, blocks pointer events.
         </Modal>
@@ -240,7 +240,7 @@ export const States: Story = {
           contained
           scrim={false}
           title="No scrim"
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         >
           Inline modal with no scrim layer.
         </Modal>
@@ -260,7 +260,7 @@ export const Shapes: Story = {
               shape={shape}
               contained
               title={`shape-${shape}`}
-              actions={<Button variant="text">OK</Button>}
+              actions={<Button color="text">OK</Button>}
             >
               Modal corner-shape token preview.
             </Modal>
@@ -283,8 +283,8 @@ export const Slots: Story = {
           trailingIcon={<CloseGlyph />}
           actions={
             <>
-              <Button variant="text">Cancel</Button>
-              <Button variant="filled">Confirm</Button>
+              <Button color="text">Cancel</Button>
+              <Button color="filled">Confirm</Button>
             </>
           }
         >
@@ -297,8 +297,8 @@ export const Slots: Story = {
           title="Form modal"
           actions={
             <>
-              <Button variant="text">Cancel</Button>
-              <Button variant="filled">Save</Button>
+              <Button color="text">Cancel</Button>
+              <Button color="filled">Save</Button>
             </>
           }
         >
@@ -321,7 +321,7 @@ export const Motion: Story = {
       return (
         <div className="flex flex-col gap-3">
           <div>
-            <Button onClick={() => setOpen((o) => !o)} variant="tonal">
+            <Button onClick={() => setOpen((o) => !o)} color="tonal">
               {open ? "Dismiss" : "Re-open"}
             </Button>
           </div>
@@ -334,10 +334,10 @@ export const Motion: Story = {
               trailingIcon={<CloseGlyph />}
               actions={
                 <>
-                  <Button variant="text" onClick={() => setOpen(false)}>
+                  <Button color="text" onClick={() => setOpen(false)}>
                     Cancel
                   </Button>
-                  <Button variant="filled" onClick={() => setOpen(false)}>
+                  <Button color="filled" onClick={() => setOpen(false)}>
                     OK
                   </Button>
                 </>
@@ -365,8 +365,8 @@ export const Accessibility: Story = {
           onClose={() => undefined}
           actions={
             <>
-              <Button variant="text">Cancel</Button>
-              <Button variant="filled">OK</Button>
+              <Button color="text">Cancel</Button>
+              <Button color="filled">OK</Button>
             </>
           }
         >
@@ -392,8 +392,8 @@ export const Playground: Story = {
         {...args}
         actions={
           <>
-            <Button variant="text">Cancel</Button>
-            <Button variant="filled">OK</Button>
+            <Button color="text">Cancel</Button>
+            <Button color="filled">OK</Button>
           </>
         }
       >
@@ -430,7 +430,7 @@ export const InteractionSpec: Story = {
             actions={
               <Button
                 data-testid="modal-ok"
-                variant="filled"
+                color="filled"
                 onClick={() => {
                   setOpen(false);
                   args.onClose?.();

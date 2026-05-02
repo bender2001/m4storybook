@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * Visual baseline screenshots for the M3 Expressive Button.
+ * Visual baseline screenshots for the Material 3 common Button.
  * Animations are disabled and reduced-motion is forced so the
  * snapshots are deterministic across runs.
  */
@@ -23,6 +23,16 @@ test.describe("Button - visual baselines", () => {
       const root = page.locator("#storybook-root");
       await expect(root).toHaveScreenshot(
         `button-variants-${theme}.png`,
+        SCREENSHOT_OPTS,
+      );
+    });
+
+    test(`colors row - ${theme}`, async ({ page }) => {
+      await page.goto(storyUrl("inputs-button--colors", theme));
+      await page.waitForLoadState("networkidle");
+      const root = page.locator("#storybook-root");
+      await expect(root).toHaveScreenshot(
+        `button-colors-${theme}.png`,
         SCREENSHOT_OPTS,
       );
     });

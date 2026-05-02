@@ -313,7 +313,7 @@ export const Motion: Story = {
       return (
         <div className="flex flex-col gap-3">
           <div>
-            <Button onClick={() => setOpen((o) => !o)} variant="tonal">
+            <Button onClick={() => setOpen((o) => !o)} color="tonal">
               {open ? "Dismiss" : "Re-open"}
             </Button>
           </div>

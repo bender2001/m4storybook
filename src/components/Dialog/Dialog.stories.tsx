@@ -97,8 +97,8 @@ export const Default: Story = {
         {...args}
         actions={
           <>
-            <Button variant="text">Cancel</Button>
-            <Button variant="filled">Reset</Button>
+            <Button color="text">Cancel</Button>
+            <Button color="filled">Reset</Button>
           </>
         }
       />
@@ -116,7 +116,7 @@ export const Variants: Story = {
           contained
           title="Standard dialog"
           supportingText="Surface-container-high + elevation 3 + xl shape."
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         />
       </Surface>
       <Surface>
@@ -125,7 +125,7 @@ export const Variants: Story = {
           contained
           title="Tonal dialog"
           supportingText="Primary-container surface, elevation 1."
-          actions={<Button variant="tonal">OK</Button>}
+          actions={<Button color="tonal">OK</Button>}
         />
       </Surface>
       <Surface>
@@ -134,7 +134,7 @@ export const Variants: Story = {
           contained
           title="Outlined dialog"
           supportingText="Transparent surface with a 1dp outline border."
-          actions={<Button variant="outlined">OK</Button>}
+          actions={<Button color="outlined">OK</Button>}
         />
       </Surface>
       <Surface>
@@ -143,7 +143,7 @@ export const Variants: Story = {
           contained
           title="Fullscreen dialog"
           supportingText="Edge-to-edge surface with no radius or elevation."
-          actions={<Button variant="text">Done</Button>}
+          actions={<Button color="text">Done</Button>}
         />
       </Surface>
     </div>
@@ -160,7 +160,7 @@ export const Sizes: Story = {
           contained
           title="Small dialog"
           supportingText="Compact alert dialog (max 400px)."
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         />
       </Surface>
       <Surface>
@@ -169,7 +169,7 @@ export const Sizes: Story = {
           contained
           title="Medium dialog"
           supportingText="Default M3 basic dialog (max 560px)."
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         />
       </Surface>
       <Surface className="!w-[760px]">
@@ -178,7 +178,7 @@ export const Sizes: Story = {
           contained
           title="Large dialog"
           supportingText="Form / choice dialog (max 720px)."
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         />
       </Surface>
     </div>
@@ -194,7 +194,7 @@ export const States: Story = {
           contained
           title="Resting"
           supportingText="Default dialog state."
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         />
       </Surface>
       <Surface>
@@ -203,7 +203,7 @@ export const States: Story = {
           variant="outlined"
           title="Outlined"
           supportingText="No elevation, 1dp outline."
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         />
       </Surface>
       <Surface>
@@ -212,7 +212,7 @@ export const States: Story = {
           scrim={false}
           title="No scrim"
           supportingText="Inline dialog with no scrim layer."
-          actions={<Button variant="text">OK</Button>}
+          actions={<Button color="text">OK</Button>}
         />
       </Surface>
     </div>
@@ -231,7 +231,7 @@ export const Shapes: Story = {
               contained
               title={`shape-${shape}`}
               supportingText="Dialog corner-shape token preview."
-              actions={<Button variant="text">OK</Button>}
+              actions={<Button color="text">OK</Button>}
             />
           </Surface>
         ),
@@ -252,8 +252,8 @@ export const Slots: Story = {
           supportingText="Icon dialogs center the headline below a 24dp glyph."
           actions={
             <>
-              <Button variant="text">Cancel</Button>
-              <Button variant="filled">Confirm</Button>
+              <Button color="text">Cancel</Button>
+              <Button color="filled">Confirm</Button>
             </>
           }
         />
@@ -265,8 +265,8 @@ export const Slots: Story = {
           supportingText="Dialogs can host inline content like a list or a form."
           actions={
             <>
-              <Button variant="text">Cancel</Button>
-              <Button variant="filled">Save</Button>
+              <Button color="text">Cancel</Button>
+              <Button color="filled">Save</Button>
             </>
           }
         >
@@ -289,7 +289,7 @@ export const Motion: Story = {
       return (
         <div className="flex flex-col gap-3">
           <div>
-            <Button onClick={() => setOpen((o) => !o)} variant="tonal">
+            <Button onClick={() => setOpen((o) => !o)} color="tonal">
               {open ? "Dismiss" : "Re-open"}
             </Button>
           </div>
@@ -302,10 +302,10 @@ export const Motion: Story = {
               supportingText="Surface scales from 95% on enter, scrim fades via the M3 emphasized tween."
               actions={
                 <>
-                  <Button variant="text" onClick={() => setOpen(false)}>
+                  <Button color="text" onClick={() => setOpen(false)}>
                     Cancel
                   </Button>
-                  <Button variant="filled" onClick={() => setOpen(false)}>
+                  <Button color="filled" onClick={() => setOpen(false)}>
                     OK
                   </Button>
                 </>
@@ -331,8 +331,8 @@ export const Accessibility: Story = {
           onClose={() => undefined}
           actions={
             <>
-              <Button variant="text">Cancel</Button>
-              <Button variant="filled">OK</Button>
+              <Button color="text">Cancel</Button>
+              <Button color="filled">OK</Button>
             </>
           }
         />
@@ -358,8 +358,8 @@ export const Playground: Story = {
         {...args}
         actions={
           <>
-            <Button variant="text">Cancel</Button>
-            <Button variant="filled">Reset</Button>
+            <Button color="text">Cancel</Button>
+            <Button color="filled">Reset</Button>
           </>
         }
       />
@@ -395,7 +395,7 @@ export const InteractionSpec: Story = {
               <>
                 <Button
                   data-testid="dialog-cancel"
-                  variant="text"
+                  color="text"
                   onClick={() => {
                     setOpen(false);
                     args.onClose?.();
@@ -405,7 +405,7 @@ export const InteractionSpec: Story = {
                 </Button>
                 <Button
                   data-testid="dialog-ok"
-                  variant="filled"
+                  color="filled"
                   onClick={() => {
                     setOpen(false);
                     args.onClose?.();
