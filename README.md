@@ -27,6 +27,26 @@ component matches its M3 spec.
 pnpm install
 ```
 
+## Package
+
+Build the publishable React component package:
+
+```bash
+pnpm build
+```
+
+Install from GitHub Packages in a consuming project:
+
+```bash
+pnpm add @bender2001/m4-components
+```
+
+Consumers should import the library stylesheet once:
+
+```ts
+import "@bender2001/m4-components/style.css";
+```
+
 ## Storybook
 
 ```bash
@@ -66,7 +86,8 @@ Playwright boots Storybook automatically via `webServer` in
 
 ```bash
 pnpm dev              # Vite dev server (component sandbox at /)
-pnpm build            # tsc -b && vite build
+pnpm build            # build the component package into dist/
+pnpm build:app        # tsc -b && vite build
 pnpm typecheck        # tsc -b --noEmit
 pnpm lint             # eslint .
 pnpm test             # vitest run (token unit tests)

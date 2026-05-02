@@ -1,6 +1,6 @@
 import type { Transition, Variants } from "motion/react";
-import { easing, duration } from "@/tokens/motion";
-import { shapeScale, type ShapeRole } from "@/tokens/shape";
+import { easing, duration } from "../tokens/motion";
+import { shapeScale, type ShapeRole } from "../tokens/shape";
 
 const ms = (d: string) => Number(d.replace("ms", "")) / 1000;
 const cubic = (e: string): [number, number, number, number] => {

@@ -1,12 +1,43 @@
 {
-  "name": "m3-expressive-storybook",
-  "private": true,
+  "name": "@bender2001/m4-components",
+  "private": false,
   "version": "0.1.0",
   "type": "module",
+  "description": "Material 3 Expressive React component library.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bender2001/m4storybook.git"
+  },
+  "homepage": "https://github.com/bender2001/m4storybook#readme",
+  "bugs": {
+    "url": "https://github.com/bender2001/m4storybook/issues"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "./dist/style.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "packageManager": "pnpm@10.33.2",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "pnpm build:lib",
+    "build:app": "tsc -b && vite build",
+    "build:lib": "vite build --config vite.config.lib.ts && tailwindcss -i ./src/index.css -o ./dist/style.css --minify && tsc -p tsconfig.lib.json",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "vitest run",
@@ -14,12 +45,15 @@
     "test:e2e": "playwright test",
     "test:e2e:update": "playwright test --update-snapshots",
     "typecheck": "tsc -b --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build:lib"
   },
   "dependencies": {
-    "motion": "^11.13.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "motion": "^11.13.1"
+  },
+  "peerDependencies": {
+    "react": ">=18 <20",
+    "react-dom": ">=18 <20"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -45,6 +79,8 @@
     "globals": "^15.14.0",
     "jsdom": "^25.0.1",
     "postcss": "^8.4.49",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "storybook": "^8.4.7",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
