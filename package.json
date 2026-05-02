@@ -1,7 +1,7 @@
 {
   "name": "@bender2001/m4-components",
   "private": false,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "description": "Material 3 Expressive React component library.",
   "repository": {

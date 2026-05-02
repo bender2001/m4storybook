@@ -18,7 +18,8 @@ import type { ReactNode } from "react";
  *                  prompts where the surface behind should remain
  *                  visible.
  *   - fullscreen : edge-to-edge surface with no radius and no
- *                  elevation. Equivalent to MUI's `fullScreen` flag.
+ *                  elevation, plus a 56dp header when a title,
+ *                  close affordance, or actions are present.
  */
 export type DialogVariant =
   | "standard"
@@ -29,9 +30,9 @@ export type DialogVariant =
 /**
  * Density / max-width preset. Mirrors MUI's `maxWidth` shorthand:
  *
- *   - sm : 320px min / 400px max  (compact alert dialog)
- *   - md : 360px min / 560px max  (M3 default basic dialog)
- *   - lg : 480px min / 720px max  (form / choice dialogs)
+ *   - sm : compact density inside the 280px / 560px M3 width band
+ *   - md : default M3 basic dialog density
+ *   - lg : roomier API alias, still capped at the 560px M3 width band
  */
 export type DialogSize = "sm" | "md" | "lg";
 
@@ -64,6 +65,10 @@ type DialogOwnKey =
   | "contained"
   | "disableEscapeClose"
   | "disableScrimClose"
+  | "disableAutoFocus"
+  | "disableFocusTrap"
+  | "closeIcon"
+  | "closeLabel"
   | "closeOnEscape"
   | "ariaLabel"
   | "ariaLabelledBy"
@@ -125,6 +130,14 @@ export interface DialogProps
   disableEscapeClose?: boolean;
   /** Skip click-on-scrim-to-close. Default false. */
   disableScrimClose?: boolean;
+  /** Skip initial focus placement inside the dialog. Default false. */
+  disableAutoFocus?: boolean;
+  /** Skip Tab / Shift+Tab focus cycling inside the dialog. Default false. */
+  disableFocusTrap?: boolean;
+  /** Full-screen close affordance. Defaults to the Material close icon. */
+  closeIcon?: ReactNode;
+  /** Accessible label for the full-screen close affordance. */
+  closeLabel?: string;
   /** Aliased `aria-label` for the dialog surface. */
   ariaLabel?: string;
   /**

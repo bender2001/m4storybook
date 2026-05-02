@@ -52,7 +52,7 @@ const meta: Meta<typeof Dialog> = {
     docs: {
       description: {
         component:
-          "M3 Dialog. Re-skins the MUI Dialog API onto the M3 basic-dialog surface (https://m3.material.io/components/dialogs/specs). Four variants (standard / tonal / outlined / fullscreen), three density sizes, full shape-token scale, optional 24dp hero icon, headline-s title, body-m supporting text, inline body content, trailing actions row, and a built-in scrim with click-to-dismiss + Escape-to-close.",
+          "M3 Dialog. Re-skins the MUI Dialog API onto the M3 basic-dialog surface (https://m3.material.io/components/dialogs/specs). Four variants (standard / tonal / outlined / fullscreen), three density sizes, full shape-token scale, optional 24dp hero icon, headline-s title, body-m supporting text, inline body content, trailing actions row, alertdialog semantics for basic dialogs, focus cycling, and a built-in scrim with click-to-dismiss + Escape-to-close.",
       },
     },
   },
@@ -71,6 +71,8 @@ const meta: Meta<typeof Dialog> = {
     contained: { control: "boolean" },
     disableEscapeClose: { control: "boolean" },
     disableScrimClose: { control: "boolean" },
+    disableAutoFocus: { control: "boolean" },
+    disableFocusTrap: { control: "boolean" },
   },
   args: {
     variant: "standard",
@@ -81,6 +83,8 @@ const meta: Meta<typeof Dialog> = {
     contained: true,
     disableEscapeClose: false,
     disableScrimClose: false,
+    disableAutoFocus: false,
+    disableFocusTrap: false,
     title: "Reset settings?",
     supportingText:
       "This will restore default values for all preferences in this section.",
@@ -141,9 +145,10 @@ export const Variants: Story = {
         <Dialog
           variant="fullscreen"
           contained
+          onClose={() => undefined}
           title="Fullscreen dialog"
-          supportingText="Edge-to-edge surface with no radius or elevation."
-          actions={<Button color="text">Done</Button>}
+          supportingText="Compact-window task surface with a 56dp header."
+          actions={<Button color="text">Save</Button>}
         />
       </Surface>
     </div>
@@ -299,7 +304,7 @@ export const Motion: Story = {
               open={open}
               onClose={() => setOpen(false)}
               title="Motion preview"
-              supportingText="Surface scales from 95% on enter, scrim fades via the M3 emphasized tween."
+              supportingText="Dialog and scrim fade in and out with the M3 enter and exit transition tokens."
               actions={
                 <>
                   <Button color="text" onClick={() => setOpen(false)}>
@@ -327,7 +332,7 @@ export const Accessibility: Story = {
         <Dialog
           contained
           title="Accessible dialog"
-          supportingText="role=dialog, aria-modal=true, headline + supporting text are auto-wired into aria-labelledby + aria-describedby. Press Escape to dismiss."
+          supportingText="role=alertdialog, aria-modal=true, headline + supporting text are auto-wired into aria-labelledby + aria-describedby. Focus lands on the first action and cycles inside."
           onClose={() => undefined}
           actions={
             <>
@@ -427,10 +432,10 @@ export const InteractionSpec: Story = {
     ) as HTMLElement | null;
 
     await step(
-      "Dialog mounts with role=dialog + aria-modal=true",
+      "Dialog mounts with role=alertdialog + aria-modal=true",
       async () => {
         expect(dialog).not.toBeNull();
-        expect(dialog?.getAttribute("role")).toBe("dialog");
+        expect(dialog?.getAttribute("role")).toBe("alertdialog");
         expect(dialog?.getAttribute("aria-modal")).toBe("true");
       },
     );

@@ -34,9 +34,9 @@ export type {
  *   invisible  -> transparent + no border (still blocks pointer events)
  *
  * Sizes drive the scrim opacity per the M3 dialog spec (sm 0.16,
- * md 0.32 default, lg 0.56). Enter/exit motion uses AnimatePresence
- * with the M3 emphasized tween (medium2 / 300ms); reduced motion
- * collapses the duration to 0 while keeping the opacity step.
+ * md 0.32 default, lg 0.56). Enter/exit motion uses the M3
+ * decelerate/accelerate fade tokens; reduced motion collapses the
+ * duration to 0 while keeping the opacity step.
  */
 export const Backdrop = forwardRef<HTMLDivElement, BackdropProps>(
   function Backdrop(
@@ -88,7 +88,12 @@ export const Backdrop = forwardRef<HTMLDivElement, BackdropProps>(
       }
     };
 
-    const transition = reduce ? { duration: 0 } : tweens.standard;
+    const enterTransition = reduce
+      ? { duration: 0 }
+      : tweens.emphasizedDecelerate;
+    const exitTransition = reduce
+      ? { duration: 0 }
+      : tweens.emphasizedAccelerate;
 
     const inner = (
       <motion.div
@@ -115,9 +120,11 @@ export const Backdrop = forwardRef<HTMLDivElement, BackdropProps>(
           className,
         )}
         initial={{ opacity: 0 }}
-        animate={{ opacity: disabled ? 0.38 : restingOpacity }}
-        exit={{ opacity: 0 }}
-        transition={transition}
+        animate={{
+          opacity: disabled ? 0.38 : restingOpacity,
+          transition: enterTransition,
+        }}
+        exit={{ opacity: 0, transition: exitTransition }}
         {...rest}
       >
         {children ? (

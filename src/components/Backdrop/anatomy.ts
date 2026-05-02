@@ -13,16 +13,16 @@ import type {
  * The backdrop is a single full-viewport (or contained) `<div>` with
  * an optional centered content slot. It paints the M3 scrim token at
  * a per-size opacity, fades in/out via AnimatePresence using the M3
- * emphasized tween, and blocks pointer events on whatever sits behind
- * it.
+ * decelerate / accelerate fade tokens, and blocks pointer events on
+ * whatever sits behind it.
  *
  * Token bindings:
  *   - shape       : `none` by default; full-radius scale available
  *                   via the `shape` prop for contained backdrops
  *   - container   : painted per `variant` × `size` matrix below
  *   - typography  : body-m for centered content (md density)
- *   - motion      : enter/exit via AnimatePresence with the M3
- *                   emphasized tween (medium2 / 300ms)
+ *   - motion      : enter/exit via AnimatePresence with M3
+ *                   decelerate / accelerate fade tokens
  *
  * The scrim opacity scale follows the M3 dialog spec:
  *   sm 0.16 / md 0.32 / lg 0.56

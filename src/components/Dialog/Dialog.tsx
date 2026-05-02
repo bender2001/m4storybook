@@ -1,17 +1,23 @@
 import {
   forwardRef,
+  useCallback,
+  useEffect,
   useId,
+  useImperativeHandle,
+  useRef,
   type KeyboardEvent,
   type MouseEvent,
   type ReactElement,
 } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Backdrop } from "@/components/Backdrop";
+import { MaterialIcon } from "@/components/MaterialIcons";
 import { cn } from "@/lib/cn";
 import { tweens } from "@/motion/presets";
 import {
   anatomy,
   colorMatrix,
+  FOCUSABLE_SELECTOR,
   fullscreenSurface,
   positionClasses,
   shapeClasses,
@@ -47,11 +53,11 @@ export type {
  *   - outlined   : transparent fill + 1dp outline border + no
  *                  elevation (low-emphasis confirmation prompts).
  *   - fullscreen : edge-to-edge surface, no radius / elevation.
- *                  Equivalent to MUI's `fullScreen` flag.
+ *                  Equivalent to MUI's `fullScreen` flag, with a
+ *                  56dp header for close / title / action slots.
  *
- * Motion: surface scales from 95% on enter and back to 95% on exit
- * via AnimatePresence with the M3 emphasized tween. The internal
- * Backdrop owns the scrim opacity and click-to-dismiss contract.
+ * Motion: surface and scrim fade via the M3 enter / exit transition
+ * tokens. The internal Backdrop owns scrim opacity and dismissal.
  */
 export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
   {
@@ -69,6 +75,10 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
     contained = false,
     disableEscapeClose = false,
     disableScrimClose = false,
+    disableAutoFocus = false,
+    disableFocusTrap = false,
+    closeIcon,
+    closeLabel = "Close",
     ariaLabel,
     ariaLabelledBy,
     ariaDescribedBy,
@@ -87,14 +97,61 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
   const titleId = `${reactId}-title`;
   const descId = `${reactId}-description`;
   const isFullscreen = variant === "fullscreen";
+  const hasIcon = icon !== undefined && icon !== null;
+  const surfaceRef = useRef<HTMLDivElement | null>(null);
+
+  useImperativeHandle(ref, () => surfaceRef.current as HTMLDivElement, []);
+
+  const fireClose = useCallback(() => {
+    onClose?.();
+  }, [onClose]);
+
+  useEffect(() => {
+    if (!open || disableAutoFocus) return;
+    const node = surfaceRef.current;
+    if (!node) return;
+    const focusables = node.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
+    if (focusables.length > 0) {
+      focusables[0].focus();
+    } else {
+      node.focus();
+    }
+  }, [open, disableAutoFocus]);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     onKeyDown?.(event);
     if (event.defaultPrevented) return;
-    if (disableEscapeClose) return;
-    if (event.key === "Escape" && onClose) {
+    if (!disableEscapeClose && event.key === "Escape" && onClose) {
       event.stopPropagation();
-      onClose();
+      fireClose();
+      return;
+    }
+
+    if (disableFocusTrap) return;
+    if (event.key !== "Tab") return;
+
+    const node = surfaceRef.current;
+    if (!node) return;
+    const focusables = Array.from(
+      node.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+    );
+    if (focusables.length === 0) {
+      event.preventDefault();
+      node.focus();
+      return;
+    }
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement as HTMLElement | null;
+    if (event.shiftKey) {
+      if (active === first || !node.contains(active)) {
+        event.preventDefault();
+        last.focus();
+      }
+    } else if (active === last) {
+      event.preventDefault();
+      first.focus();
     }
   };
 
@@ -104,7 +161,12 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
     event.stopPropagation();
   };
 
-  const transition = reduce ? { duration: 0 } : tweens.standard;
+  const enterTransition = reduce
+    ? { duration: 0 }
+    : tweens.emphasizedDecelerate;
+  const exitTransition = reduce
+    ? { duration: 0 }
+    : tweens.emphasizedAccelerate;
 
   const labelledBy =
     ariaLabelledBy ?? (title !== undefined ? titleId : undefined);
@@ -114,8 +176,8 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
 
   const surface = (
     <motion.div
-      ref={ref}
-      role={roleProp ?? "dialog"}
+      ref={surfaceRef}
+      role={roleProp ?? (isFullscreen ? "dialog" : "alertdialog")}
       aria-modal="true"
       aria-label={ariaLabel}
       aria-labelledby={labelledBy}
@@ -129,9 +191,10 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
       onKeyDown={handleKeyDown}
       className={cn(
         anatomy.surface,
-        sizes.pad,
-        sizes.gap,
-        isFullscreen ? fullscreenSurface : `${sizes.minW} ${sizes.maxW}`,
+        anatomy.focusRing,
+        isFullscreen
+          ? fullscreenSurface
+          : `${sizes.pad} ${sizes.gap} ${sizes.minW} ${sizes.maxW}`,
         isFullscreen
           ? shapeClasses.none
           : shapeClasses[shape],
@@ -141,46 +204,107 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
         colors.elevation,
         className,
       )}
-      initial={{ opacity: 0, scale: isFullscreen ? 1 : 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: isFullscreen ? 1 : 0.95 }}
-      transition={transition}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1, transition: enterTransition }}
+      exit={{ opacity: 0, transition: exitTransition }}
       tabIndex={-1}
       {...rest}
     >
-      {icon ? (
-        <span
-          data-slot="icon"
-          aria-hidden="true"
-          className={cn(anatomy.iconRow, sizes.iconBox)}
-        >
-          {icon}
-        </span>
-      ) : null}
-      {title !== undefined ? (
-        <h2 id={titleId} data-slot="title" className={anatomy.title}>
-          {title}
-        </h2>
-      ) : null}
-      {supportingText !== undefined ? (
-        <p
-          id={descId}
-          data-slot="supporting-text"
-          className={anatomy.supportingText}
-        >
-          {supportingText}
-        </p>
-      ) : null}
-      {children !== undefined && children !== null ? (
-        <div data-slot="content" className={anatomy.content}>
-          {children}
-        </div>
-      ) : null}
-      {actions ? (
-        <div data-slot="actions" className={anatomy.actions}>
-          {actions}
-        </div>
-      ) : null}
+      {isFullscreen ? (
+        <>
+          <div data-slot="header" className={anatomy.fullscreenHeader}>
+            {onClose ? (
+              <button
+                type="button"
+                data-slot="close-button"
+                aria-label={closeLabel}
+                className={anatomy.fullscreenCloseButton}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  fireClose();
+                }}
+              >
+                {closeIcon ?? (
+                  <MaterialIcon name="close" size="md" decorative />
+                )}
+              </button>
+            ) : null}
+            {title !== undefined ? (
+              <h2
+                id={titleId}
+                data-slot="title"
+                className={anatomy.fullscreenTitle}
+              >
+                {title}
+              </h2>
+            ) : (
+              <span className="flex-1" aria-hidden="true" />
+            )}
+            {actions ? (
+              <div data-slot="actions" className={anatomy.fullscreenActions}>
+                {actions}
+              </div>
+            ) : null}
+          </div>
+          {supportingText !== undefined ? (
+            <p
+              id={descId}
+              data-slot="supporting-text"
+              className={cn(anatomy.supportingText, "px-6 pt-6")}
+            >
+              {supportingText}
+            </p>
+          ) : null}
+          {children !== undefined && children !== null ? (
+            <div data-slot="content" className={cn(anatomy.content, "p-6")}>
+              {children}
+            </div>
+          ) : null}
+        </>
+      ) : (
+        <>
+          {hasIcon ? (
+            <span
+              data-slot="icon"
+              aria-hidden="true"
+              className={cn(anatomy.iconRow, sizes.iconBox)}
+            >
+              {icon}
+            </span>
+          ) : null}
+          {title !== undefined ? (
+            <h2
+              id={titleId}
+              data-slot="title"
+              className={cn(anatomy.title, hasIcon && anatomy.iconAlignedText)}
+            >
+              {title}
+            </h2>
+          ) : null}
+          {supportingText !== undefined ? (
+            <p
+              id={descId}
+              data-slot="supporting-text"
+              className={cn(
+                anatomy.supportingText,
+                hasIcon && anatomy.iconAlignedText,
+              )}
+            >
+              {supportingText}
+            </p>
+          ) : null}
+          {children !== undefined && children !== null ? (
+            <div data-slot="content" className={anatomy.content}>
+              {children}
+            </div>
+          ) : null}
+          {actions ? (
+            <div data-slot="actions" className={anatomy.actions}>
+              {actions}
+            </div>
+          ) : null}
+        </>
+      )}
     </motion.div>
   );
 
