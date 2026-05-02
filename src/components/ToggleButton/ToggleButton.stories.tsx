@@ -12,7 +12,7 @@ const Glyph = ({ glyph, label }: { glyph: string; label: string }) => (
 );
 
 const meta: Meta<typeof ToggleButton> = {
-  title: "Inputs/Toggle Button",
+  title: "Buttons/Toggle Button",
   component: ToggleButton,
   tags: ["autodocs"],
   parameters: {

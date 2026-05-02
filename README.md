@@ -65,7 +65,7 @@ Surfaces → Navigation → Layout → Utils → Advanced.
 Each component ships a spec under `tests/visual/` that:
 
 1. Loads its Storybook story via the iframe URL
-   (e.g. `iframe.html?id=inputs-button--default`).
+   (e.g. `iframe.html?id=buttons-button--default`).
 2. Reads computed styles to assert M3 spec compliance: shape radius,
    container color role, height, type role, state-layer opacities
    (hover 0.08, focus 0.10, pressed 0.10), elevation level, and

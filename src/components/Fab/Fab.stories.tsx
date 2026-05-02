@@ -51,7 +51,7 @@ const SearchIcon = () => (
 );
 
 const meta: Meta<typeof Fab> = {
-  title: "Inputs/Floating Action Button",
+  title: "Buttons/Floating Action Button",
   component: Fab,
   tags: ["autodocs"],
   parameters: {

@@ -66,7 +66,7 @@ const SettingsIcon = () => (
 );
 
 const meta: Meta<typeof IconButton> = {
-  title: "Inputs/Icon Button",
+  title: "Buttons/Icon Button",
   component: IconButton,
   tags: ["autodocs"],
   parameters: {

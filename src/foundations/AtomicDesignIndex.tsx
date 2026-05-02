@@ -3,7 +3,7 @@ type AtomicLevel = "atom" | "molecule" | "organism";
 type IndexEntry = {
   /** Display name for the component card. */
   name: string;
-  /** Storybook story-kind slug, e.g. "inputs-button". */
+  /** Storybook story-kind slug, e.g. "buttons-button". */
   slug: string;
   /** MUI navigation category. */
   category: string;
@@ -38,8 +38,8 @@ const atoms: IndexEntry[] = [
   },
   {
     name: "Button",
-    slug: "inputs-button",
-    category: "Inputs",
+    slug: "buttons-button",
+    category: "Buttons",
     role: "M3 Expressive action primitive.",
   },
   {
@@ -68,8 +68,8 @@ const atoms: IndexEntry[] = [
   },
   {
     name: "Floating Action Button",
-    slug: "inputs-floating-action-button",
-    category: "Inputs",
+    slug: "buttons-floating-action-button",
+    category: "Buttons",
     role: "Primary screen action atom.",
   },
   {
@@ -80,8 +80,8 @@ const atoms: IndexEntry[] = [
   },
   {
     name: "Icon Button",
-    slug: "inputs-icon-button",
-    category: "Inputs",
+    slug: "buttons-icon-button",
+    category: "Buttons",
     role: "Single-icon action primitive.",
   },
   {
@@ -203,8 +203,8 @@ const molecules: IndexEntry[] = [
   },
   {
     name: "Button Group",
-    slug: "inputs-button-group",
-    category: "Inputs",
+    slug: "buttons-button-group",
+    category: "Buttons",
     role: "Bundled buttons sharing edges.",
   },
   {
@@ -293,8 +293,8 @@ const molecules: IndexEntry[] = [
   },
   {
     name: "Toggle Button",
-    slug: "inputs-toggle-button",
-    category: "Inputs",
+    slug: "buttons-toggle-button",
+    category: "Buttons",
     role: "Group of mutually-exclusive buttons.",
   },
 ];

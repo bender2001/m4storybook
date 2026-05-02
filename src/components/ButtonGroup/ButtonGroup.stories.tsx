@@ -51,7 +51,7 @@ const CALL_OPTIONS = [
 ];
 
 const meta: Meta<typeof ButtonGroup> = {
-  title: "Inputs/Button Group",
+  title: "Buttons/Button Group",
   component: ButtonGroup,
   tags: ["autodocs"],
   parameters: {

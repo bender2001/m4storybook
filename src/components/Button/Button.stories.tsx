@@ -6,7 +6,7 @@ import { Button } from "./Button";
 import type { ButtonProps } from "./types";
 
 const meta: Meta<typeof Button> = {
-  title: "Inputs/Button",
+  title: "Buttons/Button",
   component: Button,
   tags: ["autodocs"],
   parameters: {
